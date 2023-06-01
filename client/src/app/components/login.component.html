@@ -1,0 +1,22 @@
+<div>
+    <h2>SIGN IN</h2>
+    <form [formGroup]="form" (ngSubmit)="login()" >
+    <table>
+        <tr>
+            Email: <input type="email" formControlName="userEmail">
+        </tr>
+        <tr>
+            Password: <input type="password" formControlName="userPassword">
+        </tr>
+        <tr>
+            <a [routerLink]="['/resetPassword']">Forgot Password?</a>
+        </tr>
+        <tr>
+            <button mat-raised-button color="primary" type="submit">Sign In</button>
+        </tr>
+    </table>
+    <hr>
+    <a [routerLink]="['/signup']">Sign Up</a>
+    </form>
+</div>
+
