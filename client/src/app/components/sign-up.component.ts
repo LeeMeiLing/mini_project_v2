@@ -11,7 +11,7 @@ import { UserService } from '../services/user.service';
 export class SignUpComponent implements OnInit{
 
   form!: FormGroup;
-
+  result$: any;
 
   constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService){}
 
@@ -38,9 +38,10 @@ export class SignUpComponent implements OnInit{
 
   async register(){
 
-    console.log(this.form.value) // debug
-    await this.userSvc.registerNewUser(this.form.value) // what will be returned?
-    // if successful, go to log in page
+    console.log(this.form.value); // debug
+    this.result$ = await this.userSvc.registerNewUser(this.form.value) // return the user email if registered successfully
+    console.log(this.result$.email); // debug
+    this.router.navigate(['/']);
     
   }
 }

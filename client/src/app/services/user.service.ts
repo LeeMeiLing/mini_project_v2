@@ -13,16 +13,31 @@ export class UserService {
 
   /*
     New user registration
-    /POST /api/user
+    /POST /api/user/register
     Content-Type: application/json
     Accept: application/json
   */
-  registerNewUser(form:any):Promise<any>{
+  async registerNewUser(form:any):Promise<any>{
 
     const headers = new HttpHeaders().set('Content-Type','application/json')
                                      .set('Accept','application/json');
     
-    return lastValueFrom(this.http.post(this.USER_URL, form, { headers }));                           
+    return lastValueFrom(this.http.post(this.USER_URL + '/register', form, { headers }));                           
+
+  }
+
+  /*
+    Log In
+    /POST /api/user/authenticate
+    Content-Type: application/json
+    Accept: application/json
+  */
+  authenticate(form:any){
+    const headers = new HttpHeaders().set('Content-Type','application/json')
+                                     .set('Accept','application/json');
+    
+    return lastValueFrom(this.http.post(this.USER_URL + '/authenticate', form, { headers }));                           
+    // return lastValueFrom(this.http.post(this.USER_URL + '/test', form, { headers }));                           
 
   }
 
