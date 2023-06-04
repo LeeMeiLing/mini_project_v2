@@ -19,21 +19,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Configuration
 public class SecurityConfig {
 
-    // @Bean
-    // public BCryptPasswordEncoder bCryptPasswordEncoder(){
-    //     return new BCryptPasswordEncoder();
-    // }
-    
     @Autowired
     private CustomAuthenticationManager customAuthenticationManager;
 
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
 
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(customAuthenticationManager);
-        authenticationFilter.setFilterProcessesUrl("/api/user/authenticate"); // default is /login ?
-        authenticationFilter.setUsernameParameter("userEmail");
-        authenticationFilter.setPasswordParameter("userPassword");
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+        authenticationFilter.setFilterProcessesUrl("/api/user/authenticate"); // default is /login
+        authenticationFilter.setUsernameParameter("userEmail"); // default is username
+        authenticationFilter.setPasswordParameter("userPassword"); // default is password
+        authenticationFilter.setAuthenticationManager(customAuthenticationManager);
 
         http
             .cors(withDefaults())
@@ -41,7 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
                     .anyRequest().authenticated())
-            // .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
+            .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
             .addFilter(authenticationFilter)
             // .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

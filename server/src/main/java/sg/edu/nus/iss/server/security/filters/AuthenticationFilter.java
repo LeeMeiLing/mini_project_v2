@@ -13,22 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import sg.edu.nus.iss.server.models.User;
-import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
-
-    // @Autowired
-    private CustomAuthenticationManager authenticationManager;
-
-
-    public AuthenticationFilter(CustomAuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 
     // @Override
     // public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -48,7 +37,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
             User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
             System.out.println(">>> In Authentication Filter attemptAuthentication(), " + user.getUserEmail()); // debug
             Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUserEmail(), user.getUserPassword());
-            return authenticationManager.authenticate(authentication);
+            return this.getAuthenticationManager().authenticate(authentication);
             
         }catch(IOException ex){
             throw new RuntimeException(); // to send back a 400 response instead of 403
