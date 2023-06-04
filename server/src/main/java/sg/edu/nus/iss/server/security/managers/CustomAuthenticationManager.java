@@ -18,8 +18,8 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     @Autowired
     private UserService userSvc;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    // @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

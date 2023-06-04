@@ -3,6 +3,7 @@ package sg.edu.nus.iss.server.security.filters;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,15 +22,20 @@ import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
-    @Autowired
+    // @Autowired
     private CustomAuthenticationManager authenticationManager;
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        
-        chain.doFilter(request, response);
+
+    public AuthenticationFilter(CustomAuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
+
+    // @Override
+    // public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    //         throws IOException, ServletException {
+        
+    //     chain.doFilter(request, response);
+    // }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
