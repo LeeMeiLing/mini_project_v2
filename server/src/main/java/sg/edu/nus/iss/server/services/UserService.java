@@ -11,7 +11,7 @@ import sg.edu.nus.iss.server.repositories.UserRepository;
 
 @Service
 public class UserService {
-    
+
     @Autowired
     private UserRepository userRepo;
 

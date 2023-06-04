@@ -37,20 +37,20 @@ public class UserController {
 
     }
 
-    @PostMapping(path = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> logInUser(@RequestBody User user){
+    // @PostMapping(path = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<String> logInUser(@RequestBody User user){
 
-        System.out.println(">>> in controller, logInUser: " + user);// debug
-        // if(userSvc.saveUser(user)){
-        //     JsonObject payload = Json.createObjectBuilder().add("email", user.getUserEmail()).build();
-        //     return ResponseEntity.status(HttpStatus.CREATED).body(payload.toString());
-        // }
+    //     System.out.println(">>> in controller, logInUser: " + user);// debug
+    //     // if(userSvc.saveUser(user)){
+    //     //     JsonObject payload = Json.createObjectBuilder().add("email", user.getUserEmail()).build();
+    //     //     return ResponseEntity.status(HttpStatus.CREATED).body(payload.toString());
+    //     // }
 
-        // JsonObject payload = Json.createObjectBuilder().add("error", "Fail to register user").build();
-        // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(payload.toString());
-
-        return null;
-    }
+    //     // JsonObject payload = Json.createObjectBuilder().add("error", "Fail to register user").build();
+    //     // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(payload.toString());
+    //     JsonObject payload = Json.createObjectBuilder().add("test", "Test message").build();
+    //     return new ResponseEntity<String>(payload.toString(),HttpStatus.OK);
+    // }
 
     // @PostMapping(path = "/test", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     // public ResponseEntity<String> logInUser(@RequestBody User user){

@@ -12,6 +12,7 @@ import { UserService } from '../services/user.service';
 export class LoginComponent implements OnInit{
 
   form!: FormGroup;
+  token!: string | null;
   
 
   constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService){}
@@ -27,9 +28,12 @@ export class LoginComponent implements OnInit{
     });
   }
 
-  login():void{
+  async login(){
     console.log(this.form.value)
-    this.userSvc.authenticate(this.form.value)
+    const result = await this.userSvc.authenticate(this.form.value);
+    this.token = result.headers.get('Authorization')
+    console.log("result: " , result);
+    console.log("token: " , this.token);
   }
 
 }
