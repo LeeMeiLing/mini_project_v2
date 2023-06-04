@@ -29,13 +29,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
     }
-    
-    // @Override
-    // public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-    //         throws IOException, ServletException {
-        
-    //     chain.doFilter(request, response);
-    // }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)

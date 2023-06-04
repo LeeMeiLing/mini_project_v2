@@ -24,8 +24,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         
         // get the user info from database for comparison with user login details
-        // System.out.println(">>> In CustomAuthenticationManager authenticate(), authentication.getPrincipal(): " + authentication.getPrincipal()); // debug
-        // System.out.println(">>> In CustomAuthenticationManager authenticate(), authentication.getName(): " + authentication.getName()); // debug
         User user = userSvc.findUser((String) authentication.getPrincipal()); // same as authentication.getName()
         if(!bCryptPasswordEncoder.matches(authentication.getCredentials().toString(), user.getUserPassword())){
             throw new BadCredentialsException("Wrong Password");

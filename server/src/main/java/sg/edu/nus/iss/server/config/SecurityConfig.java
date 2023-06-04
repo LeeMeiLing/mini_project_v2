@@ -62,11 +62,10 @@ public class SecurityConfig {
                     .anyRequest().authenticated())
             .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
             .addFilter(authenticationFilter)
-            // .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class)
+            .addFilterAfter(new JWTAuthorizationFilter(secretKey), AuthenticationFilter.class)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
-
         
     }
 
