@@ -45,8 +45,9 @@ export class UserService {
                     response => { this.token = response.headers.get('Authorization');
                                   if(this.token){
                                     this.jwtCookieSvc.setJwt(this.token)
+                                    console.log(this.jwtCookieSvc.getJwt()); // debug
                                   }
-                                  console.log(this.jwtCookieSvc.getJwt());
+                                  
                   })
                )
     );                                                   

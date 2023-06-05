@@ -12,6 +12,7 @@ export class JwtInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler) {
       // Get the jwt token from the JwtCookieService
       const authToken = this.jwtCookieSvc.getJwt();
+      console.log('in intercept: ', authToken)
   
       // Clone the request and replace the original headers with
       // cloned headers, updated with the authorization.

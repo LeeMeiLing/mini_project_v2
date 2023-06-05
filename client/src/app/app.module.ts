@@ -14,12 +14,18 @@ import { SignUpComponent } from './components/sign-up.component';
 import { CookieService  } from 'ngx-cookie-service';
 import { JwtCookieService } from './services/jwt-cookie.service';
 import { JwtInterceptor } from './http-interceptors/jwt-interceptor';
+import { HomeComponent } from './components/home.component';
+import { HospitalComponent } from './components/hospital.component';
+import { SearchHospitalComponent } from './components/search-hospital.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    SignUpComponent
+    SignUpComponent,
+    HomeComponent,
+    HospitalComponent,
+    SearchHospitalComponent
   ],
   imports: [
     BrowserModule,

@@ -54,6 +54,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
             AuthenticationException failed) throws IOException, ServletException {
         
         System.out.println(">>> Boohoo authentication didnt work"); // debug
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write(failed.getMessage());
+        response.getWriter().flush();
 
     }
 
