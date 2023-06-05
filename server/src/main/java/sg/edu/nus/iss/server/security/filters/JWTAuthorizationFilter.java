@@ -32,7 +32,8 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        if (header == null || !header.startsWith("Bearer")) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            System.out.println(" >>> request no Authorization header!!! ");
             filterChain.doFilter(request, response);
             return;
         }

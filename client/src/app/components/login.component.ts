@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit{
   constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService){}
 
   ngOnInit(): void {
-    this.form = this.createForm()
+    this.form = this.createForm();
   }
 
   createForm():FormGroup{
@@ -29,11 +29,22 @@ export class LoginComponent implements OnInit{
   }
 
   async login(){
-    console.log(this.form.value)
-    const result = await this.userSvc.authenticate(this.form.value);
-    this.token = result.headers.get('Authorization')
-    console.log("result: " , result);
-    console.log("token: " , this.token);
+    console.log(this.form.value);
+    try{
+
+      const result = await this.userSvc.authenticate(this.form.value);
+      this.token = result.headers.get('Authorization');
+      console.log("result: " , result);
+      console.log("token: " , this.token);
+      await this.userSvc.test();
+    
+    }catch(err){
+
+      console.error(err);
+      // display login error
+
+    }
+    
   }
 
 }
