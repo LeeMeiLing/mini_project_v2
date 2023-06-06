@@ -1,7 +1,14 @@
 <div>
-    List of Hospitals
+    <!-- List of Hospitals
     search by location
     search by name
-    search by specialist
-    
+    search by specialist -->
+    <h2>Find A Hospital</h2>
+    <form [formGroup]="form" (ngSubmit)="searchHospital()">
+            <!-- <select formControlName="hospital" (scroll)="loadMoreOptions()" [(ngModel)]="selectedOption"> -->
+            <select formControlName="hospital" (scroll)="loadMoreOptions()">
+                <option *ngFor="let h of hospitals" value="{{h.facilityName}}">{{ h.facilityName }}</option>
+            </select>
+        <button mat-raised-button color="primary" type="submit">Search</button>
+    </form>
 </div>
