@@ -1,6 +1,8 @@
 package sg.edu.nus.iss.server.models;
 
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 
 public class Hospital {
     
@@ -115,5 +117,24 @@ public class Hospital {
         hosp.setHospitalOverallRating(json.getString("hospital_overall_rating"));
         
         return hosp;
+    }
+
+    public JsonObject toJson(){
+
+        return Json.createObjectBuilder()
+                    .add("facilityId", facilityId)
+                    .add("facilityName", facilityName)
+                    .add("address", address)
+                    .add("city", city)
+                    .add("state", state)
+                    .add("zipCode", zipCode)
+                    .add("countyName", countyName)
+                    .add("phoneNumber", phoneNumber)
+                    .add("hospitalType", hospitalType)
+                    .add("hospitalOwnership", hospitalOwnership)
+                    .add("emergencyServices", emergencyServices)
+                    .add("hospitalOverallRating", hospitalOverallRating)
+                    .build();
+
     }
 }

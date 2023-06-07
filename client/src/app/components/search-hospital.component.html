@@ -4,7 +4,7 @@
     search by name
     search by specialist -->
     <h2>Find A Hospital</h2>
-    <form [formGroup]="form" (ngSubmit)="searchHospital()">
+    <form [formGroup]="form" (ngSubmit)="searchHospitals()">
 
             Location: 
             <select formControlName="state" (ngModelChange)="onChange()" >
@@ -22,5 +22,18 @@
 </div>
 
 <!-- List of Hospitals based on Search Result -->
-<router-outlet></router-outlet>
+<!-- <router-outlet></router-outlet> -->
+<div>
+    <table>
+        <tr *ngFor="let h of hospitals">
+            <span>{{h.facilityName}}</span>
+            <br>
+            <span>{{h.address}},{{h.city}},{{h.state}},{{h.zipCode}},{{h.countyName}}</span>
+            <br>
+            <span>{{h.phoneNumber}}</span>
+            <br>
+            <span>{{h.hospitalOverallRating}}</span>
+        </tr>
+    </table>
+</div>
 

@@ -37,30 +37,54 @@ export class HospitalService {
     let url;
 
     if(state && city && name){
+
       console.log('in state && city && name');
+
       url = `${this.HOSPITAL_URL}/search/${state}/${city}`;
       const params = new HttpParams().set('name', name).set('offset',offset);
       return this.http.get(url, { headers , params });
     }
 
     if(state && city && !name){
+
       console.log('in state && city && !name');
-      const params = new HttpParams().set('offset',offset);
+
       url = `${this.HOSPITAL_URL}/search/${state}/${city}`;
+      const params = new HttpParams().set('offset',offset);
       return this.http.get(url, { headers, params });
     }
 
-    // if(state && name){
-    //   url = `${this.HOSPITAL_URL}/${state}`;
-    //   const params = new HttpParams().set('name', name).set('offset',offset);
-    //   return this.http.get(url, { headers , params });
-    // }
+    if(state && !city && name){
+      console.log('in state && !city && name');
 
-    // if(state){
-    //   url = `${this.HOSPITAL_URL}/${state}`;
-    //   const params = new HttpParams().set('offset',offset);
-    //   return this.http.get(url, { headers });
-    // }
+      url = `${this.HOSPITAL_URL}/search/${state}`;
+      const params = new HttpParams().set('name', name).set('offset',offset);
+      return this.http.get(url, { headers , params });
+    }
+
+    if(state && !city && !name){
+      console.log('in state && !city && !name');
+
+      url = `${this.HOSPITAL_URL}/search/${state}`;
+      const params = new HttpParams().set('offset',offset);
+      return this.http.get(url, { headers, params });
+    }
+
+    if(!state && !city && name){
+      console.log('in !state && !city && name');
+
+      url = `${this.HOSPITAL_URL}/search`;
+      const params = new HttpParams().set('name', name).set('offset',offset);
+      return this.http.get(url, { headers, params });
+    }
+
+    if(!state && !city && !name){
+      console.log('in !state && !city && !name');
+
+      url = `${this.HOSPITAL_URL}/search`;
+      const params = new HttpParams().set('offset',offset);
+      return this.http.get(url, { headers, params });
+    }
 
     return;
     

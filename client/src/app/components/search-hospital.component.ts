@@ -40,8 +40,16 @@ export class SearchHospitalComponent implements OnInit{
   }
 
   onChange(){
-    console.log(this.form.value['state']);
+    console.log('state', this.form.value['state']);
+    console.log('city', this.form.value['city']);
+    console.log('name', this.form.value['hospitalName']);
 
+    this.form.value['city'] = '';
+
+    console.log('state', this.form.value['state']);
+    console.log('city', this.form.value['city']);
+    console.log('name', this.form.value['hospitalName']);
+    
     if(this.form.value['state']){
 
       this.hospitalSvc.getCities(this.form.value['state']).pipe(
@@ -71,24 +79,29 @@ export class SearchHospitalComponent implements OnInit{
   }
 
 
-  searchHospital(){
+  searchHospitals(){
+
+    console.log('in searchHospital()');
+
+    console.log('state', this.form.value['state']);
+    console.log('city', this.form.value['city']);
+    console.log('name', this.form.value['hospitalName']);
 
     this.hospitalSvc.getHospitals( this.form.value['state'], this.form.value['city'], 
-      this.form.value['hospitalName'], this.offset )?.subscribe({});
-
-
-    // GET /api/hospitals
-
-    // GET /api/hospitals?name=name
-
-    // GET /api/hospitals/{state}
-
-    // GET /api/hospitals/{state}?name=name
-
-    // GET /api/hospitals/{state}/{city}
-
-    // GET /api/hospitals/{state}/{city}?name=name
-
+      this.form.value['hospitalName'], this.offset )?.pipe(
+        tap(r => this.hospitals = r as Hospital[])
+      ).subscribe({
+        next: ()=> {
+          console.log(this.hospitals)
+        },
+        error: err=>{
+          console.error(err)
+        },
+        complete:() => {
+          console.log('completed search Hospital') // debug
+        }
+      });
+  
     
   }
 

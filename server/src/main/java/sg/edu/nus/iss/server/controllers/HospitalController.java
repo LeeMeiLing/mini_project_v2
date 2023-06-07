@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
+import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.services.HospitalService;
 
 @CrossOrigin(origins="*")
@@ -31,6 +32,8 @@ public class HospitalController {
      */
     @GetMapping(path="/states", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getStates(){
+
+        hospSvc.checkUpdated();
 
         System.out.println(">>> in controller getStates()");
 
@@ -76,10 +79,19 @@ public class HospitalController {
         @RequestParam(required = false) String name ,@RequestParam Integer offset)
     {
         // hospSvc.checkUpdated();
+
         System.out.println(">>> in controller search Hospitals");
-        System.out.println(hospSvc.getHospitalList(state,city,name,offset)); // debug
-        // hospSvc.getHospitalList(state,city,name,offset);
-        
-        return null;
+
+        List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset);
+        if(hospitals.isEmpty()){
+            System.out.println("hospital list is empty, result not found");
+            
+        }
+        System.out.println("controller hospitals :" + hospitals);
+        JsonArrayBuilder arrB = Json.createArrayBuilder();
+        hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
+        JsonArray hospitalArray = arrB.build();
+        return ResponseEntity.status(HttpStatus.OK).body(hospitalArray.toString());
+
     }
 }

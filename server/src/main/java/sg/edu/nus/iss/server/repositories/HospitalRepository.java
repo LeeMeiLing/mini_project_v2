@@ -147,61 +147,181 @@ public class HospitalRepository {
         }
     }
     
-    public Optional<List<Hospital>> findAllHospitals(Integer offset){
+
+    // public Optional<List<Hospital>> findAllHospitals(Integer offset){
         
-        try{
+    //     try{
 
-            List<Hospital> hospitals = jdbcTemplate.query(QUERY_HOSPITALS_ALL, new PreparedStatementSetter() {
+    //         List<Hospital> hospitals = jdbcTemplate.query(QUERY_HOSPITALS_ALL, new PreparedStatementSetter() {
 
-                @Override
-                public void setValues(PreparedStatement ps) throws SQLException {
-                    ps.setInt(1, LIMIT);
-                    ps.setInt(2, offset * LIMIT);
-                }
+    //             @Override
+    //             public void setValues(PreparedStatement ps) throws SQLException {
+    //                 ps.setInt(1, LIMIT);
+    //                 ps.setInt(2, offset * LIMIT);
+    //             }
                 
-            }, BeanPropertyRowMapper.newInstance(Hospital.class));
+    //         }, BeanPropertyRowMapper.newInstance(Hospital.class));
 
-            if(!hospitals.isEmpty()){
-                System.out.println("in repo: " + hospitals);
-                return Optional.of(hospitals);
-            }else{
-                System.out.println("in repo: hospital is empty list " );
-                return Optional.empty();
+    //         if(!hospitals.isEmpty()){
+    //             System.out.println("in repo: " + hospitals);
+    //             return Optional.of(hospitals);
+    //         }else{
+    //             System.out.println("in repo: hospital is empty list " );
+    //             return Optional.empty();
+    //         }
+
+    //     }catch(Exception ex){
+    //         return Optional.empty();
+    //     }
+
+    // }
+
+    public Optional<List<Hospital>> findAllHospitals(Integer offset){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setInt(1, LIMIT);
+                ps.setInt(2, offset * LIMIT);
             }
-
-        }catch(Exception ex){
-            return Optional.empty();
-        }
+            
+        };
+        
+        return queryHospitals(QUERY_HOSPITALS_ALL, ps);
 
     }
 
     public Optional<List<Hospital>> findHospitalsByName(String name, Integer offset){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, "%" + name + "%");
+                ps.setInt(2, LIMIT);
+                ps.setInt(3, offset * LIMIT);
+            }
+            
+        };
         
+        return queryHospitals(QUERY_HOSPITALS_BY_NAME, ps);
+
+    }
+
+    public Optional<List<Hospital>> findHospitalsByState(String state, Integer offset){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, state);
+                ps.setInt(2, LIMIT);
+                ps.setInt(3, offset * LIMIT);
+            }
+            
+        };
+        
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE, ps);
+
+    }
+
+    public Optional<List<Hospital>> findHospitalsByStateAndName(String state, String name, Integer offset){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, state);
+                ps.setString(2, "%" + name + "%");
+                ps.setInt(3, LIMIT);
+                ps.setInt(4, offset * LIMIT);
+            }
+            
+        };
+        
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE_NAME, ps);
+
+    }
+
+    public Optional<List<Hospital>> findHospitalsByStateAndCity(String state, String city, Integer offset){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, state);
+                ps.setString(2, city);
+                ps.setInt(3, LIMIT);
+                ps.setInt(4, offset * LIMIT);
+            }
+            
+        };
+        
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE_CITY, ps);
+
+    }
+
+    public Optional<List<Hospital>> findHospitalsByStateCityName(String state, String city, String name, Integer offset){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, state);
+                ps.setString(2, city);
+                ps.setString(3, "%" + name + "%");              
+                ps.setInt(4, LIMIT);
+                ps.setInt(5, offset * LIMIT);
+            }
+            
+        };
+        
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE_CITY_NAME, ps);
+
+    }
+
+    public Optional<List<Hospital>> queryHospitals(String queryString, PreparedStatementSetter ps){
+
         try{
-
-            List<Hospital> hospitals = jdbcTemplate.query(QUERY_HOSPITALS_BY_NAME, new PreparedStatementSetter() {
-
-                @Override
-                public void setValues(PreparedStatement ps) throws SQLException {
-                    ps.setString(1, name);
-                    ps.setInt(2, LIMIT);
-                    ps.setInt(3, offset * LIMIT);
-                }
-                
-            }, BeanPropertyRowMapper.newInstance(Hospital.class));
-
+            List<Hospital> hospitals = jdbcTemplate.query(queryString, ps, BeanPropertyRowMapper.newInstance(Hospital.class));
             if(!hospitals.isEmpty()){
                 return Optional.of(hospitals);
             }else{
                 return Optional.empty();
             }
-
+            
         }catch(Exception ex){
             return Optional.empty();
         }
-
     }
 
+    // public Optional<List<Hospital>> findHospitalsByName(String name, Integer offset){
+        
+    //     try{
+
+    //         List<Hospital> hospitals = jdbcTemplate.query(QUERY_HOSPITALS_BY_NAME, new PreparedStatementSetter() {
+
+    //             @Override
+    //             public void setValues(PreparedStatement ps) throws SQLException {
+    //                 ps.setString(1, name);
+    //                 ps.setInt(2, LIMIT);
+    //                 ps.setInt(3, offset * LIMIT);
+    //             }
+                
+    //         }, BeanPropertyRowMapper.newInstance(Hospital.class));
+
+    //         if(!hospitals.isEmpty()){
+    //             return Optional.of(hospitals);
+    //         }else{
+    //             return Optional.empty();
+    //         }
+
+    //     }catch(Exception ex){
+    //         return Optional.empty();
+    //     }
+
+    // }
 
     public Optional<List<String>> getStates(){
 

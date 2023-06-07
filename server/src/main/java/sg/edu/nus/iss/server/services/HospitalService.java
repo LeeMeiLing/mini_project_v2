@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -228,32 +227,30 @@ public class HospitalService {
             if(city != null){
                 if(name != null){
                     // search with state, city, name
-
+                    opt = hospitalRepo.findHospitalsByStateCityName(state,city,name,offset);
                 }else{
                     // search with state, city
-
+                    opt = hospitalRepo.findHospitalsByStateAndCity(state, city, offset);
                 }
             }else{
                 if(name != null){
                     // search with state, name
-
+                    opt = hospitalRepo.findHospitalsByStateAndName(state, name, offset);
                 }else{
                     // search with state
-
+                    opt = hospitalRepo.findHospitalsByState(state, offset);
                 }
             }
         }else{
 
             if(name != null){
                 // search with name
-
+                opt = hospitalRepo.findHospitalsByName(name, offset);
             }else{
                 // search all without filter
                 opt = hospitalRepo.findAllHospitals(offset);
             }
         }
-        
-        opt = hospitalRepo.findAllHospitals(offset); // debug
 
         if(opt.isPresent()){
             return opt.get();
