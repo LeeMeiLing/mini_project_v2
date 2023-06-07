@@ -17,6 +17,7 @@ import { JwtInterceptor } from './http-interceptors/jwt-interceptor';
 import { HomeComponent } from './components/home.component';
 import { HospitalComponent } from './components/hospital.component';
 import { SearchHospitalComponent } from './components/search-hospital.component';
+import { SearchHospitalResultComponent } from './components/search-hospital-result.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { SearchHospitalComponent } from './components/search-hospital.component'
     SignUpComponent,
     HomeComponent,
     HospitalComponent,
-    SearchHospitalComponent
+    SearchHospitalComponent,
+    SearchHospitalResultComponent
   ],
   imports: [
     BrowserModule,

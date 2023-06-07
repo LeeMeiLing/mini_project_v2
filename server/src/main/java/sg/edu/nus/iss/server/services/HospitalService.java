@@ -2,12 +2,15 @@ package sg.edu.nus.iss.server.services;
 
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,9 @@ public class HospitalService {
 
     @Autowired
     private HospitalRepository hospitalRepo;
+
+    @Autowired
+    private RedisTemplate<String,Object> redisTemplate;
 
     private Date previousReleased;
     private Date latestReleased;
@@ -139,14 +145,123 @@ public class HospitalService {
 
     }
     
-    // retrieve from MySQL
-    public List<Hospital> getHospitalList(String name, Integer limit){
+
+    // retrieve states
+    public List<String> getStates(){
+
+        System.out.println(">>> in hosp Svc get State");
+
+        List<Object> objects = new ArrayList<>();
         
-        Optional<List<Hospital>> opt = hospitalRepo.getHospitalList(name, limit);
+        objects = redisTemplate.opsForList().range("states", 0, redisTemplate.opsForList().size("states"));
+
+        if(!objects.isEmpty()){
+            
+            System.out.println("in if");
+            System.out.println(objects);
+            return objects.stream().map(o -> String.valueOf(o)).toList();
+
+        }else{
+
+            System.out.println("in else");
+
+            // get from MySQL
+            Optional<List<String>> opt = hospitalRepo.getStates();
+
+            if(opt.isPresent()){
+
+                // save to redis
+                List<String> states = opt.get();
+                states.stream().forEach(s -> redisTemplate.opsForList().rightPush("states", s));
+
+                return opt.get();
+            }else{
+                throw new RuntimeException(); // TODO
+            }
+        }
+
+    }
+
+    // retrieve cities
+    public List<String> getCities(String state){
+
+        System.out.println(">>> in hosp Svc get Cities");
+
+        List<Object> objects = new ArrayList<>();
+        
+        objects = redisTemplate.opsForList().range(state, 0, redisTemplate.opsForList().size(state));
+
+        if(!objects.isEmpty()){
+            
+            System.out.println("in if");
+            System.out.println(objects);
+            return objects.stream().map(o -> String.valueOf(o)).toList();
+
+        }else{
+
+            System.out.println("in else");
+
+            // get from MySQL
+            Optional<List<String>> opt = hospitalRepo.getCities(state);
+
+            if(opt.isPresent()){
+
+                // save to redis
+                List<String> cities = opt.get();
+                cities.stream().forEach(c -> redisTemplate.opsForList().rightPush(state, c));
+
+                return opt.get();
+            }else{
+                throw new RuntimeException(); // TODO
+            }
+        }
+
+    }
+
+    // retrieve from MySQL
+    public List<Hospital> getHospitalList(String state, String city, String name, Integer offset){
+
+        Optional<List<Hospital>> opt;
+
+        if(null != state){
+
+            if(city != null){
+                if(name != null){
+                    // search with state, city, name
+
+                }else{
+                    // search with state, city
+
+                }
+            }else{
+                if(name != null){
+                    // search with state, name
+
+                }else{
+                    // search with state
+
+                }
+            }
+        }else{
+
+            if(name != null){
+                // search with name
+
+            }else{
+                // search all without filter
+                opt = hospitalRepo.findAllHospitals(offset);
+            }
+        }
+        
+        opt = hospitalRepo.findAllHospitals(offset); // debug
+
         if(opt.isPresent()){
             return opt.get();
+        }else{
+            throw new RuntimeException(); // TODO
         }
-        throw new RuntimeException(); // TODO
+        
     }
+
 
 }
