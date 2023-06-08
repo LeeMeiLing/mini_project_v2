@@ -33,7 +33,7 @@ public class HospitalController {
     @GetMapping(path="/states", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getStates(){
 
-        hospSvc.checkUpdated();
+        // hospSvc.checkUpdated();
 
         System.out.println(">>> in controller getStates()");
 
@@ -66,28 +66,29 @@ public class HospitalController {
     }
     
 
-    // GET /api/hospitals/search?offset=0
-    // GET /api/hospitals/search?name=name&offset=0
-    // GET /api/hospitals/search/{state}?offset=0
-    // GET /api/hospitals/search/{state}?name=name&offset=0
-    // GET /api/hospitals/search/{state}/{city}?offset=0
-    // GET /api/hospitals/search/{state}/{city}?name=name&offset=0
+    // GET /api/hospitals/search?offset=0&sortByRating=true&descending=true
+    // GET /api/hospitals/search?name=name&offset=0&sortByRating=true&descending=true
+    // GET /api/hospitals/search/{state}?offset=0&sortByRating=true&descending=true
+    // GET /api/hospitals/search/{state}?name=name&offset=0&sortByRating=true&descending=true
+    // GET /api/hospitals/search/{state}/{city}?offset=0&sortByRating=true&descending=true
+    // GET /api/hospitals/search/{state}/{city}?name=name&offset=0&sortByRating=true&descending=true
 
     @GetMapping(path ={"/search", "/search/{state}", "search/{state}/{city}"},
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getHospitals(@PathVariable(required = false) String state,@PathVariable(required = false) String city ,
-        @RequestParam(required = false) String name ,@RequestParam Integer offset)
+        @RequestParam(required = false) String name ,@RequestParam Integer offset,
+        @RequestParam Boolean sortByRating ,@RequestParam Boolean descending)
     {
         // hospSvc.checkUpdated();
 
         System.out.println(">>> in controller search Hospitals");
 
-        List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset);
+        List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset,sortByRating,descending);
         if(hospitals.isEmpty()){
             System.out.println("hospital list is empty, result not found");
-            
+            // throw not found exception ?
         }
-        System.out.println("controller hospitals :" + hospitals);
+        System.out.println("controller hospitals not empty");
         JsonArrayBuilder arrB = Json.createArrayBuilder();
         hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
         JsonArray hospitalArray = arrB.build();

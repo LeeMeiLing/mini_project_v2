@@ -2,13 +2,11 @@ package sg.edu.nus.iss.server.repositories;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -21,9 +19,6 @@ public class HospitalRepository {
     
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
 
     private final Integer LIMIT = 20;
 
@@ -49,32 +44,44 @@ public class HospitalRepository {
 
     // GET /api/hospitals/search
     private final String QUERY_HOSPITALS_ALL = """
-        select * from hospitals limit ? offset ?
+        select * from hospitals 
     """;
 
     // GET /api/hospitals/search?name=name
     private final String QUERY_HOSPITALS_BY_NAME = """
-        select * from hospitals where facility_name like ? limit ? offset ?
+        select * from hospitals where facility_name like ? 
     """;
 
     // GET /api/hospitals/search/{state}
     private final String QUERY_HOSPITALS_BY_STATE = """
-        select * from hospitals where state = ? limit ? offset ?
+        select * from hospitals where state = ? 
     """;
 
     // GET /api/hospitals/search/{state}?name=name
     private final String QUERY_HOSPITALS_BY_STATE_NAME = """
-        select * from hospitals where state = 'AL' and facility_name like ? limit ? offset ?
+        select * from hospitals where state = ? and facility_name like ? 
     """;
 
     // GET /api/hospitals/search/{state}/{city}
     private final String QUERY_HOSPITALS_BY_STATE_CITY = """
-        select * from hospitals where state = ? and city = ? limit ? offset ?
+        select * from hospitals where state = ? and city = ? 
     """;
 
     // GET /api/hospitals/search/{state}/{city}?name=name
     private final String QUERY_HOSPITALS_BY_STATE_CITY_NAME = """
-        select * from hospitals where state = ? and city = ? and facility_name like ? limit ? offset ?
+        select * from hospitals where state = ? and city = ? and facility_name like ? 
+    """;
+
+    private final String LIMIT_OFFSET = """
+        limit ? offset ?
+    """;
+
+    private final String SORT_ASC_LIMIT_OFFSET = """
+        and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating limit ? offset ?
+    """;
+
+    private final String SORT_DESC_LIMIT_OFFSET = """
+        and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating desc limit ? offset ?
     """;
 
     public boolean insert(Hospital h){
@@ -146,37 +153,8 @@ public class HospitalRepository {
             return false;
         }
     }
-    
 
-    // public Optional<List<Hospital>> findAllHospitals(Integer offset){
-        
-    //     try{
-
-    //         List<Hospital> hospitals = jdbcTemplate.query(QUERY_HOSPITALS_ALL, new PreparedStatementSetter() {
-
-    //             @Override
-    //             public void setValues(PreparedStatement ps) throws SQLException {
-    //                 ps.setInt(1, LIMIT);
-    //                 ps.setInt(2, offset * LIMIT);
-    //             }
-                
-    //         }, BeanPropertyRowMapper.newInstance(Hospital.class));
-
-    //         if(!hospitals.isEmpty()){
-    //             System.out.println("in repo: " + hospitals);
-    //             return Optional.of(hospitals);
-    //         }else{
-    //             System.out.println("in repo: hospital is empty list " );
-    //             return Optional.empty();
-    //         }
-
-    //     }catch(Exception ex){
-    //         return Optional.empty();
-    //     }
-
-    // }
-
-    public Optional<List<Hospital>> findAllHospitals(Integer offset){
+    public Optional<List<Hospital>> findAllHospitals(Integer offset, Boolean sortByRating, Boolean descending){
 
         PreparedStatementSetter ps = new PreparedStatementSetter() {
 
@@ -187,12 +165,26 @@ public class HospitalRepository {
             }
             
         };
+
+
+        String queryString = null;
+
+        if(sortByRating && descending){
+            queryString =  QUERY_HOSPITALS_ALL + "where hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating desc ";
+        }
+
+        else if(sortByRating && !descending){
+            queryString =  QUERY_HOSPITALS_ALL + "where hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating ";
+        }
+        else if(!sortByRating){
+            queryString =  QUERY_HOSPITALS_ALL;
+        }
         
-        return queryHospitals(QUERY_HOSPITALS_ALL, ps);
+        return queryHospitals(queryString, ps, false, false);
 
     }
 
-    public Optional<List<Hospital>> findHospitalsByName(String name, Integer offset){
+    public Optional<List<Hospital>> findHospitalsByName(String name, Integer offset, Boolean sortByRating, Boolean descending){
 
         PreparedStatementSetter ps = new PreparedStatementSetter() {
 
@@ -205,11 +197,11 @@ public class HospitalRepository {
             
         };
         
-        return queryHospitals(QUERY_HOSPITALS_BY_NAME, ps);
+        return queryHospitals(QUERY_HOSPITALS_BY_NAME, ps, sortByRating, descending);
 
     }
 
-    public Optional<List<Hospital>> findHospitalsByState(String state, Integer offset){
+    public Optional<List<Hospital>> findHospitalsByState(String state, Integer offset, Boolean sortByRating, Boolean descending){
 
         PreparedStatementSetter ps = new PreparedStatementSetter() {
 
@@ -222,11 +214,14 @@ public class HospitalRepository {
             
         };
         
-        return queryHospitals(QUERY_HOSPITALS_BY_STATE, ps);
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE, ps, sortByRating, descending);
 
     }
 
-    public Optional<List<Hospital>> findHospitalsByStateAndName(String state, String name, Integer offset){
+    public Optional<List<Hospital>> findHospitalsByStateAndName(String state, String name, Integer offset, Boolean sortByRating, Boolean descending){
+
+        System.out.println(">> in findHospitalsByStateAndName");
+
 
         PreparedStatementSetter ps = new PreparedStatementSetter() {
 
@@ -240,11 +235,11 @@ public class HospitalRepository {
             
         };
         
-        return queryHospitals(QUERY_HOSPITALS_BY_STATE_NAME, ps);
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE_NAME, ps, sortByRating, descending);
 
     }
 
-    public Optional<List<Hospital>> findHospitalsByStateAndCity(String state, String city, Integer offset){
+    public Optional<List<Hospital>> findHospitalsByStateAndCity(String state, String city, Integer offset, Boolean sortByRating, Boolean descending){
 
         PreparedStatementSetter ps = new PreparedStatementSetter() {
 
@@ -258,11 +253,11 @@ public class HospitalRepository {
             
         };
         
-        return queryHospitals(QUERY_HOSPITALS_BY_STATE_CITY, ps);
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE_CITY, ps, sortByRating, descending);
 
     }
 
-    public Optional<List<Hospital>> findHospitalsByStateCityName(String state, String city, String name, Integer offset){
+    public Optional<List<Hospital>> findHospitalsByStateCityName(String state, String city, String name, Integer offset, Boolean sortByRating, Boolean descending){
 
         PreparedStatementSetter ps = new PreparedStatementSetter() {
 
@@ -277,51 +272,41 @@ public class HospitalRepository {
             
         };
         
-        return queryHospitals(QUERY_HOSPITALS_BY_STATE_CITY_NAME, ps);
+        return queryHospitals(QUERY_HOSPITALS_BY_STATE_CITY_NAME, ps, sortByRating, descending);
 
     }
 
-    public Optional<List<Hospital>> queryHospitals(String queryString, PreparedStatementSetter ps){
+    public Optional<List<Hospital>> queryHospitals(String queryString, PreparedStatementSetter ps, Boolean sortByRating, Boolean descending){
+
+        String finalQueryString = null;
+
+        if(sortByRating && descending){
+            finalQueryString = queryString + SORT_DESC_LIMIT_OFFSET;
+        }
+
+        else if(sortByRating && !descending){
+            finalQueryString = queryString + SORT_ASC_LIMIT_OFFSET;
+        }
+
+        else if(!sortByRating){
+            finalQueryString = queryString + LIMIT_OFFSET; 
+        }
 
         try{
-            List<Hospital> hospitals = jdbcTemplate.query(queryString, ps, BeanPropertyRowMapper.newInstance(Hospital.class));
+            List<Hospital> hospitals = jdbcTemplate.query(finalQueryString, ps, BeanPropertyRowMapper.newInstance(Hospital.class));
             if(!hospitals.isEmpty()){
+                System.out.println(" in queryHospitals: " + hospitals);
                 return Optional.of(hospitals);
             }else{
+                System.out.println(" in queryHospitals, hospitals is empty list: " + hospitals);
                 return Optional.empty();
             }
             
         }catch(Exception ex){
+            System.out.println(" in queryHospitals,catch exception: " + ex);
             return Optional.empty();
         }
     }
-
-    // public Optional<List<Hospital>> findHospitalsByName(String name, Integer offset){
-        
-    //     try{
-
-    //         List<Hospital> hospitals = jdbcTemplate.query(QUERY_HOSPITALS_BY_NAME, new PreparedStatementSetter() {
-
-    //             @Override
-    //             public void setValues(PreparedStatement ps) throws SQLException {
-    //                 ps.setString(1, name);
-    //                 ps.setInt(2, LIMIT);
-    //                 ps.setInt(3, offset * LIMIT);
-    //             }
-                
-    //         }, BeanPropertyRowMapper.newInstance(Hospital.class));
-
-    //         if(!hospitals.isEmpty()){
-    //             return Optional.of(hospitals);
-    //         }else{
-    //             return Optional.empty();
-    //         }
-
-    //     }catch(Exception ex){
-    //         return Optional.empty();
-    //     }
-
-    // }
 
     public Optional<List<String>> getStates(){
 
@@ -364,7 +349,6 @@ public class HospitalRepository {
             System.out.println(">>> in repo, catch: " + ex); // debug
             return Optional.empty();
         }
-
 
     }
 }

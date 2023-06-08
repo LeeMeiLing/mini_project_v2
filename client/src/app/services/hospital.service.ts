@@ -31,7 +31,7 @@ export class HospitalService {
     return this.http.get(`${this.HOSPITAL_URL}/${state}/cities`,{ headers } );
   }
 
-  getHospitals(state:string, city:string, name:string, offset:number){
+  getHospitals(state:string, city:string, name:string, offset:number, sortByRating:boolean, descending:boolean){
     
     const headers = new HttpHeaders().set('Accept','application/json');
     let url;
@@ -41,7 +41,7 @@ export class HospitalService {
       console.log('in state && city && name');
 
       url = `${this.HOSPITAL_URL}/search/${state}/${city}`;
-      const params = new HttpParams().set('name', name).set('offset',offset);
+      const params = new HttpParams().set('name', name).set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
       return this.http.get(url, { headers , params });
     }
 
@@ -50,7 +50,7 @@ export class HospitalService {
       console.log('in state && city && !name');
 
       url = `${this.HOSPITAL_URL}/search/${state}/${city}`;
-      const params = new HttpParams().set('offset',offset);
+      const params = new HttpParams().set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
       return this.http.get(url, { headers, params });
     }
 
@@ -58,7 +58,7 @@ export class HospitalService {
       console.log('in state && !city && name');
 
       url = `${this.HOSPITAL_URL}/search/${state}`;
-      const params = new HttpParams().set('name', name).set('offset',offset);
+      const params = new HttpParams().set('name', name).set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
       return this.http.get(url, { headers , params });
     }
 
@@ -66,7 +66,7 @@ export class HospitalService {
       console.log('in state && !city && !name');
 
       url = `${this.HOSPITAL_URL}/search/${state}`;
-      const params = new HttpParams().set('offset',offset);
+      const params = new HttpParams().set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
       return this.http.get(url, { headers, params });
     }
 
@@ -74,7 +74,7 @@ export class HospitalService {
       console.log('in !state && !city && name');
 
       url = `${this.HOSPITAL_URL}/search`;
-      const params = new HttpParams().set('name', name).set('offset',offset);
+      const params = new HttpParams().set('name', name).set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
       return this.http.get(url, { headers, params });
     }
 
@@ -82,7 +82,7 @@ export class HospitalService {
       console.log('in !state && !city && !name');
 
       url = `${this.HOSPITAL_URL}/search`;
-      const params = new HttpParams().set('offset',offset);
+      const params = new HttpParams().set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
       return this.http.get(url, { headers, params });
     }
 

@@ -38,7 +38,7 @@ public class HospitalService {
     private Date previousReleased;
     private Date latestReleased;
     private Integer totalHospital;
-    private final Integer QUERY_LIMIT = 500;
+    private final Integer API_QUERY_LIMIT = 500;
 
     // Check if there is any new released data. if there is, get the latest released data from API 
     public void checkUpdated(){
@@ -63,14 +63,15 @@ public class HospitalService {
             if(!latestReleased.equals(previousReleased) ){
                 getTotalHospital();
                 System.out.println(">>> total Hospital = " + totalHospital); // debug
-                int loop = (int) Math.ceil((double)totalHospital / QUERY_LIMIT);
+                int loop = (int) Math.ceil((double)totalHospital / API_QUERY_LIMIT);
                 System.out.println("loop # " + loop); // debug
                 for(int i=0 ; i < loop ; i++){
-                    getHospitalInfo(i*QUERY_LIMIT);
+                    getHospitalInfo(i*API_QUERY_LIMIT);
                 }
             }
 
         }catch(HttpClientErrorException ex){
+            System.out.println(" >>> in HttpClientErrorException"); // debug
             logger.info(ex.getResponseBodyAsString());
  
         }catch(Exception ex){
@@ -115,7 +116,7 @@ public class HospitalService {
         // GET https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/{index}
         String url = UriComponentsBuilder.fromUriString(Constant.US_DATA_GOV_HOSPITAL_GENERAL_INFORMATION_URL)
         .pathSegment("0")
-        .queryParam("limit", QUERY_LIMIT)
+        .queryParam("limit", API_QUERY_LIMIT)
         .queryParam("offset", offset)
         .toUriString();
 
@@ -218,7 +219,9 @@ public class HospitalService {
     }
 
     // retrieve from MySQL
-    public List<Hospital> getHospitalList(String state, String city, String name, Integer offset){
+    public List<Hospital> getHospitalList(String state, String city, String name, Integer offset,
+    Boolean sortByRating, Boolean descending)
+    {
 
         Optional<List<Hospital>> opt;
 
@@ -227,28 +230,29 @@ public class HospitalService {
             if(city != null){
                 if(name != null){
                     // search with state, city, name
-                    opt = hospitalRepo.findHospitalsByStateCityName(state,city,name,offset);
+                    opt = hospitalRepo.findHospitalsByStateCityName(state,city,name,offset,sortByRating,descending);
                 }else{
                     // search with state, city
-                    opt = hospitalRepo.findHospitalsByStateAndCity(state, city, offset);
+                    opt = hospitalRepo.findHospitalsByStateAndCity(state, city, offset,sortByRating,descending);
                 }
             }else{
                 if(name != null){
                     // search with state, name
-                    opt = hospitalRepo.findHospitalsByStateAndName(state, name, offset);
+                    System.out.println(">> in state !city name svc");
+                    opt = hospitalRepo.findHospitalsByStateAndName(state, name, offset,sortByRating,descending);
                 }else{
                     // search with state
-                    opt = hospitalRepo.findHospitalsByState(state, offset);
+                    opt = hospitalRepo.findHospitalsByState(state, offset,sortByRating,descending);
                 }
             }
         }else{
 
             if(name != null){
                 // search with name
-                opt = hospitalRepo.findHospitalsByName(name, offset);
+                opt = hospitalRepo.findHospitalsByName(name, offset,sortByRating,descending);
             }else{
                 // search all without filter
-                opt = hospitalRepo.findAllHospitals(offset);
+                opt = hospitalRepo.findAllHospitals(offset,sortByRating,descending);
             }
         }
 

@@ -4,17 +4,14 @@ import { LoginComponent } from './components/login.component';
 import { SignUpComponent } from './components/sign-up.component';
 import { HomeComponent } from './components/home.component';
 import { SearchHospitalComponent } from './components/search-hospital.component';
-import { SearchHospitalResultComponent } from './components/search-hospital-result.component';
+import { HospitalComponent } from './components/hospital.component';
 
 const routes: Routes = [
   { path:'', component:LoginComponent},
   { path:'signup', component:SignUpComponent},
   { path:'home', component:HomeComponent},
-  { path:'searchHospital', component:SearchHospitalComponent,
-    children:[
-      { path:'result/:facilityId',component:SearchHospitalResultComponent}
-    ]
-  },
+  { path:'searchHospital', component:SearchHospitalComponent},
+  { path:'hospital/:facilityId',component:HospitalComponent},
   { path:'**', redirectTo:'/', pathMatch:'full'}
 ];
 
