@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.services.HospitalService;
 
@@ -81,18 +83,31 @@ public class HospitalController {
     {
         // hospSvc.checkUpdated();
 
-        System.out.println(">>> in controller search Hospitals");
+        System.out.println(">>> in controller search Hospitals"); // dbeug
+
+        
 
         List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset,sortByRating,descending);
+
         if(hospitals.isEmpty()){
             System.out.println("hospital list is empty, result not found");
-            // throw not found exception ?
+            hospSvc.countResult(state,city,name,sortByRating,descending);
+            // throw not found exception ? todo!!!!
         }
-        System.out.println("controller hospitals not empty");
+
         JsonArrayBuilder arrB = Json.createArrayBuilder();
         hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
         JsonArray hospitalArray = arrB.build();
-        return ResponseEntity.status(HttpStatus.OK).body(hospitalArray.toString());
+
+        JsonObjectBuilder joB = Json.createObjectBuilder();
+        joB.add("results", hospitalArray);
+
+        Integer totalResult = hospSvc.countResult(state,city,name,sortByRating,descending);
+        joB.add("count", totalResult);
+
+        JsonObject payload = joB.build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
     }
 }

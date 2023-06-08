@@ -30,22 +30,28 @@
 <!-- List of Hospitals based on Search Result -->
 <div *ngIf="hospitals">
     <h3>Search Results:</h3>
-    <table>
-       
-        <tr *ngFor="let h of hospitals">
-            <a [routerLink]="['/hospital',h.facilityId]" >
-                <mat-card>
-                    <mat-card-title>
-                        <span>{{h.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{h.hospitalOverallRating}}/5</span>
-                    </mat-card-title>
-                    <mat-card-content>
-                        <span>{{h.address}},{{h.city}},{{h.state}},{{h.zipCode}},{{h.countyName}}</span>
-                        <br>
-                        <span>{{h.phoneNumber}}</span>
-                    </mat-card-content>
-                </mat-card>
-            </a>
-        </tr>
-    </table>
+    <span>total {{count}} results</span>
+    <div *ngIf="hospitals.length > 0">
+        <p>page {{offset + 1}} 
+            <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
+            <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
+        </p>
+        <table>
+            <tr *ngFor="let h of hospitals">
+                <a [routerLink]="['/hospital',h.facilityId]" >
+                    <mat-card>
+                        <mat-card-title>
+                            <span>{{h.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{h.hospitalOverallRating}}/5</span>
+                        </mat-card-title>
+                        <mat-card-content>
+                            <span>{{h.address}},{{h.city}},{{h.state}},{{h.zipCode}},{{h.countyName}}</span>
+                            <br>
+                            <span>{{h.phoneNumber}}</span>
+                        </mat-card-content>
+                    </mat-card>
+                </a>
+            </tr>
+        </table>
+    </div>
 </div>
 

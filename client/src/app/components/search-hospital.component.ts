@@ -20,6 +20,8 @@ export class SearchHospitalComponent implements OnInit{
   descending:boolean = false;
   sortByRating:boolean = false;
   disableSort:boolean = true;
+  count!:number;
+  seeResponse!:any;
 
   constructor(private fb:FormBuilder, private hospitalSvc:HospitalService) {}
   
@@ -93,10 +95,17 @@ export class SearchHospitalComponent implements OnInit{
 
     this.hospitalSvc.getHospitals( this.form.value['state'], this.form.value['city'], 
       this.form.value['hospitalName'], this.offset, this.sortByRating, this.descending )?.pipe(
-        tap(r => this.hospitals = r as Hospital[])
+        tap((r:any) => {
+          this.seeResponse = r
+          this.hospitals = r['results'] as Hospital[];
+          this.count = r['count'];
+        }),
       ).subscribe({
         next: ()=> {
-          console.log(this.hospitals)
+          console.log(this.seeResponse);
+          console.log(this.hospitals);
+          console.log(this.count);
+          console.log('count/20 ', this.count/20)
         },
         error: err=>{
           console.error(err)
@@ -119,6 +128,16 @@ export class SearchHospitalComponent implements OnInit{
     this.sortByRating = false;
     this.disableSort = !this.disableSort;
     console.log('undoSort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
+    this.searchHospitals();
+  }
+
+  loadNextPage(){
+    this.offset++;
+    this.searchHospitals();
+  }
+
+  loadPreviousPage(){
+    this.offset--;
     this.searchHospitals();
   }
 

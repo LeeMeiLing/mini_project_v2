@@ -1,15 +1,18 @@
 package sg.edu.nus.iss.server.repositories;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.iss.server.models.Hospital;
@@ -42,46 +45,50 @@ public class HospitalRepository {
         select distinct city from hospitals where state = ? order by city
     """;
 
+
+    private final String COUNT = "select count(*) ";
+    private final String SELECT = "select * ";
+
     // GET /api/hospitals/search
     private final String QUERY_HOSPITALS_ALL = """
-        select * from hospitals 
+        from hospitals 
     """;
 
     // GET /api/hospitals/search?name=name
     private final String QUERY_HOSPITALS_BY_NAME = """
-        select * from hospitals where facility_name like ? 
+        from hospitals where facility_name like ? 
     """;
 
     // GET /api/hospitals/search/{state}
     private final String QUERY_HOSPITALS_BY_STATE = """
-        select * from hospitals where state = ? 
+        from hospitals where state = ? 
     """;
 
     // GET /api/hospitals/search/{state}?name=name
     private final String QUERY_HOSPITALS_BY_STATE_NAME = """
-        select * from hospitals where state = ? and facility_name like ? 
+        from hospitals where state = ? and facility_name like ? 
     """;
 
     // GET /api/hospitals/search/{state}/{city}
     private final String QUERY_HOSPITALS_BY_STATE_CITY = """
-        select * from hospitals where state = ? and city = ? 
+        from hospitals where state = ? and city = ? 
     """;
 
     // GET /api/hospitals/search/{state}/{city}?name=name
     private final String QUERY_HOSPITALS_BY_STATE_CITY_NAME = """
-        select * from hospitals where state = ? and city = ? and facility_name like ? 
+        from hospitals where state = ? and city = ? and facility_name like ? 
     """;
 
     private final String LIMIT_OFFSET = """
         limit ? offset ?
     """;
 
-    private final String SORT_ASC_LIMIT_OFFSET = """
-        and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating limit ? offset ?
+    private final String SORT_ASC = """
+        and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating 
     """;
 
-    private final String SORT_DESC_LIMIT_OFFSET = """
-        and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating desc limit ? offset ?
+    private final String SORT_DESC = """
+        and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating desc 
     """;
 
     public boolean insert(Hospital h){
@@ -281,15 +288,15 @@ public class HospitalRepository {
         String finalQueryString = null;
 
         if(sortByRating && descending){
-            finalQueryString = queryString + SORT_DESC_LIMIT_OFFSET;
+            finalQueryString = SELECT + queryString + SORT_DESC + LIMIT_OFFSET;
         }
 
         else if(sortByRating && !descending){
-            finalQueryString = queryString + SORT_ASC_LIMIT_OFFSET;
+            finalQueryString = SELECT + queryString + SORT_ASC + LIMIT_OFFSET;
         }
 
         else if(!sortByRating){
-            finalQueryString = queryString + LIMIT_OFFSET; 
+            finalQueryString = SELECT + queryString + LIMIT_OFFSET; 
         }
 
         try{
@@ -306,6 +313,135 @@ public class HospitalRepository {
             System.out.println(" in queryHospitals,catch exception: " + ex);
             return Optional.empty();
         }
+    }
+
+    public Integer countResult(String state, String city, String name, Boolean sortByRating, Boolean descending){
+
+        String queryString = null;
+        PreparedStatementSetter ps = null;
+
+        if(state != null){
+
+            if(city != null){
+                if(name != null){
+                    // search with state, city, name
+                    ps = new PreparedStatementSetter() {
+
+                        @Override
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setString(1, state);
+                            ps.setString(2, city);
+                            ps.setString(3, "%" + name + "%");              
+                        }
+                        
+                    };
+
+                    queryString = COUNT + QUERY_HOSPITALS_BY_STATE_CITY_NAME;
+                    
+                }else{
+                    // search with state, city
+                    ps = new PreparedStatementSetter() {
+
+                        @Override
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setString(1, state);
+                            ps.setString(2, city);
+          
+                        }
+                        
+                    };
+
+                    queryString = COUNT + QUERY_HOSPITALS_BY_STATE_CITY;
+
+                }
+            }else{
+                if(name != null){
+                    // search with state, name
+                    ps = new PreparedStatementSetter() {
+
+                        @Override
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setString(1, state);
+                            ps.setString(2, "%" + name + "%");              
+                        }
+                        
+                    };
+
+                    queryString = COUNT + QUERY_HOSPITALS_BY_STATE_NAME;
+
+                }else{
+                    // search with state
+                    ps = new PreparedStatementSetter() {
+
+                        @Override
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setString(1, state);
+                        }
+                        
+                    };
+
+                    queryString = COUNT + QUERY_HOSPITALS_BY_STATE;
+
+                    System.out.println("in search with state: " + queryString);
+
+                }
+            }
+        }else{
+
+            if(name != null){
+                // search with name
+                ps = new PreparedStatementSetter() {
+
+                    @Override
+                    public void setValues(PreparedStatement ps) throws SQLException {
+                        ps.setString(1, "%" + name + "%");              
+                    }
+                    
+                };
+
+                queryString = COUNT + QUERY_HOSPITALS_BY_NAME;
+
+            }else{
+                // search all without filter
+                queryString = COUNT + QUERY_HOSPITALS_ALL;
+
+                if(sortByRating && descending){
+                    queryString =  queryString + "where hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating desc ";
+                }
+        
+                else if(sortByRating && !descending){
+                    queryString =  queryString + "where hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating ";
+                }
+
+                sortByRating = false;
+                descending = false;
+            }
+
+        }
+
+        if(sortByRating && descending){
+            queryString = queryString + SORT_DESC;
+        }
+
+        else if(sortByRating && !descending){
+            queryString = queryString + SORT_ASC;
+        }
+
+        return jdbcTemplate.query(queryString, ps, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+                Integer count = -1;
+
+                while(rs.next()){
+                    count = rs.getInt(1);
+                }
+                System.out.println(">>> In repo countResult, count: " + count); // debug
+                return count;
+            }
+            
+        });
     }
 
     public Optional<List<String>> getStates(){

@@ -225,7 +225,7 @@ public class HospitalService {
 
         Optional<List<Hospital>> opt;
 
-        if(null != state){
+        if(state != null){
 
             if(city != null){
                 if(name != null){
@@ -259,10 +259,17 @@ public class HospitalService {
         if(opt.isPresent()){
             return opt.get();
         }else{
-            throw new RuntimeException(); // TODO
+            return new ArrayList<>();  // TODO result not found exception!!!!!!!!!!
+            // throw new RuntimeException(); // TODO result not found exception
         }
         
     }
+
+    public Integer countResult(String state, String city, String name, Boolean sortByRating, Boolean descending){
+
+        return hospitalRepo.countResult(state, city, name, sortByRating, descending);
+    }
+
 
 
 }
