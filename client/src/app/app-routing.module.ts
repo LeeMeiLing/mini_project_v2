@@ -5,6 +5,7 @@ import { SignUpComponent } from './components/sign-up.component';
 import { HomeComponent } from './components/home.component';
 import { SearchHospitalComponent } from './components/search-hospital.component';
 import { HospitalComponent } from './components/hospital.component';
+import { HospitalReviewComponent } from './components/hospital-review.component';
 
 const routes: Routes = [
   { path:'', component:LoginComponent},
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path:'home', component:HomeComponent},
   { path:'searchHospital', component:SearchHospitalComponent},
   { path:'hospital/:facilityId',component:HospitalComponent},
+  { path:'reviewHospital/:facilityId',component:HospitalReviewComponent},
   { path:'**', redirectTo:'/', pathMatch:'full'}
 ];
 

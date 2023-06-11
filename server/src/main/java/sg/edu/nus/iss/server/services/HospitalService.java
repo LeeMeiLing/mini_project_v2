@@ -1,6 +1,8 @@
 package sg.edu.nus.iss.server.services;
 
 import java.io.StringReader;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,8 +23,12 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import sg.edu.nus.iss.server.constants.Constant;
+import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.models.Hospital;
+import sg.edu.nus.iss.server.models.HospitalCredentials;
+import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.repositories.HospitalRepository;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
 @Service
 public class HospitalService {
@@ -34,6 +40,12 @@ public class HospitalService {
 
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
+
+    @Autowired
+    private CustomAuthenticationManager customAuthenticationManager;
+
+    @Autowired
+    private EthereumService ethSvc;
 
     private Date previousReleased;
     private Date latestReleased;
@@ -259,8 +271,7 @@ public class HospitalService {
         if(opt.isPresent()){
             return opt.get();
         }else{
-            return new ArrayList<>();  // TODO result not found exception!!!!!!!!!!
-            // throw new RuntimeException(); // TODO result not found exception
+            throw new ResultNotFoundException("Hospital");
         }
         
     }
@@ -270,6 +281,54 @@ public class HospitalService {
         return hospitalRepo.countResult(state, city, name, sortByRating, descending);
     }
 
+    public Hospital findHospitalBYId(String facilityId){
+
+        Optional<Hospital> opt = hospitalRepo.findHospitalById(facilityId);
+
+        if(opt.isPresent()){
+            return opt.get();
+        }else{
+            throw new ResultNotFoundException("Hospital ID: " + facilityId);
+        }
+    }
+
+    public void postHospitalReview(String facilityId, HospitalReview review){
+
+        review.setFacilityId(facilityId);
+
+        // retrieve Hospital Eth Address
+        review.setFacilityEthAddress(findHospitalBYId(facilityId).getEthAddress());
+
+        // retrieve current user
+        review.setReviewer(customAuthenticationManager.getCurrentUser());
+
+        System.out.println("in service postHospitalreview, review: " + review);
+
+        //===== perform in transaction =====
+
+        // 1) save to MySql & get id >> for user to see own review
+        Integer reviewId = hospitalRepo.insertHospitalReview(review);
+
+        // 2) save to Smart Contract & get ethReviewIndex >> for hospital owner to verify Patient
+        if(reviewId > 0){
+            HospitalCredentials contract = ethSvc.getContract(findHospitalById(facilityId).getContractAddress()); // update MySQL table to include column contract address
+            
+            // TODO: convert comments to md5
+            // generate hash: md5(ts+privateKey+publicKey)
+            String toHash = review.getComments();
+            // Static getInstance method is called with hashing MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // digest() method is called to calculate message digest of an input, digest() return array of byte
+            byte[] digest = md.digest(toHash.getBytes());
+
+
+            contract.addReview(new BigInteger(String.valueOf(reviewId)), review.getPatientId(), new BigInteger(String.valueOf(review.getOverallRating())), digest);
+        }
+
+        // 3) update MySQL review table to save ethReviewIndex (need review Id from previous query)
+
+  
+    }
 
 
 }

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +21,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import sg.edu.nus.iss.server.models.Hospital;
+import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.services.HospitalService;
 
 @CrossOrigin(origins="*")
@@ -110,4 +113,49 @@ public class HospitalController {
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
     }
+
+    /*
+     * GET /api/hospitals/hospital/{facilityId}
+     */
+    @GetMapping(path ={"/hospital/{facilityId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospital(@PathVariable String facilityId){
+
+        Hospital hospital = hospSvc.findHospitalBYId(facilityId);
+
+        JsonObjectBuilder joB = Json.createObjectBuilder();
+
+        joB.add("hospital", hospital.toJson());
+        joB.add("totalReview", 3);
+        JsonObject payload = joB.build();
+
+        System.out.println("in controller getHospital: " + payload.toString());
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+    }
+
+    /*
+     * // POST /api/hospitals/hospital/{facilityId}/review
+     */
+    @PostMapping(path ={"/hospital/{facilityId}/review"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> postHospitalReview(@PathVariable String facilityId, @RequestBody HospitalReview hospitalReview){
+
+        System.out.println("in controller, postHospitalreview(), hospitalReview: " + hospitalReview);
+
+        hospSvc.postHospitalReview(facilityId, hospitalReview);
+        
+        // Hospital hospital = hospSvc.queryHospital(facilityId);
+
+        // JsonObjectBuilder joB = Json.createObjectBuilder();
+
+        // joB.add("hospital", hospital.toJson());
+        // joB.add("totalReview", 3);
+        // JsonObject payload = joB.build();
+
+        // System.out.println("in controller getHospital: " + payload.toString());
+
+        // return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+        return null;
+    }
+
 }

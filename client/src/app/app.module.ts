@@ -18,6 +18,7 @@ import { HomeComponent } from './components/home.component';
 import { HospitalComponent } from './components/hospital.component';
 import { SearchHospitalComponent } from './components/search-hospital.component';
 import { SearchHospitalResultComponent } from './components/search-hospital-result.component';
+import { HospitalReviewComponent } from './components/hospital-review.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { SearchHospitalResultComponent } from './components/search-hospital-resu
     HomeComponent,
     HospitalComponent,
     SearchHospitalComponent,
-    SearchHospitalResultComponent
+    SearchHospitalResultComponent,
+    HospitalReviewComponent
   ],
   imports: [
     BrowserModule,

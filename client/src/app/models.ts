@@ -14,3 +14,26 @@ export interface Hospital{
     hospitalOverallRating:string;
   
 }
+
+export interface HospitalReview{
+    
+    id:number;
+    facilityId:string;
+    facilityEthAddress:string;
+    ethReviewIndex:number;
+    reviewer:string;
+    patientNRIC:string;
+    patientVerified:boolean;
+    nurseCommunication:number;
+    doctorCommunication:number;
+	staffResponsiveness:number;
+	communicationAboutMedicines:number;
+	dischargeInformation:number;
+	careTransition:number;
+	cleanliness:number;
+	quientness:number;
+	overallRating:number;
+	willingnessToRecommend:number;
+    comments:string;
+  
+}

@@ -1,1 +1,31 @@
-<p>hospital works!</p>
+<div>
+    <mat-card>
+        <a [routerLink]="['/searchHospital']">Back to Search</a>
+        <mat-card-title>
+            <span>{{hospital.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{hospital.hospitalOverallRating}}/5</span>
+        </mat-card-title>
+        <mat-card-content>
+            <span>{{hospital.address}},{{hospital.city}},{{hospital.state}},{{hospital.zipCode}},{{hospital.countyName}}</span>
+            <br>
+            <span>{{hospital.phoneNumber}}</span>
+            <br>
+            <span>Emergency service available: {{hospital.emergencyServices}}</span>
+            <br>
+            <span>Hospital Ownership: {{hospital.hospitalOwnership}}</span>
+            <br>
+            <span>Hospital Type: {{hospital.hospitalType}}</span>
+            <br>
+            <span *ngIf="totalReview > 0">
+                <button type="button" (click)="showReview()">
+                    Reviews ({{totalReview}})
+                </button>
+            </span>
+            <span *ngIf="totalReview == 0">No Review Yet</span>
+            <span><button type="button" (click)="goToReview()">Add A Review</button></span>
+
+            <!-- <div *ngIf="reviews.length > 0">
+
+            </div> -->
+        </mat-card-content>
+    </mat-card>
+</div>

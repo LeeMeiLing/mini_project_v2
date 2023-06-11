@@ -1,0 +1,89 @@
+<h2>Share Your Experience With Others</h2>
+<div>
+    <form [formGroup]="form" (ngSubmit)="postReview()">
+        <table>
+            <tr>
+                Patient ID: <input type="text" formControlName="patientId">
+            </tr>
+            
+            <tr>
+                Nurse Communication: 
+                <input type="radio" formControlName="nurseCommunication" value=1>1
+                <input type="radio" formControlName="nurseCommunication" value=2>2
+                <input type="radio" formControlName="nurseCommunication" value=3>3
+                <input type="radio" formControlName="nurseCommunication" value=4>4
+                <input type="radio" formControlName="nurseCommunication" value=5>5
+            </tr>
+            <tr>
+                Doctor Communication: 
+                <input type="radio" formControlName="doctorCommunication" value=1>1
+                <input type="radio" formControlName="doctorCommunication" value=2>2
+                <input type="radio" formControlName="doctorCommunication" value=3>3
+                <input type="radio" formControlName="doctorCommunication" value=4>4
+                <input type="radio" formControlName="doctorCommunication" value=5>5
+            </tr>
+            <tr>
+                Responsiveness of hospital staff: 
+                <input type="radio" formControlName="staffResponsiveness" value=1>1
+                <input type="radio" formControlName="staffResponsiveness" value=2>2
+                <input type="radio" formControlName="staffResponsiveness" value=3>3
+                <input type="radio" formControlName="staffResponsiveness" value=4>4
+                <input type="radio" formControlName="staffResponsiveness" value=5>5
+            </tr>
+            <tr>
+                Communication about medicines: 
+                <input type="radio" formControlName="communicationAboutMedicines" value=1>1
+                <input type="radio" formControlName="communicationAboutMedicines" value=2>2
+                <input type="radio" formControlName="communicationAboutMedicines" value=3>3
+                <input type="radio" formControlName="communicationAboutMedicines" value=4>4
+                <input type="radio" formControlName="communicationAboutMedicines" value=5>5
+            </tr>
+            <tr>
+                Discharge information: 
+                <input type="radio" formControlName="dischargeInformation" value=1>1
+                <input type="radio" formControlName="dischargeInformation" value=2>2
+                <input type="radio" formControlName="dischargeInformation" value=3>3
+                <input type="radio" formControlName="dischargeInformation" value=4>4
+                <input type="radio" formControlName="dischargeInformation" value=5>5
+            </tr>
+            <tr>
+                Care transition: 
+                <input type="radio" formControlName="careTransition" value=1>1
+                <input type="radio" formControlName="careTransition" value=2>2
+                <input type="radio" formControlName="careTransition" value=3>3
+                <input type="radio" formControlName="careTransition" value=4>4
+                <input type="radio" formControlName="careTransition" value=5>5
+            </tr>
+            <tr>
+                Quietness of hospital environment: 
+                <input type="radio" formControlName="quientness" value=1>1
+                <input type="radio" formControlName="quientness" value=2>2
+                <input type="radio" formControlName="quientness" value=3>3
+                <input type="radio" formControlName="quientness" value=4>4
+                <input type="radio" formControlName="quientness" value=5>5
+            </tr>
+            <tr>
+                Overall Rating: 
+                <input type="radio" formControlName="overallRating" value=1>1
+                <input type="radio" formControlName="overallRating" value=2>2
+                <input type="radio" formControlName="overallRating" value=3>3
+                <input type="radio" formControlName="overallRating" value=4>4
+                <input type="radio" formControlName="overallRating" value=5>5
+            </tr>
+            <tr>
+                Willingness to recommend hospital: 
+                <input type="radio" formControlName="willingnessToRecommend" value=1>1
+                <input type="radio" formControlName="willingnessToRecommend" value=2>2
+                <input type="radio" formControlName="willingnessToRecommend" value=3>3
+                <input type="radio" formControlName="willingnessToRecommend" value=4>4
+                <input type="radio" formControlName="willingnessToRecommend" value=5>5
+            </tr>
+            <tr>
+                Comment: 
+                <textarea name="comments" formControlName="comments" cols="30" rows="10"></textarea>
+            </tr>
+
+                <button type="submit">Submit Review</button>
+        </table>
+    </form>
+</div>

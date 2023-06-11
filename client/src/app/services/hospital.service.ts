@@ -87,6 +87,30 @@ export class HospitalService {
     }
 
     return;
-    
+  }
+
+  getHospital(facilityId:string){
+    // GET /api/hospitals/hospital/{facilityId}
+    const headers = new HttpHeaders().set('Accept','application/json');
+
+    return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}`, { headers });
+  }
+
+  getHospitalReview(facilityId:string){
+    // GET /api/hospitals/hospital/{facilityId}/review
+    // const headers = new HttpHeaders().set('Accept','application/json');
+
+    // return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}`, { headers }); // todo
+  }
+
+  postHospitalReview(facilityId:string, review:any){
+
+    // POST /api/hospitals/hospital/{facilityId}/review
+    const headers = new HttpHeaders().set('Accept','application/json')
+                                     .set('Content-Type', 'application/json');
+
+    const payload = review 
+
+    return this.http.post(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, payload , { headers }); // todo
   }
 }

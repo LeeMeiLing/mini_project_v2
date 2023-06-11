@@ -38,7 +38,7 @@
         </p>
         <table>
             <tr *ngFor="let h of hospitals">
-                <a [routerLink]="['/hospital',h.facilityId]" >
+                <a [routerLink]="['/hospital', h.facilityId]" >
                     <mat-card>
                         <mat-card-title>
                             <span>{{h.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{h.hospitalOverallRating}}/5</span>
