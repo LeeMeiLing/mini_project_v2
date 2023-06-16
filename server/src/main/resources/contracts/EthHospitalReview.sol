@@ -15,7 +15,7 @@ contract EthHospitalReview{
         string patientNRIC;
         bool patientVerified;
         uint8 overallRating;
-        bytes16 hashedMessage;
+        uint hashedMessage;
 
     }
 
@@ -25,7 +25,7 @@ contract EthHospitalReview{
 
     }
 
-    function addReview(string memory _facilityId, uint _reviewId, string memory _patientNRIC, uint8  _overallRating, bytes16 _hashedMessage) public{
+    function addReview(string memory _facilityId, uint _reviewId, string memory _patientNRIC, uint8  _overallRating, uint _hashedMessage) public{
 
         PatientReview storage newReview = reviews.push();
         newReview.facilityId = _facilityId;

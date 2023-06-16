@@ -127,10 +127,10 @@ public class HospitalController {
         JsonObjectBuilder joB = Json.createObjectBuilder();
 
         joB.add("hospital", hospital.toJson());
-        joB.add("totalReview", 3);
+        joB.add("totalReview", hospSvc.getReviewCountByFacilityId(facilityId));
         JsonObject payload = joB.build();
 
-        System.out.println("in controller getHospital: " + payload.toString());
+        System.out.println("in controller getHospital: " + payload.toString()); // debug
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
     }
@@ -144,9 +144,13 @@ public class HospitalController {
 
         System.out.println(">> in controller, postHospitalreview(), hospitalReview: " + hospitalReview);
 
-        hospSvc.postHospitalReview(facilityId, hospitalReview);
-        
-        return null;
+        boolean posted = hospSvc.postHospitalReview(facilityId, hospitalReview);
+
+        JsonObject payload =  Json.createObjectBuilder().add("posted", posted).build();
+
+        System.out.println("in controller getHospital: " + payload.toString()); // debug
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
     }
 
 }

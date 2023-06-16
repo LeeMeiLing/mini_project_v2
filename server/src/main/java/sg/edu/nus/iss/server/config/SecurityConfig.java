@@ -14,6 +14,7 @@ import sg.edu.nus.iss.server.security.filters.AuthenticationFilter;
 import sg.edu.nus.iss.server.security.filters.ExceptionHandlerFilter;
 import sg.edu.nus.iss.server.security.filters.JWTAuthorizationFilter;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
+import sg.edu.nus.iss.server.services.EthereumService;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -29,7 +30,17 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationManager customAuthenticationManager;
 
+    @Value("${INFURA_URL}")
+    private String infuraUrl;
 
+    @Value("${ETH_PRIVATE_KEY}")
+    private String privateKey;
+
+    @Bean
+    public EthereumService ethereumService() {
+        return new EthereumService(infuraUrl, privateKey);
+    }
+  
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 
 @RestControllerAdvice
@@ -17,6 +18,14 @@ public class ErrorController {
 
         JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(payload.toString());
+        
+    }
+
+    @ExceptionHandler(PostReviewFailedException.class)
+    public ResponseEntity<String> handlePostReviewFailedException(PostReviewFailedException ex){
+
+        JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(payload.toString());
         
     }
 }

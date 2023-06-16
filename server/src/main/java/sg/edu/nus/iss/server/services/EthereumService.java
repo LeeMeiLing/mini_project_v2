@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
@@ -16,32 +17,28 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.StaticGasProvider;
 
+import sg.edu.nus.iss.server.config.SecurityConfig;
 import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 
-@Service
 public class EthereumService {
-
-    // @Value("${INFURA_URL}")
-    // private String InfuraUrl;
-
-    // @Value("${ETH_PRIVATE_KEY}")
-    // private String privateKey;
 
     private Web3j web3j;
     private Credentials credentials;
 
-    public EthereumService() {
+    public EthereumService(String infuraUrl, String privateKey) {
 
-        // @INFURA SEPOLIA
-        // Web3j web3j = Web3j.build(new HttpService(InfuraUrl));
+        // // @INFURA SEPOLIA
+        // web3j = Web3j.build(new HttpService(infuraUrl));
+        // System.out.println(">>> InfuraURL " + infuraUrl); // debug
+
+        // // @INFURA SEPOLIA
+        // System.out.println(">>> private Key " + privateKey); // debug
+        // credentials = Credentials.create(privateKey);
+        // System.out.println(">>> credentials address " + credentials.getAddress()); // debug
 
         // @GANACHE
         web3j = Web3j.build(new HttpService("http://localhost:8545"));
-
-        // @INFURA SEPOLIA
-        // Credentials credentials = Credentials.create(privateKey);
-        // System.out.println("credentials address " + credentials.getAddress());
 
         // @GANACHE
         credentials = Credentials.create("0xb7791c35a9621dcc594e4d732df2634b7f87dbd43a9a826f7a1a0ccdda4898fb");
@@ -49,13 +46,6 @@ public class EthereumService {
 
     }
 
-    // public Web3j getWeb3j() {
-    //     return web3j;
-    // }
-
-    // public Credentials getCredentials() {
-    //     return credentials;
-    // }
 
     public BigInteger checkAccountBalance(Credentials credentials) throws InterruptedException, ExecutionException {
 
@@ -114,7 +104,6 @@ public class EthereumService {
         return contract;
 
     }
-
 
 
 }

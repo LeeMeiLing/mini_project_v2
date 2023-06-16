@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,6 +29,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import sg.edu.nus.iss.server.constants.Constant;
+import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.Hospital;
@@ -298,17 +300,13 @@ public class HospitalService {
         }
     }
 
-    public void postHospitalReview(String facilityId, HospitalReview review) throws Exception{
+    @Transactional(rollbackFor = PostReviewFailedException.class)
+    public boolean postHospitalReview(String facilityId, HospitalReview review) throws Exception{
 
         review.setFacilityId(facilityId);
 
-        // retrieve Hospital Eth Address
-        review.setFacilityEthAddress(findHospitalById(facilityId).getEthAddress());
-
         // retrieve current user
         review.setReviewer(customAuthenticationManager.getCurrentUser());
-
-        System.out.println("in service postHospitalreview, review: " + review);
 
         //===== perform in transaction =====
 
@@ -320,34 +318,29 @@ public class HospitalService {
  
             EthHospitalReview contract;
 
-            try{
-                // check if contract address already exists
-                String contractAddress = findHospitalById(facilityId).getReviewContractAddress();
+        
+            // check if contract address already exists
+            String contractAddress = findHospitalById(facilityId).getReviewContractAddress();
 
-                if( contractAddress != null){
+            if( contractAddress != null){
 
-                    contract = ethSvc.getEthHospitalReviewContract(contractAddress);
-                    System.out.println(">> In Hosp Svc (try, if) deployed contract address: " + contract.getContractAddress());
+                contract = ethSvc.getEthHospitalReviewContract(contractAddress);
+                System.out.println(">> In Hosp Svc (try, if) deployed contract address: " + contract.getContractAddress());
 
-                }else{
-                    System.out.println(">> in Hosp Svc, else block:" );
+            }else{
+                System.out.println(">> in Hosp Svc, else block:" );
 
-                    contract = ethSvc.deployEthHospitalReviewContract();
-                    // save contract address into us_hospitals table in MySQL
-                    boolean contractAddressSaved = hospitalRepo.saveReviewContractAddressForAll(contract.getContractAddress());
-                    if(!contractAddressSaved){
-                        throw new Exception(); //TODO: custom exception 
-                    }
+                contract = ethSvc.deployEthHospitalReviewContract();
 
-                    System.out.println("In Hosp Svc (try, else) deployed contract address: " + contract.getContractAddress());
+                // save contract address into us_hospitals table in MySQL
+                boolean contractAddressSaved = hospitalRepo.saveReviewContractAddressForAll(contract.getContractAddress());
+                if(!contractAddressSaved){
+                    throw new PostReviewFailedException("Error in hospitalRepo.saveReviewContractAddressForAll()");
                 }
 
-            }catch(Exception ex){
-                System.out.println("in Hosp Svc postHospitalReview catch getEthHospitalReviewContract() exception: " + ex);
-                contract = ethSvc.deployEthHospitalReviewContract(); // update MySQL table to include column contract address
-                System.out.println("In Hosp Svc (catch) deployed contract address: " + contract.getContractAddress());
-
+                System.out.println("In Hosp Svc (try, else) deployed contract address: " + contract.getContractAddress());
             }
+
 
             // generate hash: md5(comments)
             String toHash = review.getComments();
@@ -355,33 +348,53 @@ public class HospitalService {
             MessageDigest md = MessageDigest.getInstance("MD5");
             // digest() method is called to calculate message digest of an input, digest() return array of byte
             byte[] digest = md.digest(toHash.getBytes());
+            // Convert byte array into signum representation
+            BigInteger no = new BigInteger(1, digest);
 
-            System.out.println("digest: " + digest); // debug
+            System.out.println("digest no: " + no); // debug
 
-            TransactionReceipt ethReviewIndex = contract.addReview(facilityId,new BigInteger(String.valueOf(reviewId)), review.getPatientId(), new BigInteger(String.valueOf(review.getOverallRating())), digest).send();
+            try{
+                // add review to Eth Smart Contract
+                TransactionReceipt ethReviewIndex = contract.addReview(facilityId,new BigInteger(String.valueOf(reviewId)), review.getPatientId(), new BigInteger(String.valueOf(review.getOverallRating())), no).send();
+                String returnedIndex = ethReviewIndex.getLogs().get(0).getData();
+                Integer reviewIndex = Integer.decode(returnedIndex);
+                // save review index to review table
+                boolean reviewIndexSaved = hospitalRepo.saveEthReviewIndex(reviewId, reviewIndex);
+
+                if(!reviewIndexSaved){
+                    throw new PostReviewFailedException("Error in hospitalRepo.saveEthReviewIndex()");
+                }
+
+                // debug
+                System.out.println("TransactionReceipt of addReview(): " + ethReviewIndex);
+                System.out.println("review Index: " + reviewIndex);
+
+
+            }catch(Exception ex){
+                throw new PostReviewFailedException("Error interacting with smart contract: " + ex);
+
+            }
 
             // debug
-            System.out.println("TransactionReceipt of addReview(): " + ethReviewIndex);
-            String returnedIndex = ethReviewIndex.getLogs().get(0).getData();
-            Integer reviewIndex = Integer.decode(returnedIndex);
-            System.out.println("review Index: " + reviewIndex);
-            // save review index to review table
-
             System.out.println("contract.reviews(0):" + contract.reviews(new BigInteger(String.valueOf(0))).send().component6());
 
-            boolean isMatch = Arrays.equals(digest, contract.reviews(new BigInteger(String.valueOf(0))).send().component6());
-            System.out.println("Is match: " + isMatch);
+            // check if comments has been amended , FOR USE DURING READ REVIEW
+            if(no.equals(contract.reviews(new BigInteger(String.valueOf(0))).send().component6())){
+                System.out.println("Is match: !!!");
+            }
 
-            // TODO: save contract address to Hospital, save review index to Review in MySQL
+
         }else{
-            throw new Exception(); // TODO: roll back insert review if reviewId == -1
+            throw new PostReviewFailedException("Error in hospitalRepo.insertHospitalReview()"); 
         }
 
-        // 3) update MySQL review table to save ethReviewIndex (need review Id from previous query)
+        return true;
+
+    }
 
 
-
-  
+    public Integer getReviewCountByFacilityId(String facilityId){
+        return hospitalRepo.getReviewCountByFacilityId(facilityId);
     }
 
 

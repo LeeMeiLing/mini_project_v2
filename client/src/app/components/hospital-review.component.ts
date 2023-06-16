@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HospitalService } from '../services/hospital.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -15,7 +15,7 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
   facilityId!:string;
   form!:FormGroup
 
-  constructor(private fb:FormBuilder, private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService){}
+  constructor(private fb:FormBuilder, private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router){}
  
   ngOnInit(): void {
     this.param$ = this.actiavtedRoute.params.subscribe(
@@ -49,7 +49,13 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
 
   postReview(){
     console.log(this.form.value)
-    this.hospitalSvc.postHospitalReview(this.facilityId, this.form.value).subscribe();
+    this.hospitalSvc.postHospitalReview(this.facilityId, this.form.value).subscribe({
+      next:() => {},
+      error: (err) => console.error(err),
+      complete:()=>{
+        this.router.navigate(['/hospital',this.facilityId]);
+      }
+    });
     
   }
 

@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -20,6 +22,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import sg.edu.nus.iss.server.constants.Constant;
 import sg.edu.nus.iss.server.constants.SqlQueryConstant;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
@@ -540,20 +543,19 @@ public class HospitalRepository {
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 PreparedStatement ps = con.prepareStatement(SqlQueryConstant.INSERT_HOSPITAL_REVIEW, new String[]{"id"});
                 ps.setString(1, review.getFacilityId());
-                ps.setString(2, review.getFacilityEthAddress());
-                ps.setString(3, review.getReviewer());
-                ps.setString(4, review.getPatientId());
-                ps.setInt(5, review.getNurseCommunication());
-                ps.setInt(6, review.getDoctorCommunication());
-                ps.setInt(7, review.getStaffResponsiveness());
-                ps.setInt(8, review.getCommunicationAboutMedicines());
-                ps.setInt(9, review.getDischargeInformation());
-                ps.setInt(10, review.getCareTransition());
-                ps.setInt(11, review.getCleanliness());
-                ps.setInt(12, review.getQuientness());
-                ps.setInt(13, review.getOverallRating());
-                ps.setInt(14, review.getWillingnessToRecommend());
-                ps.setString(15, review.getComments());
+                ps.setString(2, review.getReviewer());
+                ps.setString(3, review.getPatientId());
+                ps.setInt(4, review.getNurseCommunication());
+                ps.setInt(5, review.getDoctorCommunication());
+                ps.setInt(6, review.getStaffResponsiveness());
+                ps.setInt(7, review.getCommunicationAboutMedicines());
+                ps.setInt(8, review.getDischargeInformation());
+                ps.setInt(9, review.getCareTransition());
+                ps.setInt(10, review.getCleanliness());
+                ps.setInt(11, review.getQuientness());
+                ps.setInt(12, review.getOverallRating());
+                ps.setInt(13, review.getWillingnessToRecommend());
+                ps.setString(14, review.getComments());
 
                 return ps;
             }
@@ -594,6 +596,58 @@ public class HospitalRepository {
             System.out.println("in update catch: " + ex);
             return false;
         }
+    }
+
+    public boolean saveEthReviewIndex(Integer reviewId, Integer reviewIndex){
+        
+        try{
+            jdbcTemplate.update(SqlQueryConstant.INSERT_REVIEW_INDEX_US_HOSPITAL, new PreparedStatementSetter() {
+
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+
+                    ps.setInt(1, reviewIndex);
+                    ps.setInt(2, reviewId);
+                    
+                }
+                
+            });
+
+            return true;
+    
+        }catch(Exception ex){
+            System.out.println("in update catch: " + ex);
+            return false;
+        }
+    }
+
+    public Integer getReviewCountByFacilityId(String facilityId){
+
+       PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+        @Override
+        public void setValues(PreparedStatement ps) throws SQLException {
+            ps.setString(1, facilityId);
+        }
+        
+       };
+
+        return jdbcTemplate.query(SqlQueryConstant.COUNT_REVIEW_US_HOSPITAL, ps, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+                Integer count = -1;
+
+                while(rs.next()){
+                    count = rs.getInt(1); // if facilityId not found, will return 0
+                }
+                
+                System.out.println(">>> In repo countReview: " + count); // debug
+                return count;
+            }
+            
+        });
     }
 
     
