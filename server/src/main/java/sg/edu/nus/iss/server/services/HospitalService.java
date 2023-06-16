@@ -1,10 +1,13 @@
 package sg.edu.nus.iss.server.services;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -18,12 +21,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.web3j.protocol.core.RemoteFunctionCall;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import sg.edu.nus.iss.server.constants.Constant;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
+import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalReview;
@@ -281,7 +287,7 @@ public class HospitalService {
         return hospitalRepo.countResult(state, city, name, sortByRating, descending);
     }
 
-    public Hospital findHospitalBYId(String facilityId){
+    public Hospital findHospitalById(String facilityId){
 
         Optional<Hospital> opt = hospitalRepo.findHospitalById(facilityId);
 
@@ -292,12 +298,12 @@ public class HospitalService {
         }
     }
 
-    public void postHospitalReview(String facilityId, HospitalReview review){
+    public void postHospitalReview(String facilityId, HospitalReview review) throws Exception{
 
         review.setFacilityId(facilityId);
 
         // retrieve Hospital Eth Address
-        review.setFacilityEthAddress(findHospitalBYId(facilityId).getEthAddress());
+        review.setFacilityEthAddress(findHospitalById(facilityId).getEthAddress());
 
         // retrieve current user
         review.setReviewer(customAuthenticationManager.getCurrentUser());
@@ -311,21 +317,69 @@ public class HospitalService {
 
         // 2) save to Smart Contract & get ethReviewIndex >> for hospital owner to verify Patient
         if(reviewId > 0){
-            HospitalCredentials contract = ethSvc.getContract(findHospitalById(facilityId).getContractAddress()); // update MySQL table to include column contract address
-            
-            // TODO: convert comments to md5
-            // generate hash: md5(ts+privateKey+publicKey)
+ 
+            EthHospitalReview contract;
+
+            try{
+                // check if contract address already exists
+                String contractAddress = findHospitalById(facilityId).getReviewContractAddress();
+
+                if( contractAddress != null){
+
+                    contract = ethSvc.getEthHospitalReviewContract(contractAddress);
+                    System.out.println(">> In Hosp Svc (try, if) deployed contract address: " + contract.getContractAddress());
+
+                }else{
+                    System.out.println(">> in Hosp Svc, else block:" );
+
+                    contract = ethSvc.deployEthHospitalReviewContract();
+                    // save contract address into us_hospitals table in MySQL
+                    boolean contractAddressSaved = hospitalRepo.saveReviewContractAddressForAll(contract.getContractAddress());
+                    if(!contractAddressSaved){
+                        throw new Exception(); //TODO: custom exception 
+                    }
+
+                    System.out.println("In Hosp Svc (try, else) deployed contract address: " + contract.getContractAddress());
+                }
+
+            }catch(Exception ex){
+                System.out.println("in Hosp Svc postHospitalReview catch getEthHospitalReviewContract() exception: " + ex);
+                contract = ethSvc.deployEthHospitalReviewContract(); // update MySQL table to include column contract address
+                System.out.println("In Hosp Svc (catch) deployed contract address: " + contract.getContractAddress());
+
+            }
+
+            // generate hash: md5(comments)
             String toHash = review.getComments();
             // Static getInstance method is called with hashing MD5
             MessageDigest md = MessageDigest.getInstance("MD5");
             // digest() method is called to calculate message digest of an input, digest() return array of byte
             byte[] digest = md.digest(toHash.getBytes());
 
+            System.out.println("digest: " + digest); // debug
 
-            contract.addReview(new BigInteger(String.valueOf(reviewId)), review.getPatientId(), new BigInteger(String.valueOf(review.getOverallRating())), digest);
+            TransactionReceipt ethReviewIndex = contract.addReview(facilityId,new BigInteger(String.valueOf(reviewId)), review.getPatientId(), new BigInteger(String.valueOf(review.getOverallRating())), digest).send();
+
+            // debug
+            System.out.println("TransactionReceipt of addReview(): " + ethReviewIndex);
+            String returnedIndex = ethReviewIndex.getLogs().get(0).getData();
+            Integer reviewIndex = Integer.decode(returnedIndex);
+            System.out.println("review Index: " + reviewIndex);
+            // save review index to review table
+
+            System.out.println("contract.reviews(0):" + contract.reviews(new BigInteger(String.valueOf(0))).send().component6());
+
+            boolean isMatch = Arrays.equals(digest, contract.reviews(new BigInteger(String.valueOf(0))).send().component6());
+            System.out.println("Is match: " + isMatch);
+
+            // TODO: save contract address to Hospital, save review index to Review in MySQL
+        }else{
+            throw new Exception(); // TODO: roll back insert review if reviewId == -1
         }
 
         // 3) update MySQL review table to save ethReviewIndex (need review Id from previous query)
+
+
 
   
     }

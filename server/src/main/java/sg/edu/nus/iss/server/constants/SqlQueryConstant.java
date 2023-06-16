@@ -58,7 +58,9 @@ public class SqlQueryConstant {
     """
     insert into us_hospital_reviews (facility_id, facility_eth_address, reviewer, patient_id,
     nurse_communication, doctor_communication, staff_responsiveness, communication_about_medicines,
-    discharge_information, care_transition, cleanliness, quientness, overallRating, willingness_to_recommend, comments) 
+    discharge_information, care_transition, cleanliness, quientness, overall_rating, willingness_to_recommend, comments) 
     values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
+
+    public static final String INSERT_REVIEW_CONTRACT_ADDRESS_US_HOSPITAL = "update us_hospitals set review_contract_address = ? ";
 }

@@ -16,16 +16,17 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.StaticGasProvider;
 
+import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 
 @Service
 public class EthereumService {
 
-    @Value("${INFURA_URL}")
-    private String InfuraUrl;
+    // @Value("${INFURA_URL}")
+    // private String InfuraUrl;
 
-    @Value("${ETH_PRIVATE_KEY}")
-    private String privateKey;
+    // @Value("${ETH_PRIVATE_KEY}")
+    // private String privateKey;
 
     private Web3j web3j;
     private Credentials credentials;
@@ -43,20 +44,20 @@ public class EthereumService {
         // System.out.println("credentials address " + credentials.getAddress());
 
         // @GANACHE
-        credentials = Credentials.create("0x310e6dd006a37bb6c5561ba90021013e003daf81c2e2d2ef4eb500379a9b6f9f");
-        System.out.println("credentials address " + credentials.getAddress());
+        credentials = Credentials.create("0xb7791c35a9621dcc594e4d732df2634b7f87dbd43a9a826f7a1a0ccdda4898fb");
+        System.out.println(">>> credentials address " + credentials.getAddress());
 
     }
 
-    public Web3j getWeb3j() {
-        return web3j;
-    }
+    // public Web3j getWeb3j() {
+    //     return web3j;
+    // }
 
-    public Credentials getCredentials() {
-        return credentials;
-    }
+    // public Credentials getCredentials() {
+    //     return credentials;
+    // }
 
-    public BigInteger checkAccountBalance() throws InterruptedException, ExecutionException {
+    public BigInteger checkAccountBalance(Credentials credentials) throws InterruptedException, ExecutionException {
 
         EthGetBalance result = new EthGetBalance();
         result = web3j.ethGetBalance(credentials.getAddress(), DefaultBlockParameter.valueOf("latest"))
@@ -68,24 +69,52 @@ public class EthereumService {
 
     }
 
-    public HospitalCredentials deployContract(String ethAddressMOH, String license) throws Exception {
+    // public HospitalCredentials deployHospitalCredentialsContract(String ethAddressHospital, String ethAddressMOH, String license) throws Exception {
 
-        HospitalCredentials contract = HospitalCredentials.deploy(web3j, credentials,
-                new StaticGasProvider(BigInteger.valueOf(100000000), BigInteger.valueOf(3000000)), ethAddressMOH,
-                license)
+    //     Credentials credentials = Credentials.create(ethAddressHospital);
+    //     System.out.println(">>> credentials address " + credentials.getAddress());
+
+    //     HospitalCredentials contract = HospitalCredentials.deploy(web3j, credentials,
+    //             new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)), ethAddressMOH,
+    //             license)
+    //             .send();
+
+    //     return contract;
+
+    // }
+
+    // // store contract Address in MySQL
+    // public HospitalCredentials getHospitalCredentialsContract(String contractAddress) throws IOException{
+
+    //     // Path abiPath = Path.of("..\\..\\resources\\contracts\\HospitalCredentials.abi");
+    //     // String contractABI = Files.readString(abiPath);
+    //     HospitalCredentials contract = HospitalCredentials.load(contractAddress, web3j, credentials, new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)));
+    //     return contract;
+    // }
+
+    // TODO: use MOH's credentials from front end to deploy contract
+    // EthHospitalReview contract deployed by MOH
+    public EthHospitalReview deployEthHospitalReviewContract() throws Exception{
+
+        System.out.println(">>> credentials address " + credentials.getAddress());
+
+        EthHospitalReview contract = EthHospitalReview.deploy(web3j, credentials,
+                new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)))
                 .send();
 
+        System.out.println(">>> in eth svc, contract address: " + contract.getContractAddress()); //debug
         return contract;
 
     }
 
-    // store contract Address in MySQL
-    public HospitalCredentials getContract(String contractAddress) throws IOException{
+    // TODO: use MOH's credentials from front end to get contract
+    public EthHospitalReview getEthHospitalReviewContract(String contractAddress){
 
-        // Path abiPath = Path.of("..\\..\\resources\\contracts\\HospitalCredentials.abi");
-        // String contractABI = Files.readString(abiPath);
-        HospitalCredentials contract = HospitalCredentials.load(contractAddress, web3j, credentials, new StaticGasProvider(BigInteger.valueOf(100000000), BigInteger.valueOf(3000000)));
+        EthHospitalReview contract = EthHospitalReview.load(contractAddress, web3j, credentials, new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)));
         return contract;
+
     }
+
+
 
 }

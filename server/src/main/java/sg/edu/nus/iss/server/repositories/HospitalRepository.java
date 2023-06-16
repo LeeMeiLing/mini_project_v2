@@ -574,5 +574,27 @@ public class HospitalRepository {
             
     }
 
+    public boolean saveReviewContractAddressForAll(String reviewContractAddress){
+        
+        try{
+            jdbcTemplate.update(SqlQueryConstant.INSERT_REVIEW_CONTRACT_ADDRESS_US_HOSPITAL, new PreparedStatementSetter() {
+
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+
+                    ps.setString(1, reviewContractAddress);
+      
+                }
+                
+            });
+
+            return true;
+    
+        }catch(Exception ex){
+            System.out.println("in update catch: " + ex);
+            return false;
+        }
+    }
+
     
 }

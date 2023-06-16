@@ -18,6 +18,8 @@ public class Hospital {
     private String emergencyServices;
     private String hospitalOverallRating;
     private String ethAddress;
+    private String reviewContractAddress;
+
     
     public String getFacilityId() {
         return facilityId;
@@ -123,7 +125,13 @@ public class Hospital {
         this.ethAddress = ethAddress;
     }
 
-    
+    public String getReviewContractAddress() {
+        return reviewContractAddress;
+    }
+
+    public void setReviewContractAddress(String reviewContractAddress) {
+        this.reviewContractAddress = reviewContractAddress;
+    }
 
     @Override
     public String toString() {
@@ -131,7 +139,8 @@ public class Hospital {
                 + ", city=" + city + ", state=" + state + ", zipCode=" + zipCode + ", countyName=" + countyName
                 + ", phoneNumber=" + phoneNumber + ", hospitalType=" + hospitalType + ", hospitalOwnership="
                 + hospitalOwnership + ", emergencyServices=" + emergencyServices + ", hospitalOverallRating="
-                + hospitalOverallRating + ", ethAddress=" + ethAddress + "]";
+                + hospitalOverallRating + ", ethAddress=" + ethAddress + ", reviewContractAddress="
+                + reviewContractAddress + "]";
     }
 
     public static Hospital createHospital(JsonObject json){
@@ -171,4 +180,5 @@ public class Hospital {
                     .build();
 
     }
+
 }

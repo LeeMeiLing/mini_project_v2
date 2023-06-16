@@ -1,5 +1,7 @@
 package sg.edu.nus.iss.server.controllers;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +122,7 @@ public class HospitalController {
     @GetMapping(path ={"/hospital/{facilityId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getHospital(@PathVariable String facilityId){
 
-        Hospital hospital = hospSvc.findHospitalBYId(facilityId);
+        Hospital hospital = hospSvc.findHospitalById(facilityId);
 
         JsonObjectBuilder joB = Json.createObjectBuilder();
 
@@ -137,24 +139,13 @@ public class HospitalController {
      * // POST /api/hospitals/hospital/{facilityId}/review
      */
     @PostMapping(path ={"/hospital/{facilityId}/review"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> postHospitalReview(@PathVariable String facilityId, @RequestBody HospitalReview hospitalReview){
+    public ResponseEntity<String> postHospitalReview(@PathVariable String facilityId, @RequestBody HospitalReview hospitalReview)
+    throws Exception{
 
-        System.out.println("in controller, postHospitalreview(), hospitalReview: " + hospitalReview);
+        System.out.println(">> in controller, postHospitalreview(), hospitalReview: " + hospitalReview);
 
         hospSvc.postHospitalReview(facilityId, hospitalReview);
         
-        // Hospital hospital = hospSvc.queryHospital(facilityId);
-
-        // JsonObjectBuilder joB = Json.createObjectBuilder();
-
-        // joB.add("hospital", hospital.toJson());
-        // joB.add("totalReview", 3);
-        // JsonObject payload = joB.build();
-
-        // System.out.println("in controller getHospital: " + payload.toString());
-
-        // return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
-
         return null;
     }
 
