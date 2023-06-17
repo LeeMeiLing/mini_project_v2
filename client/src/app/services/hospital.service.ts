@@ -98,9 +98,9 @@ export class HospitalService {
 
   getHospitalReview(facilityId:string){
     // GET /api/hospitals/hospital/{facilityId}/review
-    // const headers = new HttpHeaders().set('Accept','application/json');
+    const headers = new HttpHeaders().set('Accept','application/json');
 
-    // return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}`, { headers }); // todo
+    return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, { headers });
   }
 
   postHospitalReview(facilityId:string, review:any){

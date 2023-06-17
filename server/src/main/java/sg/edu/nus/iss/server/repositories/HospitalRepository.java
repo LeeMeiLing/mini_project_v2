@@ -20,12 +20,14 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.iss.server.constants.Constant;
 import sg.edu.nus.iss.server.constants.SqlQueryConstant;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
+import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 
 @Repository
 public class HospitalRepository {
@@ -533,7 +535,7 @@ public class HospitalRepository {
 
         // facility_id, facility_eth_address, reviewer, patientNRIC,
         // nurse_communication, doctor_communication, staff_responsiveness, communication_about_medicines,
-        // discharge_information, care_transition, cleanliness, quientness, overallRating, willingness_to_recommend, comments
+        // discharge_information, care_transition, cleanliness, quietness, overallRating, willingness_to_recommend, comments
 
         KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
 
@@ -552,10 +554,11 @@ public class HospitalRepository {
                 ps.setInt(8, review.getDischargeInformation());
                 ps.setInt(9, review.getCareTransition());
                 ps.setInt(10, review.getCleanliness());
-                ps.setInt(11, review.getQuientness());
+                ps.setInt(11, review.getQuietness());
                 ps.setInt(12, review.getOverallRating());
                 ps.setInt(13, review.getWillingnessToRecommend());
                 ps.setString(14, review.getComments());
+                ps.setDate(15, review.getReviewDate());
 
                 return ps;
             }
@@ -642,12 +645,59 @@ public class HospitalRepository {
                 while(rs.next()){
                     count = rs.getInt(1); // if facilityId not found, will return 0
                 }
-                
+
                 System.out.println(">>> In repo countReview: " + count); // debug
                 return count;
             }
             
         });
+    }
+
+
+    public Optional<List<HospitalReview>> getHospitalReviews(String facilityId){
+
+        try{
+            List<HospitalReview> reviews = jdbcTemplate.query(SqlQueryConstant.QUERY_REVIEW_US_HOSPITAL_BY_HOSPITAL, new PreparedStatementSetter() {
+
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+                    ps.setString(1, facilityId);
+                }
+                
+            }, BeanPropertyRowMapper.newInstance(HospitalReview.class));
+
+            System.out.println("get Reviews: " + reviews);
+            if(!reviews.isEmpty()){
+                return Optional.of(reviews);
+            }else{
+                return Optional.empty();
+            }
+
+        }catch(Exception ex){
+            return Optional.empty();
+        }
+
+    }
+
+    public HospitalReviewSummary getHospitalReviewSummary(String facilityId){
+
+        HospitalReviewSummary reviewSummary = jdbcTemplate.queryForObject(SqlQueryConstant.QUERY_REVIEW_SUMMARY_US_HOSPITAL_BY_HOSPITAL, BeanPropertyRowMapper.newInstance(HospitalReviewSummary.class), facilityId);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SqlQueryConstant.COUNT_REVIEW_RATING_US_HOSPITAL_BY_HOSPITAL, facilityId);
+
+        while(rs.next()){
+
+            Integer rating = rs.getInt("overall_rating");
+            switch(rating){
+                case 1: reviewSummary.setCountOfRatingOne( rs.getInt("count"));
+                case 2: reviewSummary.setCountOfRatingTwo( rs.getInt("count"));
+                case 3: reviewSummary.setCountOfRatingThree( rs.getInt("count"));
+                case 4: reviewSummary.setCountOfRatingFour( rs.getInt("count"));
+                case 5: reviewSummary.setCountOfRatingFive( rs.getInt("count"));
+            }
+           
+        }
+    
+        return reviewSummary;
     }
 
     

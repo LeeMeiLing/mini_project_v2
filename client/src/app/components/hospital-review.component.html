@@ -65,11 +65,11 @@
 
             <tr>
                 Quietness of hospital environment: 
-                <input type="radio" formControlName="quientness" value=1>1
-                <input type="radio" formControlName="quientness" value=2>2
-                <input type="radio" formControlName="quientness" value=3>3
-                <input type="radio" formControlName="quientness" value=4>4
-                <input type="radio" formControlName="quientness" value=5>5
+                <input type="radio" formControlName="quietness" value=1>1
+                <input type="radio" formControlName="quietness" value=2>2
+                <input type="radio" formControlName="quietness" value=3>3
+                <input type="radio" formControlName="quietness" value=4>4
+                <input type="radio" formControlName="quietness" value=5>5
             </tr>
             <tr>
                 Overall Rating: 
@@ -92,7 +92,7 @@
                 <textarea name="comments" formControlName="comments" cols="30" rows="10"></textarea>
             </tr>
 
-                <button type="submit">Submit Review</button>
+                <button type="submit" [disabled]="form.invalid">Submit Review</button>
         </table>
     </form>
 </div>

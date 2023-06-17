@@ -31,9 +31,30 @@ export interface HospitalReview{
 	dischargeInformation:number;
 	careTransition:number;
 	cleanliness:number;
-	quientness:number;
+	quietness:number;
 	overallRating:number;
 	willingnessToRecommend:number;
     comments:string;
+    reviewDate:string;
   
+}
+
+export interface ReviewSummary{
+
+    countOfRatingFive:number;
+    countOfRatingFour:number;
+    countOfRatingThree:number;
+    countOfRatingTwo:number;
+    countOfRatingOne:number;
+    avgOverallRating:number;
+    avgNurseComm:number;
+    avgDoctorComm:number;
+    avgStaffResponsiveness:number;
+    avgCommAbtMed:number;
+    avgDischargeInfo:number;
+    avgCareTransition:number;
+    avgCleanliness:number;
+    avgQuietness:number;
+    avgRecommendation:number;
+    
 }

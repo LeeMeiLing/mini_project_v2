@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HospitalService } from '../services/hospital.service';
-import { Hospital, HospitalReview } from '../models';
+import { Hospital, HospitalReview, ReviewSummary } from '../models';
 
 @Component({
   selector: 'app-hospital',
@@ -15,7 +15,8 @@ export class HospitalComponent implements OnInit, OnDestroy{
   facilityId!:string;
   hospital!:Hospital;
   totalReview!:number;
-  reviews!:HospitalReview[];
+  reviews:HospitalReview[] = [];
+  reviewSummary!: ReviewSummary;
 
   constructor(private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router){}
  
@@ -41,9 +42,15 @@ export class HospitalComponent implements OnInit, OnDestroy{
   }
 
   showReview(){
-    // this.hospitalSvc.getHospitalReview(this.facilityId).subscribe({
-    //   //TODO
-    // })
+    this.hospitalSvc.getHospitalReview(this.facilityId).subscribe({
+      next: (r:any) => {
+        this.reviews = r['reviews'];
+        this.totalReview = r['totalReview'];
+        this.reviewSummary = r['reviewSummary'];
+      },
+      error: err => console.error(err),
+      complete: () => console.log('completed getHospitalReview()')
+    });
   }
 
   goToReview(){

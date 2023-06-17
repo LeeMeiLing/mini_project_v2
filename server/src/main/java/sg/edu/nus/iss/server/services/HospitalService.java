@@ -35,6 +35,7 @@ import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalReview;
+import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.repositories.HospitalRepository;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
@@ -308,6 +309,9 @@ public class HospitalService {
         // retrieve current user
         review.setReviewer(customAuthenticationManager.getCurrentUser());
 
+        // set timestamp
+        review.setReviewDate(new java.sql.Date(new Date().getTime()));
+
         //===== perform in transaction =====
 
         // 1) save to MySql & get id >> for user to see own review
@@ -395,6 +399,26 @@ public class HospitalService {
 
     public Integer getReviewCountByFacilityId(String facilityId){
         return hospitalRepo.getReviewCountByFacilityId(facilityId);
+    }
+
+    public List<HospitalReview> getHospitalReviews(String facilityId){
+
+        Optional<List<HospitalReview>> opt = hospitalRepo.getHospitalReviews(facilityId);
+
+        if(opt.isPresent()){
+            return opt.get();
+        }else{
+            throw new ResultNotFoundException("Review ");
+        }
+        
+    }
+
+    public HospitalReviewSummary getHospitalReviewSummary(String facilityId){
+
+        HospitalReviewSummary summary = hospitalRepo.getHospitalReviewSummary(facilityId);
+        System.out.println("Review summary: " + summary);
+        return summary;
+        
     }
 
 

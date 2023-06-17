@@ -22,8 +22,10 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
+import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.services.HospitalService;
 
 @CrossOrigin(origins="*")
@@ -152,5 +154,46 @@ public class HospitalController {
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
     }
+
+    /*
+     * GET /api/hospitals/hospital/{facilityId}/review
+     *  this.reviews = r['reviews'];
+        this.totalReview = r['totalReview'];
+        this.reviewSummary = r['reviewSummary'];
+     */
+     @GetMapping(path ={"/hospital/{facilityId}/review"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospitalReviews(@PathVariable String facilityId){
+
+        Integer totalReview = hospSvc.getReviewCountByFacilityId(facilityId);
+
+        List<HospitalReview> reviews = null;
+        HospitalReviewSummary reviewSummary;
+
+        if(totalReview > 0){
+
+            reviews = hospSvc.getHospitalReviews(facilityId);
+            reviewSummary =  hospSvc.getHospitalReviewSummary(facilityId);
+
+        }else{
+            throw new ResultNotFoundException("Reviews");
+        }
+
+        JsonObjectBuilder joB = Json.createObjectBuilder();
+        joB.add("totalReview", hospSvc.getReviewCountByFacilityId(facilityId));
+
+        JsonArrayBuilder reviewArrBuilder = Json.createArrayBuilder();
+        reviews.stream().map(r -> r.toJson()).forEach(j -> reviewArrBuilder.add(j));
+        joB.add("reviews", reviewArrBuilder.build());
+
+        joB.add("reviewSummary", reviewSummary.toJson());
+
+        JsonObject payload = joB.build();
+        
+        System.out.println("in controller getHospital: " + payload.toString()); // debug
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+    }
+
 
 }

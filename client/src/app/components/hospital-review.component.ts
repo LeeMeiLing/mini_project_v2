@@ -32,16 +32,16 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
     return this.fb.group({
 
       patientId:this.fb.control<string>('',[Validators.required]),
-      nurseCommunication:this.fb.control<number>(0,[Validators.required]),
-      doctorCommunication:this.fb.control<number>(0,[Validators.required]),
-      staffResponsiveness:this.fb.control<number>(0,[Validators.required]),
-      communicationAboutMedicines:this.fb.control<number>(0,[Validators.required]),
-      dischargeInformation:this.fb.control<number>(0,[Validators.required]),
-      careTransition:this.fb.control<number>(0,[Validators.required]),
-      cleanliness:this.fb.control<number>(0,[Validators.required]),
-      quientness:this.fb.control<number>(0,[Validators.required]),
-      overallRating:this.fb.control<number>(0,[Validators.required]),
-      willingnessToRecommend:this.fb.control<number>(0,[Validators.required]),
+      nurseCommunication:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      doctorCommunication:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      staffResponsiveness:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      communicationAboutMedicines:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      dischargeInformation:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      careTransition:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      cleanliness:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      quietness:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      overallRating:this.fb.control<number|undefined>(undefined,[Validators.required]),
+      willingnessToRecommend:this.fb.control<number|undefined>(undefined,[Validators.required]),
       comments:this.fb.control<string>(''),
 
     })
@@ -53,6 +53,7 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
       next:() => {},
       error: (err) => console.error(err),
       complete:()=>{
+        alert('You have posted a review');
         this.router.navigate(['/hospital',this.facilityId]);
       }
     });

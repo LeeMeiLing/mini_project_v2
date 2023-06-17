@@ -5,10 +5,10 @@ public class SqlQueryConstant {
     public static final Integer LIMIT = 20;
 
     public static final String INSERT_HOSPITAL = """
-            insert into us_hospitals (facility_id, facility_name, address, city, state, zip_code, county_name,
-            phone_number, hospital_type, hospital_ownership, emergency_services, hospital_overall_rating ) 
-            values (?,?,?,?,?,?,?,?,?,?,?,?)
-        """;
+        insert into us_hospitals (facility_id, facility_name, address, city, state, zip_code, county_name,
+        phone_number, hospital_type, hospital_ownership, emergency_services, hospital_overall_rating ) 
+        values (?,?,?,?,?,?,?,?,?,?,?,?)
+    """;
     
     public static final String UPDATE_HOSPITAL = """
         update us_hospitals set facility_name = ? , address = ? , city = ? , state = ? , zip_code = ? , 
@@ -54,17 +54,37 @@ public class SqlQueryConstant {
 
     public static final String QUERY_HOSPITAL_BY_ID = "select * from us_hospitals where facility_id = ? "; 
 
-    public static final String INSERT_HOSPITAL_REVIEW = 
-    """
-    insert into us_hospital_reviews (facility_id, reviewer, patient_id,
-    nurse_communication, doctor_communication, staff_responsiveness, communication_about_medicines,
-    discharge_information, care_transition, cleanliness, quientness, overall_rating, willingness_to_recommend, comments) 
-    values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+    public static final String INSERT_HOSPITAL_REVIEW = """
+        insert into us_hospital_reviews (facility_id, reviewer, patient_id,
+        nurse_communication, doctor_communication, staff_responsiveness, communication_about_medicines,
+        discharge_information, care_transition, cleanliness, quietness, overall_rating, willingness_to_recommend, comments, review_date) 
+        values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """;
 
     public static final String INSERT_REVIEW_CONTRACT_ADDRESS_US_HOSPITAL = "update us_hospitals set review_contract_address = ? ";
 
     public static final String INSERT_REVIEW_INDEX_US_HOSPITAL = "update us_hospital_reviews set eth_review_index = ? where id = ? ";
 
     public static final String COUNT_REVIEW_US_HOSPITAL = "select count(*) from us_hospital_reviews where facility_id = ?";
+
+    public static final String COUNT_REVIEW_RATING_US_HOSPITAL_BY_HOSPITAL = "select overall_rating, count(*) as count from us_hospital_reviews where facility_id = ? group by overall_rating";
+
+    public static final String QUERY_REVIEW_SUMMARY_US_HOSPITAL_BY_HOSPITAL = """
+        select facility_id, 
+        avg(nurse_communication) as avg_nurse_comm, 
+        avg(doctor_communication) as avg_doctor_comm,
+        avg(staff_responsiveness) as avg_staff_responsiveness, 
+        avg(communication_about_medicines) as avg_comm_abt_med,
+        avg(discharge_information) as avg_discharge_info, 
+        avg(care_transition) as avg_care_transition, 
+        avg(cleanliness) as avg_cleanliness, 
+        avg(quietness) as avg_quietness, 
+        avg(overall_rating) as avg_overall_rating, 
+        avg(willingness_to_recommend) as avg_recommendation
+        from us_hospital_reviews where facility_id = ?
+    """;
+
+    public static final String QUERY_REVIEW_US_HOSPITAL_BY_HOSPITAL = "select * from us_hospital_reviews where facility_id = ?";
+
+
 }
