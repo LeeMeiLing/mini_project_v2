@@ -6,10 +6,14 @@ import { HomeComponent } from './components/home.component';
 import { SearchHospitalComponent } from './components/search-hospital.component';
 import { HospitalComponent } from './components/hospital.component';
 import { HospitalReviewComponent } from './components/hospital-review.component';
+import { SignUpHospitalComponent } from './components/sign-up-hospital.component';
+import { SignUpMohComponent } from './components/sign-up-moh.component';
 
 const routes: Routes = [
   { path:'', component:LoginComponent},
   { path:'signup', component:SignUpComponent},
+  { path:'signupHospital', component:SignUpHospitalComponent},
+  { path:'signupMOH', component:SignUpMohComponent},
   { path:'home', component:HomeComponent},
   { path:'searchHospital', component:SearchHospitalComponent},
   { path:'hospital/:facilityId',component:HospitalComponent},

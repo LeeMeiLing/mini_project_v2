@@ -21,6 +21,7 @@ import { HospitalReviewComponent } from './components/hospital-review.component'
 import { SignUpHospitalComponent } from './components/sign-up-hospital.component';
 import { SignUpMohComponent } from './components/sign-up-moh.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,7 +48,7 @@ import { SignUpMohComponent } from './components/sign-up-moh.component';
       registrationStrategy: 'registerWhenStable:30000'
     })
   ],
-  providers: [ 
+  providers: [
     CookieService,
     JwtCookieService,
     {

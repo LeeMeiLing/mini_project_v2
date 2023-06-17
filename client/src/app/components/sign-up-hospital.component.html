@@ -1,1 +1,35 @@
-<p>sign-up-hospital works!</p>
+<!-- <div>
+    <h2>SIGN UP</h2>
+    <form [formGroup]="form" (ngSubmit)="register()">
+        <table>
+            <tr>
+                Email: <input type="email" formControlName="userEmail">
+                <span *ngIf="form.get('userEmail')?.invalid && form.get('userEmail')?.dirty">Email is mandatory and must be in correct email format</span>
+            </tr>
+            <tr>
+                Password: <input type="password" formControlName="userPassword">
+                <span *ngIf="form.get('userPassword')?.invalid && form.get('userPassword')?.dirty">Password must be at least 8 characters, contains at least 1 digit, 1 uppercase letter and 1 lowercase letter</span>
+            </tr>
+            <tr>
+                Full Name: <input type="text" formControlName="userName">
+                <span *ngIf="form.get('userName')?.invalid && form.get('userName')?.dirty">Name is mandatory and must be more than 3 characters</span>
+            </tr>
+            
+            <tr>
+                Mobile No.: <input type="text" formControlName="mobileNumber">
+                <span *ngIf="form.get('mobileNumber')?.invalid && form.get('mobileNumber')?.dirty">Mobile number is mandatory and must be 8 digits</span>
+            </tr>
+            <tr>
+                Gender: 
+                <input type="radio" formControlName="gender" name="gender" value="male">Male
+                <input type="radio" formControlName="gender" name="gender" value="female">Female
+                <span *ngIf="form.get('gender')?.invalid && form.get('gender')?.dirty">Please indicate your gender</span>
+            </tr>
+            <tr>
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Sign Up</button>
+            </tr>
+        </table>
+        <a [routerLink]="['/']">Back to Sign-In Page</a>
+    </form>
+</div>
+ -->
