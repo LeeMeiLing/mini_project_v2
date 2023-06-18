@@ -24,7 +24,7 @@ export class UserService {
     const headers = new HttpHeaders().set('Content-Type','application/json')
                                      .set('Accept','application/json');
     
-    return lastValueFrom(this.http.post(this.USER_URL + '/register', form, { headers }));                           
+    return lastValueFrom(this.http.post(this.USER_URL + '/register/public', form, { headers }));                           
 
   }
 
@@ -54,21 +54,6 @@ export class UserService {
 
   }
 
-
-  test(){
-    const headers = new HttpHeaders()
-                                     .set('Accept','application/json');
-    
-    return lastValueFrom(
-      this.http.get(this.USER_URL + '/test', { headers , observe: 'response' })
-               .pipe(
-                  map( 
-                    response => { const testMsg = response;
-                                  console.log("testMsg: " , testMsg);
-                  })
-               )
-    );         
-  }
 
 
 }

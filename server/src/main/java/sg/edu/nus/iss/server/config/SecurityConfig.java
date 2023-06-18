@@ -69,7 +69,9 @@ public class SecurityConfig {
             .cors(withDefaults())
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/user/register/public").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/user/register/healthcareprovider").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/hospitals/hospital/testaccount").permitAll()
                     .anyRequest().authenticated())
             .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
             .addFilter(authenticationFilter)

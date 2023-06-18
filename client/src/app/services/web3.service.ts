@@ -15,7 +15,8 @@ export class Web3Service {
       (window as any).ethereum.request({ method: 'eth_requestAccounts' });
       this.web3 = new Web3((window as any).ethereum);
     } else {
-      console.log('No ethereum provider detected. Please install MetaMask or another Web3 provider.');
+      alert('No ethereum provider detected. Please install MetaMask.');
+      console.log('No ethereum provider detected. Please install MetaMask.');
     }
   }
 

@@ -27,6 +27,8 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         // get the user info from database for comparison with user login details
         User user = userSvc.findUser((String) authentication.getPrincipal()); // same as authentication.getName()
         if(!bCryptPasswordEncoder.matches(authentication.getCredentials().toString(), user.getUserPassword())){
+            //TODO: compare with password from hospital table
+            
             throw new BadCredentialsException("Wrong Password");
         }
         return new UsernamePasswordAuthenticationToken(authentication.getName(), user.getUserPassword());

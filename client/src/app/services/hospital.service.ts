@@ -111,6 +111,6 @@ export class HospitalService {
 
     const payload = review 
 
-    return this.http.post(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, payload , { headers }); // todo
+    return this.http.post(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, payload , { headers });
   }
 }
