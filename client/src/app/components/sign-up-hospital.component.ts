@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Web3Service } from '../services/web3.service';
 import { HospitalService } from '../services/hospital.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up-hospital',
@@ -13,12 +14,10 @@ export class SignUpHospitalComponent implements OnInit{
   form!: FormGroup;
   result$: any;
 
-  constructor(private fb:FormBuilder, private hospSvc:HospitalService, private web3Svc:Web3Service){}
+  constructor(private fb:FormBuilder, private hospSvc:HospitalService, private web3Svc:Web3Service, private router:Router){}
 
   ngOnInit(): void {
     this.form = this.createForm()
-    // this.web3Svc.web3.eth.getAccounts().then(console.log)
-
   }
 
   /* PASSWORD 
@@ -139,31 +138,16 @@ export class SignUpHospitalComponent implements OnInit{
 
     this.form.addControl('encryptedKeyStore', this.fb.control(encryptedKeyStore))
     console.log('form: ', this.form)
-    this.hospSvc.registerHospital(this.form.value).subscribe();
+    this.hospSvc.registerHospital(this.form.value).subscribe({
+      next:()=>{},
+      error:(err)=>{
+        console.error(err)
+      },
+      complete:()=>{
+        console.log('registered success')
+        this.router.navigate(['/'])
+      }
+    });
    
-    // this.userSvc.getKeyStorePassword().subscribe({
-    //   next: (r:any) => {
-    //     keyStorePassword = r['keyStorePassword'];
-    //     const encrptedKeyStore = this.web3Svc.web3.eth.accounts.encrypt(this.form.value['privateKey'], keyStorePassword);
-    //     console.log('keyStore: ', encrptedKeyStore);
-    
-    //   },
-    //   error: err => console.error(err),
-    //   complete: () => console.log('completed getKeyStorePassword():', keyStorePassword)
-    // });
-
-    // // POST /api/hospitals/hospital/{facilityId}/review
-    // const headers = new HttpHeaders().set('Accept','application/json')
-    //                                  .set('Content-Type', 'application/json');
-
-    // const payload = acc 
-    // this.http.post(`http://localhost:8080/api/hospitals/hospital/testaccount`, payload , { headers }).subscribe(); // todo
-
-
-    // console.log(this.form.value); // debug
-    // this.result$ = await this.userSvc.registerNewUser(this.form.value) // return the user email if registered successfully
-    // console.log(this.result$.email); // debug
-    // this.router.navigate(['/']);
-    
   }
 }

@@ -1,26 +1,48 @@
 <div>
     <h2>SIGN IN</h2>
-    <form [formGroup]="form" (ngSubmit)="login()" >
-    <table>
-        <tr>
-            Email: <input type="email" formControlName="userEmail">
-        </tr>
-        <tr>
-            Password: <input type="password" formControlName="userPassword">
-        </tr>
-        <tr>
-            <a [routerLink]="['/resetPassword']">Forgot Password?</a>
-        </tr>
-        <tr>
-            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Sign In</button>
-        </tr>
-    </table>
+    <form [formGroup]="form">
+        Sign In As: 
+        <select formControlName="signInMethod" (ngModelChange)="onChange()">
+            <option value="user">User</option>
+            <option value="hospital">Healthcare Provider</option>
+            <option value="moh">Ministry of Health</option>
+        </select>    
+    </form>
+
+    <form [formGroup]="userForm" (ngSubmit)="signInAsUser()" *ngIf="showUserForm">
+        <table>
+            <tr>
+                Email: <input type="email" formControlName="userEmail">
+            </tr>
+            <tr>
+                Password: <input type="password" formControlName="userPassword">
+            </tr>
+            <tr>
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Sign In</button>
+            </tr>
+        </table>
+    </form>
+
+    <form [formGroup]="hospitalForm" (ngSubmit)="signInAsHospital()" *ngIf="showHospitalForm">
+        <table>
+            <tr>
+                Ethereum Address: <input type="text" formControlName="ethAddress">
+            </tr>
+            <tr>
+                Password: <input type="password" formControlName="accountPassword">
+            </tr>
+            <tr>
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Sign In</button>
+            </tr>
+        </table>
+    </form>
+
     <hr>
     <a [routerLink]="['/signup']">Sign Up As User</a>
     <br>
     <a [routerLink]="['/signupHospital']">Sign Up As Healthcare Provider</a>
     <br>
     <a [routerLink]="['/signupMOH']">Sign Up As MOH</a>
-    </form>
+    
 </div>
 

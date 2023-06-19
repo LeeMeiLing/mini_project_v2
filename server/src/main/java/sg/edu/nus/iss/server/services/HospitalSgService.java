@@ -7,11 +7,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalSg;
-import sg.edu.nus.iss.server.repositories.HospitalRepository;
 import sg.edu.nus.iss.server.repositories.HospitalSgRepository;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
