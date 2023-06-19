@@ -2,6 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom, map, tap } from 'rxjs';
 import { JwtCookieService } from './jwt-cookie.service';
+import { environment } from 'src/environments/environment';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,7 @@ export class UserService {
   
   constructor(private http:HttpClient, private jwtCookieSvc: JwtCookieService) { }
 
-  USER_URL = 'http://localhost:8080/api/user';
+  USER_URL = environment.apiUserUrl;
   token!: string | null;
 
   /*
@@ -53,6 +55,23 @@ export class UserService {
     );                                                   
 
   }
+
+  // getKeyStorePassword() {
+
+  //   const headers = new HttpHeaders().set('Accept','application/json');
+
+  //   return this.http.get(this.USER_URL + '/getKeyStorePassword', {headers});
+
+  // }
+
+  // registerHospital(form:any){
+
+  //   const headers = new HttpHeaders().set('Content-Type','application/json')
+  //                                    .set('Accept','application/json');
+
+  //   return this.http.post(`${this.USER_URL}/register/healthcareprovider/${form.countryCode}`, form, { headers });
+  // }
+  
 
 
 

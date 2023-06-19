@@ -5,7 +5,7 @@
         <!-- <button type="submit">Submit</button> -->
         <table>
             <tr>
-                Ethereum Account Private Key: <input type="text" formControlName="privateKey">
+                Ethereum Account Private Key: <input type="password" formControlName="privateKey">
                 <span *ngIf="form.get('privateKey')?.invalid && form.get('privateKey')?.dirty">Please enter a valid private key associated with the connected account</span>
             </tr>
             <tr>

@@ -36,6 +36,7 @@ import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
+import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.repositories.HospitalRepository;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
@@ -48,7 +49,7 @@ public class HospitalService {
     private HospitalRepository hospitalRepo;
 
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
     private CustomAuthenticationManager customAuthenticationManager;
@@ -61,54 +62,57 @@ public class HospitalService {
     private Integer totalHospital;
     private final Integer API_QUERY_LIMIT = 500;
 
-    // Check if there is any new released data. if there is, get the latest released data from API 
-    public void checkUpdated(){
+    // Check if there is any new released data. if there is, get the latest released
+    // data from API
+    public void checkUpdated() {
 
-        previousReleased = latestReleased; 
+        previousReleased = latestReleased;
         System.out.println("Previous Released: " + previousReleased); // debug
 
-        RequestEntity<Void> req = RequestEntity.get(Constant.US_DATA_GOV_HOSPITAL_GENERAL_INFORMATION_METASTORE_URL).build();
+        RequestEntity<Void> req = RequestEntity.get(Constant.US_DATA_GOV_HOSPITAL_GENERAL_INFORMATION_METASTORE_URL)
+                .build();
 
         RestTemplate template = new RestTemplate();
 
         String payload;
 
-        try{
-            ResponseEntity<String> resp = template.exchange(req,String.class);
+        try {
+            ResponseEntity<String> resp = template.exchange(req, String.class);
             payload = resp.getBody();
             JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             latestReleased = formatter.parse(jo.getString("released"));
             System.out.println("Latest Released: " + latestReleased); // debug
 
-            if(!latestReleased.equals(previousReleased) ){
+            if (!latestReleased.equals(previousReleased)) {
                 getTotalHospital();
                 System.out.println(">>> total Hospital = " + totalHospital); // debug
-                int loop = (int) Math.ceil((double)totalHospital / API_QUERY_LIMIT);
+                int loop = (int) Math.ceil((double) totalHospital / API_QUERY_LIMIT);
                 System.out.println("loop # " + loop); // debug
-                for(int i=0 ; i < loop ; i++){
-                    getHospitalInfo(i*API_QUERY_LIMIT);
+                for (int i = 0; i < loop; i++) {
+                    getHospitalInfo(i * API_QUERY_LIMIT);
                 }
             }
 
-        }catch(HttpClientErrorException ex){
+        } catch (HttpClientErrorException ex) {
             System.out.println(" >>> in HttpClientErrorException"); // debug
             logger.info(ex.getResponseBodyAsString());
- 
-        }catch(Exception ex){
+
+        } catch (Exception ex) {
             logger.info(ex.getMessage());
 
         }
     }
 
-    public void getTotalHospital(){
+    public void getTotalHospital() {
 
-        // GET https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/{index}
+        // GET
+        // https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/{index}
         String url = UriComponentsBuilder.fromUriString(Constant.US_DATA_GOV_HOSPITAL_GENERAL_INFORMATION_URL)
-        .pathSegment("0")
-        .queryParam("limit", 1)
-        .queryParam("offset", 0)
-        .toUriString();
+                .pathSegment("0")
+                .queryParam("limit", 1)
+                .queryParam("offset", 0)
+                .toUriString();
 
         RequestEntity<Void> req = RequestEntity.get(url).build();
 
@@ -116,30 +120,31 @@ public class HospitalService {
 
         String payload;
 
-        try{
-            ResponseEntity<String> resp = template.exchange(req,String.class);
+        try {
+            ResponseEntity<String> resp = template.exchange(req, String.class);
             payload = resp.getBody();
             JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
             totalHospital = jo.getInt("count");
- 
-        }catch(HttpClientErrorException ex){
+
+        } catch (HttpClientErrorException ex) {
             logger.info(ex.getResponseBodyAsString());
- 
-        }catch(Exception ex){
+
+        } catch (Exception ex) {
             logger.info(ex.getMessage());
 
         }
     }
 
     // Get Hospitals General Information from API & save to MySQL
-    public void getHospitalInfo(Integer offset){
+    public void getHospitalInfo(Integer offset) {
 
-        // GET https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/{index}
+        // GET
+        // https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/{index}
         String url = UriComponentsBuilder.fromUriString(Constant.US_DATA_GOV_HOSPITAL_GENERAL_INFORMATION_URL)
-        .pathSegment("0")
-        .queryParam("limit", API_QUERY_LIMIT)
-        .queryParam("offset", offset)
-        .toUriString();
+                .pathSegment("0")
+                .queryParam("limit", API_QUERY_LIMIT)
+                .queryParam("offset", offset)
+                .toUriString();
 
         RequestEntity<Void> req = RequestEntity.get(url).build();
 
@@ -147,8 +152,8 @@ public class HospitalService {
 
         String payload;
 
-        try{
-            ResponseEntity<String> resp = template.exchange(req,String.class);
+        try {
+            ResponseEntity<String> resp = template.exchange(req, String.class);
             payload = resp.getBody();
             JsonArray results = Json.createReader(new StringReader(payload)).readObject().getJsonArray("results");
             List<Hospital> hospitals = results.stream().map(j -> Hospital.createHospital((JsonObject) j)).toList();
@@ -156,47 +161,45 @@ public class HospitalService {
             // save to MySQL database
             hospitals.stream().forEach(h -> hospitalRepo.insert(h));
 
-        }catch(HttpClientErrorException ex){
+        } catch (HttpClientErrorException ex) {
             logger.info(ex.getResponseBodyAsString());
 
-
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logger.info(ex.getMessage());
         }
 
     }
-    
 
     // retrieve states
-    public List<String> getStates(){
+    public List<String> getStates() {
 
         System.out.println(">>> in hosp Svc get State");
 
         List<Object> objects = new ArrayList<>();
-        
+
         objects = redisTemplate.opsForList().range("states", 0, redisTemplate.opsForList().size("states"));
 
-        if(!objects.isEmpty()){
-            
+        if (!objects.isEmpty()) {
+
             System.out.println("in if");
             System.out.println(objects);
             return objects.stream().map(o -> String.valueOf(o)).toList();
 
-        }else{
+        } else {
 
             System.out.println("in else");
 
             // get from MySQL
             Optional<List<String>> opt = hospitalRepo.getStates();
 
-            if(opt.isPresent()){
+            if (opt.isPresent()) {
 
                 // save to redis
                 List<String> states = opt.get();
                 states.stream().forEach(s -> redisTemplate.opsForList().rightPush("states", s));
 
                 return opt.get();
-            }else{
+            } else {
                 throw new RuntimeException(); // TODO
             }
         }
@@ -204,35 +207,35 @@ public class HospitalService {
     }
 
     // retrieve cities
-    public List<String> getCities(String state){
+    public List<String> getCities(String state) {
 
         System.out.println(">>> in hosp Svc get Cities");
 
         List<Object> objects = new ArrayList<>();
-        
+
         objects = redisTemplate.opsForList().range(state, 0, redisTemplate.opsForList().size(state));
 
-        if(!objects.isEmpty()){
-            
+        if (!objects.isEmpty()) {
+
             System.out.println("in if");
             System.out.println(objects);
             return objects.stream().map(o -> String.valueOf(o)).toList();
 
-        }else{
+        } else {
 
             System.out.println("in else");
 
             // get from MySQL
             Optional<List<String>> opt = hospitalRepo.getCities(state);
 
-            if(opt.isPresent()){
+            if (opt.isPresent()) {
 
                 // save to redis
                 List<String> cities = opt.get();
                 cities.stream().forEach(c -> redisTemplate.opsForList().rightPush(state, c));
 
                 return opt.get();
-            }else{
+            } else {
                 throw new RuntimeException(); // TODO
             }
         }
@@ -241,68 +244,68 @@ public class HospitalService {
 
     // retrieve from MySQL
     public List<Hospital> getHospitalList(String state, String city, String name, Integer offset,
-    Boolean sortByRating, Boolean descending)
-    {
+            Boolean sortByRating, Boolean descending) {
 
         Optional<List<Hospital>> opt;
 
-        if(state != null){
+        if (state != null) {
 
-            if(city != null){
-                if(name != null){
+            if (city != null) {
+                if (name != null) {
                     // search with state, city, name
-                    opt = hospitalRepo.findHospitalsByStateCityName(state,city,name,offset,sortByRating,descending);
-                }else{
+                    opt = hospitalRepo.findHospitalsByStateCityName(state, city, name, offset, sortByRating,
+                            descending);
+                } else {
                     // search with state, city
-                    opt = hospitalRepo.findHospitalsByStateAndCity(state, city, offset,sortByRating,descending);
+                    opt = hospitalRepo.findHospitalsByStateAndCity(state, city, offset, sortByRating, descending);
                 }
-            }else{
-                if(name != null){
+            } else {
+                if (name != null) {
                     // search with state, name
                     System.out.println(">> in state !city name svc");
-                    opt = hospitalRepo.findHospitalsByStateAndName(state, name, offset,sortByRating,descending);
-                }else{
+                    opt = hospitalRepo.findHospitalsByStateAndName(state, name, offset, sortByRating, descending);
+                } else {
                     // search with state
-                    opt = hospitalRepo.findHospitalsByState(state, offset,sortByRating,descending);
+                    opt = hospitalRepo.findHospitalsByState(state, offset, sortByRating, descending);
                 }
             }
-        }else{
+        } else {
 
-            if(name != null){
+            if (name != null) {
                 // search with name
-                opt = hospitalRepo.findHospitalsByName(name, offset,sortByRating,descending);
-            }else{
+                opt = hospitalRepo.findHospitalsByName(name, offset, sortByRating, descending);
+            } else {
                 // search all without filter
-                opt = hospitalRepo.findAllHospitals(offset,sortByRating,descending);
+                opt = hospitalRepo.findAllHospitals(offset, sortByRating, descending);
             }
         }
 
-        if(opt.isPresent()){
+        if (opt.isPresent()) {
             return opt.get();
-        }else{
+        } else {
             throw new ResultNotFoundException("Hospital");
         }
-        
+
     }
 
-    public Integer countResult(String state, String city, String name, Boolean sortByRating, Boolean descending){
+    public Integer countResult(String state, String city, String name, Boolean sortByRating, Boolean descending) {
 
         return hospitalRepo.countResult(state, city, name, sortByRating, descending);
     }
 
-    public Hospital findHospitalById(String facilityId){
+    public Hospital findHospitalById(String facilityId) {
 
         Optional<Hospital> opt = hospitalRepo.findHospitalById(facilityId);
 
-        if(opt.isPresent()){
+        if (opt.isPresent()) {
             return opt.get();
-        }else{
+        } else {
             throw new ResultNotFoundException("Hospital ID: " + facilityId);
         }
     }
 
     @Transactional(rollbackFor = PostReviewFailedException.class)
-    public boolean postHospitalReview(String facilityId, HospitalReview review) throws Exception{
+    public boolean postHospitalReview(String facilityId, HospitalReview review) throws Exception {
 
         review.setFacilityId(facilityId);
 
@@ -312,60 +315,66 @@ public class HospitalService {
         // set timestamp
         review.setReviewDate(new java.sql.Date(new Date().getTime()));
 
-        //===== perform in transaction =====
+        // ===== perform in transaction =====
 
         // 1) save to MySql & get id >> for user to see own review
         Integer reviewId = hospitalRepo.insertHospitalReview(review);
 
-        // 2) save to Smart Contract & get ethReviewIndex >> for hospital owner to verify Patient
-        if(reviewId > 0){
- 
+        // 2) save to Smart Contract & get ethReviewIndex >> for hospital owner to
+        // verify Patient
+        if (reviewId > 0) {
+
             EthHospitalReview contract;
 
-        
             // check if contract address already exists
             String contractAddress = findHospitalById(facilityId).getReviewContractAddress();
 
-            if( contractAddress != null){
+            if (contractAddress != null) {
 
                 contract = ethSvc.getEthHospitalReviewContract(contractAddress);
-                System.out.println(">> In Hosp Svc (try, if) deployed contract address: " + contract.getContractAddress());
+                System.out.println(
+                        ">> In Hosp Svc (try, if) deployed contract address: " + contract.getContractAddress());
 
-            }else{
-                System.out.println(">> in Hosp Svc, else block:" );
+            } else {
+                System.out.println(">> in Hosp Svc, else block:");
 
                 contract = ethSvc.deployEthHospitalReviewContract();
 
                 // save contract address into us_hospitals table in MySQL
-                boolean contractAddressSaved = hospitalRepo.saveReviewContractAddressForAll(contract.getContractAddress());
-                if(!contractAddressSaved){
+                boolean contractAddressSaved = hospitalRepo
+                        .saveReviewContractAddressForAll(contract.getContractAddress());
+                if (!contractAddressSaved) {
                     throw new PostReviewFailedException("Error in hospitalRepo.saveReviewContractAddressForAll()");
                 }
 
-                System.out.println("In Hosp Svc (try, else) deployed contract address: " + contract.getContractAddress());
+                System.out
+                        .println("In Hosp Svc (try, else) deployed contract address: " + contract.getContractAddress());
             }
-
 
             // generate hash: md5(comments)
             String toHash = review.getComments();
             // Static getInstance method is called with hashing MD5
             MessageDigest md = MessageDigest.getInstance("MD5");
-            // digest() method is called to calculate message digest of an input, digest() return array of byte
+            // digest() method is called to calculate message digest of an input, digest()
+            // return array of byte
             byte[] digest = md.digest(toHash.getBytes());
             // Convert byte array into signum representation
             BigInteger no = new BigInteger(1, digest);
 
             System.out.println("digest no: " + no); // debug
 
-            try{
+            try {
                 // add review to Eth Smart Contract
-                TransactionReceipt ethReviewIndex = contract.addReview(facilityId,new BigInteger(String.valueOf(reviewId)), review.getPatientId(), new BigInteger(String.valueOf(review.getOverallRating())), no).send();
+                TransactionReceipt ethReviewIndex = contract
+                        .addReview(facilityId, new BigInteger(String.valueOf(reviewId)), review.getPatientId(),
+                                new BigInteger(String.valueOf(review.getOverallRating())), no)
+                        .send();
                 String returnedIndex = ethReviewIndex.getLogs().get(0).getData();
                 Integer reviewIndex = Integer.decode(returnedIndex);
                 // save review index to review table
                 boolean reviewIndexSaved = hospitalRepo.saveEthReviewIndex(reviewId, reviewIndex);
 
-                if(!reviewIndexSaved){
+                if (!reviewIndexSaved) {
                     throw new PostReviewFailedException("Error in hospitalRepo.saveEthReviewIndex()");
                 }
 
@@ -373,53 +382,52 @@ public class HospitalService {
                 System.out.println("TransactionReceipt of addReview(): " + ethReviewIndex);
                 System.out.println("review Index: " + reviewIndex);
 
-
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 throw new PostReviewFailedException("Error interacting with smart contract: " + ex);
 
             }
 
             // debug
-            System.out.println("contract.reviews(0):" + contract.reviews(new BigInteger(String.valueOf(0))).send().component6());
+            System.out.println(
+                    "contract.reviews(0):" + contract.reviews(new BigInteger(String.valueOf(0))).send().component6());
 
             // check if comments has been amended , FOR USE DURING READ REVIEW
-            if(no.equals(contract.reviews(new BigInteger(String.valueOf(0))).send().component6())){
+            if (no.equals(contract.reviews(new BigInteger(String.valueOf(0))).send().component6())) {
                 System.out.println("Is match: !!!");
             }
 
-
-        }else{
-            throw new PostReviewFailedException("Error in hospitalRepo.insertHospitalReview()"); 
+        } else {
+            throw new PostReviewFailedException("Error in hospitalRepo.insertHospitalReview()");
         }
 
         return true;
 
     }
 
-
-    public Integer getReviewCountByFacilityId(String facilityId){
+    public Integer getReviewCountByFacilityId(String facilityId) {
         return hospitalRepo.getReviewCountByFacilityId(facilityId);
     }
 
-    public List<HospitalReview> getHospitalReviews(String facilityId){
+    public List<HospitalReview> getHospitalReviews(String facilityId) {
 
         Optional<List<HospitalReview>> opt = hospitalRepo.getHospitalReviews(facilityId);
 
-        if(opt.isPresent()){
+        if (opt.isPresent()) {
             return opt.get();
-        }else{
+        } else {
             throw new ResultNotFoundException("Review ");
         }
-        
+
     }
 
-    public HospitalReviewSummary getHospitalReviewSummary(String facilityId){
+    public HospitalReviewSummary getHospitalReviewSummary(String facilityId) {
 
         HospitalReviewSummary summary = hospitalRepo.getHospitalReviewSummary(facilityId);
         System.out.println("Review summary: " + summary);
         return summary;
-        
+
     }
 
+    
 
 }

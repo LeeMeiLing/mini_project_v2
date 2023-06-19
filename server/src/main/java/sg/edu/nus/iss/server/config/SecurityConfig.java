@@ -70,8 +70,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.POST, "/api/user/register/public").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/user/register/healthcareprovider").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/hospitals/hospital/testaccount").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/hospitals/*/register/hospital").permitAll()
+                    // .requestMatchers(HttpMethod.GET, "/api/user/getKeyStorePassword").permitAll()
+                    // .requestMatchers(HttpMethod.POST, "/api/hospitals/hospital/testaccount").permitAll()
                     .anyRequest().authenticated())
             .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
             .addFilter(authenticationFilter)

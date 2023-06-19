@@ -28,6 +28,7 @@ import sg.edu.nus.iss.server.constants.SqlQueryConstant;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
+import sg.edu.nus.iss.server.models.HospitalSg;
 
 @Repository
 public class HospitalRepository {
@@ -699,6 +700,46 @@ public class HospitalRepository {
     
         return reviewSummary;
     }
+    
+    // public boolean insertHospitalSg(HospitalSg h){
 
+    //     try{
+    //         jdbcTemplate.update(SqlQueryConstant.INSERT_SG_HOSPITAL, new PreparedStatementSetter() {
+
+    //             @Override
+    //             public void setValues(PreparedStatement ps) throws SQLException {
+    //                 ps.setString(1, h.getFacilityId());
+    //                 ps.setString(2, h.getFacilityName());
+    //                 ps.setString(3, h.getLicense());
+    //                 ps.setBoolean(4, h.isRegistered());
+    //                 ps.setBoolean(5, h.isJciAccredited());
+    //                 ps.setString(6,h.getAddress());
+    //                 ps.setString(7,h.getStreetName());
+    //                 ps.setString(8,h.getZipCode());
+    //                 ps.setString(9,h.getCountryCode());
+    //                 ps.setString(10,h.getPhoneNumber());
+    //                 ps.setString(11,h.getHospitalOwnership());
+    //                 ps.setString(12,h.getEmergencyServices());
+    //                 ps.setString(13,h.getEthAddress());
+    //                 ps.setString(14,h.getAccountPassword());
+    //                 ps.setBytes(15,h.getEncryptedKeyStore());
+                    
+    //             }
+                
+    //         });
+
+    //         return true;
+    
+    //     }catch(Exception ex){
+    //         return false;
+    //     }
+
+    // }
+
+
+    // public String getMohAddress(String countryCode){
+
+    //     return null;
+    // }
     
 }

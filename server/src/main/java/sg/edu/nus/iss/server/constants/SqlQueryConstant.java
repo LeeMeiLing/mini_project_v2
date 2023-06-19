@@ -86,5 +86,30 @@ public class SqlQueryConstant {
 
     public static final String QUERY_REVIEW_US_HOSPITAL_BY_HOSPITAL = "select * from us_hospital_reviews where facility_id = ?";
 
+    public static final String INSERT_USER = "insert into users (user_email, user_password, user_name, mobile_number, gender) values (?, ?, ?, ?, ?)";
+    
+    public static final String FIND_USER_BY_EMAIL = "select user_email, user_password from users where user_email = ?";
+    
+    public static final String INSERT_SG_HOSPITAL="""
+        insert into sg_hospitals (
+        facility_id,
+        facility_name,
+        license,
+        registered,
+        jci_accredited,
+        address,
+        street_name,
+        zip_code,
+        country_code,
+        phone_number,
+        hospital_ownership,
+        emergency_services,
+        eth_address,
+        account_password,
+        encrypted_key_store) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """;
 
+    public static final String UPDATE_SG_HOSPITAL_CONTRACT_ADDRESS = "update sg_hospitals set contract_address = ? where facility_id = ?";
+
+    public static final String FIND_MOH_ETH_ADDRESS = "select moh_eth_address from moh where country_code = ?";
 }

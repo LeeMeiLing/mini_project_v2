@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ export class HospitalService {
 
   constructor(private http:HttpClient) { }
 
-  HOSPITAL_URL = 'http://localhost:8080/api/hospitals';
+  HOSPITAL_URL = environment.apiHospitalUrl;
 
   getHospitalList(name:string){
     
@@ -112,5 +113,13 @@ export class HospitalService {
     const payload = review 
 
     return this.http.post(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, payload , { headers });
+  }
+
+  registerHospital(form:any){
+
+    const headers = new HttpHeaders().set('Content-Type','application/json')
+                                     .set('Accept','application/json');
+
+    return this.http.post(`${this.HOSPITAL_URL}/${form.countryCode}/register/hospital`, form, { headers });
   }
 }

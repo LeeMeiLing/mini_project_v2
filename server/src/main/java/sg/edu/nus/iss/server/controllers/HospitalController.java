@@ -1,11 +1,9 @@
 package sg.edu.nus.iss.server.controllers;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +27,12 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonReader;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
+import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.services.HospitalService;
 
 @CrossOrigin(origins="*")
@@ -202,45 +202,63 @@ public class HospitalController {
 
     }
 
-    @PostMapping(path ={"/hospital/testaccount"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> testAccount(@RequestBody String payload) throws IOException, CipherException{
+    // @PostMapping(path ={"/hospital/testaccount"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<String> testAccount(@RequestBody String payload) throws IOException, CipherException{
 
-        JsonObject kdfparams = Json.createObjectBuilder()
-            .add("dklen",32)
-            .add("salt", "3975eaa9bb1e1f23811d203985962db8a14ab3e18a640ad640001aadeec97f3e")
-            .add("n",8192)
-            .add("r",8)
-            .add("p",1)
-            .build();
+    //     JsonObject kdfparams = Json.createObjectBuilder()
+    //         .add("dklen",32)
+    //         .add("salt", "3975eaa9bb1e1f23811d203985962db8a14ab3e18a640ad640001aadeec97f3e")
+    //         .add("n",8192)
+    //         .add("r",8)
+    //         .add("p",1)
+    //         .build();
         
-        JsonObject cipherparams = Json.createObjectBuilder().add("iv","56675a823b5ff04683887b9bc9d83bbc").build();
+    //     JsonObject cipherparams = Json.createObjectBuilder().add("iv","56675a823b5ff04683887b9bc9d83bbc").build();
         
-        JsonObject crypto = Json.createObjectBuilder()
-            .add("ciphertext","599691cd7bb642362ddf5d3510266678349fa39cd8cc5092432166af1c69bdd4")
-            .add("cipherparams",cipherparams)
-            .add("cipher","aes-128-ctr")
-            .add("kdf","scrypt")
-            .add("kdfparams",kdfparams)
-            .add("mac","90d766b262d97f622dbf2ddea28b9ef3ee202100d0b66f57808ee9029b3ace32")
-            .build();
+    //     JsonObject crypto = Json.createObjectBuilder()
+    //         .add("ciphertext","599691cd7bb642362ddf5d3510266678349fa39cd8cc5092432166af1c69bdd4")
+    //         .add("cipherparams",cipherparams)
+    //         .add("cipher","aes-128-ctr")
+    //         .add("kdf","scrypt")
+    //         .add("kdfparams",kdfparams)
+    //         .add("mac","90d766b262d97f622dbf2ddea28b9ef3ee202100d0b66f57808ee9029b3ace32")
+    //         .build();
 
-        JsonObject jo = Json.createObjectBuilder()
-            .add("version",3)
-            .add("id","297f0e83-3a5b-4172-9d35-d918113f37b7")
-            .add("address","343cad04808b83b20010f942f440f5e4fd4d28d2")
-            .add("crypto",crypto)
-            .build();
+    //     JsonObject jo = Json.createObjectBuilder()
+    //         .add("version",3)
+    //         .add("id","297f0e83-3a5b-4172-9d35-d918113f37b7")
+    //         .add("address","343cad04808b83b20010f942f440f5e4fd4d28d2")
+    //         .add("crypto",crypto)
+    //         .build();
         
-        File file = File.createTempFile("temp","txt");
-        FileWriter writer = new FileWriter(file);
+    //     File file = File.createTempFile("temp","txt");
+    //     FileWriter writer = new FileWriter(file);
         
-        writer.write(jo.toString());
-        writer.close();
+    //     writer.write(jo.toString());
+    //     writer.close();
         
-        Credentials credentials = WalletUtils.loadCredentials("abc123", file);
-        System.out.println(">>>>>> in controller, payload acc: " + credentials.getAddress());
-        return null;
-    }
+    //     Credentials credentials = WalletUtils.loadCredentials("abc123", file);
+    //     System.out.println(">>>>>> in controller, payload acc: " + credentials.getAddress());
+    //     return null;
+    // }
+
+    // @PostMapping(path = "/register/healthcareprovider/sg", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<String> registerHospitalSg(@RequestBody String payload) throws Exception{
+
+    //     JsonReader rd = Json.createReader(new StringReader(payload));
+    //     JsonObject jo = rd.readObject();
+
+    //     System.out.println(">>> in controller, registerHealthcareProvider: " + payload);// debug
+
+    //     HospitalSg hospital = HospitalSg.createHospitalSg(jo);
+
+    //     System.out.println("hospital: " + hospital); // debug
+
+    //     hospSvc.registerHospitalSg(hospital,jo.getString("accountPassword"));
+
+    //     return null;
+
+    // }
 
 
 }

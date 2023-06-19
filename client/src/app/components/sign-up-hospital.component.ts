@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { UserService } from '../services/user.service';
 import { Web3Service } from '../services/web3.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HospitalService } from '../services/hospital.service';
 
 @Component({
   selector: 'app-sign-up-hospital',
@@ -15,7 +13,7 @@ export class SignUpHospitalComponent implements OnInit{
   form!: FormGroup;
   result$: any;
 
-  constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService, private web3Svc:Web3Service, private http:HttpClient){}
+  constructor(private fb:FormBuilder, private hospSvc:HospitalService, private web3Svc:Web3Service){}
 
   ngOnInit(): void {
     this.form = this.createForm()
@@ -54,6 +52,24 @@ export class SignUpHospitalComponent implements OnInit{
     hospital_overall_rating varchar(13),
     eth_address varchar(42),
     review_contract_address varchar(42),
+
+    private String facilityId; // to be assign UUID
+    private String facilityName;
+    private String license;
+    private boolean registered; // MOH to verify
+    private boolean jeciAccredited; // MOH to verify
+    private String address; 
+    private String streetName;
+    private String zipCode;
+    private String countryCode; // drop down option
+    private String phoneNumber;
+    // private String hospitalType;
+    private String hospitalOwnership; 
+    private String emergencyServices; // yes or no
+    private String hospitalOverallRating; 
+    private String ethAddress; // get from metamask
+    private String reviewContractAddress; // to be assign
+    private String accountPassword; // to be encrypted
   */
   createForm():FormGroup{
     return this.fb.group({
@@ -75,6 +91,30 @@ export class SignUpHospitalComponent implements OnInit{
     });
   }
 
+  async privateKeyNotMatched():Promise<boolean>{
+
+    try{
+
+      const currentAccount =  await this.web3Svc.web3.eth.requestAccounts(); // all lower case
+      const currentAccountAddress= this.web3Svc.web3.utils.toChecksumAddress(currentAccount[0]); // convert to checksum form for comparison
+      // console.log(currentAccountAddress);
+      const fromKey = this.web3Svc.web3.eth.accounts.privateKeyToAccount(this.form.value['privateKey']);
+      // console.log(fromKey);
+      if(currentAccountAddress === fromKey.address){
+        return false;
+      }
+      return true;
+
+    }catch(err){
+
+      alert(err);
+      console.error(err);
+      return true;
+
+    }
+
+  }
+
   // createFormMOH():FormGroup{
   //   return this.fb.group({
 
@@ -88,10 +128,29 @@ export class SignUpHospitalComponent implements OnInit{
 
   async register(){
 
-    const accounts = await this.web3Svc.web3.eth.requestAccounts();
-    const acc = accounts[0];
-    // const acc = this.web3Svc.web3.eth.accounts.encrypt(privatekey, password);
-    console.log(acc)
+    if(await this.privateKeyNotMatched()){
+      alert("Private key invalid. Please connect to the correct account and enter a valid private key.");
+      return;
+    }
+
+    const encryptedKeyStore = await this.web3Svc.web3.eth.accounts.encrypt(this.form.value['privateKey'], this.form.value['accountPassword']);
+    console.log('keyStore: ', encryptedKeyStore);
+    this.form.patchValue({privateKey:null}) // remove privateKey before sending to server
+
+    this.form.addControl('encryptedKeyStore', this.fb.control(encryptedKeyStore))
+    console.log('form: ', this.form)
+    this.hospSvc.registerHospital(this.form.value).subscribe();
+   
+    // this.userSvc.getKeyStorePassword().subscribe({
+    //   next: (r:any) => {
+    //     keyStorePassword = r['keyStorePassword'];
+    //     const encrptedKeyStore = this.web3Svc.web3.eth.accounts.encrypt(this.form.value['privateKey'], keyStorePassword);
+    //     console.log('keyStore: ', encrptedKeyStore);
+    
+    //   },
+    //   error: err => console.error(err),
+    //   complete: () => console.log('completed getKeyStorePassword():', keyStorePassword)
+    // });
 
     // // POST /api/hospitals/hospital/{facilityId}/review
     // const headers = new HttpHeaders().set('Accept','application/json')
