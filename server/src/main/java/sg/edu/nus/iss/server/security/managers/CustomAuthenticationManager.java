@@ -1,6 +1,7 @@
 package sg.edu.nus.iss.server.security.managers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import sg.edu.nus.iss.server.models.User;
 import sg.edu.nus.iss.server.services.UserService;
 
 @Component
+@Primary
 public class CustomAuthenticationManager implements AuthenticationManager {
 
     @Autowired
@@ -27,7 +29,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         // get the user info from database for comparison with user login details
         User user = userSvc.findUser((String) authentication.getPrincipal()); // same as authentication.getName()
         if(!bCryptPasswordEncoder.matches(authentication.getCredentials().toString(), user.getUserPassword())){
-            //TODO: compare with password from hospital table
             
             throw new BadCredentialsException("Wrong Password");
         }

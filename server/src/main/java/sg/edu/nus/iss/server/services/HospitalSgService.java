@@ -1,6 +1,6 @@
 package sg.edu.nus.iss.server.services;
 
-import java.util.logging.Logger;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,21 +11,15 @@ import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.repositories.HospitalSgRepository;
-import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
 @Service
 public class HospitalSgService {
-
-    private Logger logger = Logger.getLogger(HospitalService.class.getName());
 
     @Autowired
     private HospitalSgRepository hospSgRepo;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    private CustomAuthenticationManager customAuthenticationManager;
 
     @Autowired
     private EthereumService ethSvc;
@@ -51,6 +45,8 @@ public class HospitalSgService {
             mohEthAddress, hospital.getLicense());
 
         } catch (Exception ex) {
+            System.out.println(">>> failed to deploy contract!!");
+            ex.printStackTrace();
             throw new RegisterHospitalFailedException("failed to deploy Hospital Credentials contract");
         }
 

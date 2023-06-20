@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { JwtCookieService } from '../services/jwt-cookie.service';
+import { HospitalService } from '../services/hospital.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit{
   showHospitalForm!: boolean;
   showMohForm!: boolean;
 
-  constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService, private jwtCookieSvc: JwtCookieService){}
+  constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService, 
+    private hospSvc:HospitalService, private jwtCookieSvc: JwtCookieService){}
 
   ngOnInit(): void {
     console.log('>> in OnInit');
@@ -108,10 +110,10 @@ export class LoginComponent implements OnInit{
     
     try{
 
-      const result = await this.userSvc.authenticate(this.hospitalForm.value);
+      const result = await this.hospSvc.authenticate(this.hospitalForm.value);
       console.log('result: ', result) // debug
       const status = result.status
-      console.log('status ', status) // debug
+      console.log('sign in as hospital, status ', status) // debug
       
       this.router.navigate(['/home']);
 
@@ -120,10 +122,10 @@ export class LoginComponent implements OnInit{
       console.error(err); // err is a HttpErrorResponse
       // display login error
 
-      if(err.status == 400){ // wrong username
+      if(err.status == 400){ // wrong eth Address
         alert(err.error)
       }
-      if(err.status == 401){ // wrong password
+      if(err.status == 401){ // wrong account password
         alert(err.error)
       }
 

@@ -3,9 +3,6 @@ package sg.edu.nus.iss.server.security.filters;
 import java.io.IOException;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,17 +17,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import sg.edu.nus.iss.server.models.User;
+import sg.edu.nus.iss.server.models.HospitalSg;
 
-@Component
-@Primary
-public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticationFilter{
 
     private String secretKey;
-
-    public AuthenticationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
 
     public String getSecretKey() {
         return secretKey;
@@ -44,18 +35,22 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
-        System.out.println(">>> in attemptauthentication(), secret key is: " + this.getSecretKey()); // debug
+        System.out.println(">>> in attemptauthentication() of AuthenticationFilterForHospital "); // debug
         
         try{
 
-            User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
-            System.out.println(">>> In Authentication Filter attemptAuthentication(), " + user.getUserEmail()); // debug
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUserEmail(), user.getUserPassword());
+            HospitalSg hospitalSg = new ObjectMapper().readValue(request.getInputStream(), HospitalSg.class);
+            System.out.println(">>> In Authentication Filter attemptAuthentication(), " + hospitalSg.getEthAddress()); // debug
+            Authentication authentication = new UsernamePasswordAuthenticationToken(hospitalSg.getEthAddress(), hospitalSg.getAccountPassword());
+            System.out.println(">>> current authentication manager is: " + this.getAuthenticationManager().getClass());
             return this.getAuthenticationManager().authenticate(authentication);
-            
+        
         }catch(IOException ex){
+            System.out.println("catch AuthenticationFilterForHospital IOexception: " + ex);
             throw new RuntimeException(); // to send back a 400 response instead of 403
         }
+
+        
     }
     
     

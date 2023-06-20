@@ -2,14 +2,17 @@ package sg.edu.nus.iss.server.repositories;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.iss.server.constants.SqlQueryConstant;
 import sg.edu.nus.iss.server.models.HospitalSg;
+
 
 @Repository
 public class HospitalSgRepository {
@@ -70,5 +73,19 @@ public class HospitalSgRepository {
             System.out.println("in update catch: " + ex);
             return false;
         }
+    }
+
+    public Optional<HospitalSg> findHospitalSgByEthAddress(String ethAddress){
+
+         try{
+
+            HospitalSg hosp = jdbcTemplate.queryForObject(SqlQueryConstant.FIND_HOSPITAL_SG_BY_ETH_ADDRESS, BeanPropertyRowMapper.newInstance(HospitalSg.class), ethAddress);
+            return Optional.of(hosp);
+
+        // catch exception if ethAddress not found or more than one entry found for the same eth Address
+        }catch(Exception ex){
+            return Optional.empty();
+        }
+
     }
 }

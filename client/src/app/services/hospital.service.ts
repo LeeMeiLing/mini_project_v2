@@ -1,5 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { lastValueFrom, tap } from 'rxjs';
+import { JwtCookieService } from './jwt-cookie.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -7,9 +9,10 @@ import { environment } from 'src/environments/environment';
 })
 export class HospitalService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient, private jwtCookieSvc: JwtCookieService) { }
 
   HOSPITAL_URL = environment.apiHospitalUrl;
+  token!: string | null;
 
   getHospitalList(name:string){
     
@@ -122,4 +125,30 @@ export class HospitalService {
 
     return this.http.post(`${this.HOSPITAL_URL}/${form.countryCode}/register/hospital`, form, { headers });
   }
+
+    /*
+    Log In
+    /POST /api/hospitals/authenticate
+    Content-Type: application/json
+    Accept: application/json
+  */
+    authenticate(form:any){
+      const headers = new HttpHeaders().set('Content-Type','application/json')
+                                       .set('Accept','application/json');
+      
+      return lastValueFrom(
+        this.http.post(this.HOSPITAL_URL + '/authenticate', form, { headers , observe: 'response' })
+                 .pipe(
+                    tap( 
+                      response => { this.token = response.headers.get('Authorization');
+                                    if(this.token){
+                                      this.jwtCookieSvc.setJwt(this.token)
+                                      console.log(this.jwtCookieSvc.getJwt()); // debug
+                                    }
+                                    
+                    })
+                 )
+      );                                                   
+  
+    }
 }

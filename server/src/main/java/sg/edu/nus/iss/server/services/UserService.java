@@ -1,15 +1,14 @@
 package sg.edu.nus.iss.server.services;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.web3j.crypto.CipherException;
 
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.User;
+import sg.edu.nus.iss.server.repositories.HospitalSgRepository;
 import sg.edu.nus.iss.server.repositories.UserRepository;
 
 @Service
@@ -17,6 +16,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private HospitalSgRepository hospSgRepo;
 
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     
@@ -42,11 +44,21 @@ public class UserService {
        if(user.isPresent()){
             return user.get();
        }else{
-            throw new RuntimeException(); // change to customed exception
+            throw new RuntimeException("Cannot find user with " + userEmail); 
        }
 
     }
 
+    // if autowired HospitalSgService to CustomAuthenticationManagerForHospital, will cause unresolvable circular reference
+    public HospitalSg findHospitalSgByEthAddress(String ethAddress){
+
+        Optional<HospitalSg> opt = hospSgRepo.findHospitalSgByEthAddress(ethAddress);
+
+        if(opt.isPresent()){
+            return opt.get();
+        }
+        throw new RuntimeException("Cannot find hospital with eth_address" + ethAddress);
+    }
 
    
 }

@@ -112,4 +112,6 @@ public class SqlQueryConstant {
     public static final String UPDATE_SG_HOSPITAL_CONTRACT_ADDRESS = "update sg_hospitals set contract_address = ? where facility_id = ?";
 
     public static final String FIND_MOH_ETH_ADDRESS = "select moh_eth_address from moh where country_code = ?";
+
+    public static final String FIND_HOSPITAL_SG_BY_ETH_ADDRESS = "select * from sg_hospitals where eth_address = ?";
 }
