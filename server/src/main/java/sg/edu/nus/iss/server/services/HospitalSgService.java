@@ -6,11 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.web3j.crypto.Keys;
 
+import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
+import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Statistic;
 import sg.edu.nus.iss.server.repositories.HospitalSgRepository;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForHospital;
 
 @Service
 public class HospitalSgService {
@@ -23,6 +28,9 @@ public class HospitalSgService {
 
     @Autowired
     private EthereumService ethSvc;
+
+    @Autowired
+    private CustomAuthenticationManagerForHospital customAuthenticationManagerForHospital;
     
     @Transactional(rollbackFor = RegisterHospitalFailedException.class)
     public void registerHospitalSg(HospitalSg hospital, String accountPassword) throws Exception {
@@ -56,6 +64,35 @@ public class HospitalSgService {
         if(!updated){
             throw new RegisterHospitalFailedException("failed to update contract address into sg_hospitals");
         }
+
+    }
+
+    public void updateStatistic(Statistic stat, String accountPassword) throws UpdateStatisticFailedException{
+
+        // get current user eth address
+        String ethAddress = customAuthenticationManagerForHospital.getCurrentUser();
+        byte[] keyStore = null;
+        String contractAddress = null; 
+        
+        // get contract address & keystore by eth address
+        Optional<HospitalSg> opt = hospSgRepo.findHospitalSgByEthAddress(ethAddress);
+
+        if(opt.isPresent()) {
+            HospitalSg hosp = opt.get();
+            keyStore = hosp.getEncryptedKeyStore();
+            contractAddress = hosp.getContractAddress();
+        }
+
+        try{
+            ethSvc.updateStatistic(stat, accountPassword, keyStore, contractAddress);
+            System.out.println(">>> In HospSgSvc, done updateing Stat");
+
+        }catch(Exception ex){
+            ex.printStackTrace();
+            throw new UpdateStatisticFailedException(ex.getMessage());
+
+        }
+
 
     }
 

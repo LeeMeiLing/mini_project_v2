@@ -10,6 +10,7 @@ import jakarta.json.JsonObject;
 import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
+import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
 
 @RestControllerAdvice
 public class ErrorController {
@@ -32,6 +33,15 @@ public class ErrorController {
 
     @ExceptionHandler(RegisterHospitalFailedException.class)
     public ResponseEntity<String> handleRegisterHospitalFailedException(RegisterHospitalFailedException ex){
+
+        JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(payload.toString());
+        
+    }
+
+    
+    @ExceptionHandler(UpdateStatisticFailedException.class)
+    public ResponseEntity<String> handleUpdateStatisticFailedException(UpdateStatisticFailedException ex){
 
         JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(payload.toString());

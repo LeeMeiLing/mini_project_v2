@@ -115,7 +115,7 @@ export class LoginComponent implements OnInit{
       const status = result.status
       console.log('sign in as hospital, status ', status) // debug
       
-      this.router.navigate(['/home']);
+      this.router.navigate(['/home/hospital']);
 
     }catch(err:any){
 

@@ -1,0 +1,20 @@
+<h2>Update Hospital Statistic</h2>
+<form [formGroup]="form" (ngSubmit)="updateStatistic()">
+    Mortality rate: <input type="number" formControlName="mortality">
+    <br>
+    Patient safety: <input type="number" formControlName="patientSafety">
+    <br>
+    Patient readmission rate: <input type="number" formControlName="readmission">
+    <br>
+    Patient experience: <input type="number" formControlName="patientExperience">
+    <br>
+    Effectiveness of care: <input type="number" formControlName="effectiveness">
+    <br>
+    Timeliness of care: <input type="number" formControlName="timeliness">
+    <br>
+    Efficient use of medical imaging: <input type="number" formControlName="medicalImagingEfficiency">
+    <br>
+    Password: <input type="password" [formControl]="accountPassword">
+    <br>
+    <button type="submit" [disabled]="form.invalid || accountPassword.invalid">Submit</button>
+</form>

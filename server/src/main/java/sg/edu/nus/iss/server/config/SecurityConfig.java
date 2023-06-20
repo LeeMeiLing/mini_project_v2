@@ -47,10 +47,10 @@ public class SecurityConfig {
     }
 
     @Autowired
-    private CustomAuthenticationManager customAuthenticationManager; // UserService
+    private CustomAuthenticationManager customAuthenticationManager; 
 
     @Autowired
-    private CustomAuthenticationManagerForHospital customAuthenticationManagerForHospital; //HospitalSgService
+    private CustomAuthenticationManagerForHospital customAuthenticationManagerForHospital; 
   
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

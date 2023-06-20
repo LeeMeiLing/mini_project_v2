@@ -126,29 +126,47 @@ export class HospitalService {
     return this.http.post(`${this.HOSPITAL_URL}/${form.countryCode}/register/hospital`, form, { headers });
   }
 
-    /*
+  /*
     Log In
     /POST /api/hospitals/authenticate
     Content-Type: application/json
     Accept: application/json
   */
-    authenticate(form:any){
-      const headers = new HttpHeaders().set('Content-Type','application/json')
-                                       .set('Accept','application/json');
-      
-      return lastValueFrom(
-        this.http.post(this.HOSPITAL_URL + '/authenticate', form, { headers , observe: 'response' })
-                 .pipe(
-                    tap( 
-                      response => { this.token = response.headers.get('Authorization');
-                                    if(this.token){
-                                      this.jwtCookieSvc.setJwt(this.token)
-                                      console.log(this.jwtCookieSvc.getJwt()); // debug
-                                    }
-                                    
-                    })
-                 )
-      );                                                   
-  
+  authenticate(form:any){
+    const headers = new HttpHeaders().set('Content-Type','application/json')
+                                      .set('Accept','application/json');
+    
+    return lastValueFrom(
+      this.http.post(this.HOSPITAL_URL + '/authenticate', form, { headers , observe: 'response' })
+                .pipe(
+                  tap( 
+                    response => { this.token = response.headers.get('Authorization');
+                                  if(this.token){
+                                    this.jwtCookieSvc.setJwt(this.token)
+                                    console.log(this.jwtCookieSvc.getJwt()); // debug
+                                  }
+                                  
+                  })
+                )
+    );                                                   
+
+  }
+
+  updateStatistic(form:any, password:string){
+
+    // POST /api/hospitals/hospital/{facilityId}/review
+    const headers = new HttpHeaders().set('Accept','application/json')
+    .set('Content-Type', 'application/json');
+
+    const payload = {
+      statistic: form,
+      accountPassword: password
     }
+
+    console.log(payload); // debug
+
+    return this.http.post(`${this.HOSPITAL_URL}/sg/statistic/update`, payload , { headers });
+  }
+
+
 }

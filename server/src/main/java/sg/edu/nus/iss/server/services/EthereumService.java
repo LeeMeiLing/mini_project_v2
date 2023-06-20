@@ -2,20 +2,25 @@ package sg.edu.nus.iss.server.services;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
+import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.StaticGasProvider;
 
 import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
+import sg.edu.nus.iss.server.models.Statistic;
 
 public class EthereumService {
 
@@ -98,6 +103,70 @@ public class EthereumService {
         return contract;
 
     }
+
+    public HospitalCredentials loadHospitalCredentialsContract(String contractAddress, Credentials credentials){
+
+        return HospitalCredentials.load(contractAddress, web3j, credentials,  new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)));
+    }
+
+    // read Penalty, use app's credential
+    public BigInteger getPenalty(String contractAddress) throws Exception{
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+        return contract.penalty().send();
+
+    }
+
+    public TransactionReceipt updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception {
+
+        // create credentials from keystore & password
+        File file = File.createTempFile("temp","txt");
+        FileWriter writer = new FileWriter(file);
+        
+        writer.write(new String(keyStore, StandardCharsets.UTF_8));
+        writer.close();
+        
+        Credentials credentials = WalletUtils.loadCredentials(accountPassword, file);
+        System.out.println(">>>>>> in eth svc, credentials acc: " + credentials.getAddress()); // debug
+
+        // load contract from contractAddress
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        // update stat into contract
+        return contract.updateStatistic(BigInteger.valueOf(stat.getMortality()), BigInteger.valueOf(stat.getPatientSafety()), 
+            BigInteger.valueOf(stat.getReadmission()), BigInteger.valueOf(stat.getPatientExperience()), 
+            BigInteger.valueOf(stat.getEffectiveness()), BigInteger.valueOf(stat.getTimeliness()), 
+            BigInteger.valueOf(stat.getMedicalImagingEfficiency()), getPenalty(contractAddress)).send();
+        // return contract.updateStatistic(floatToBigInteger(stat.getMortality()), floatToBigInteger(stat.getPatientSafety()), 
+        //     floatToBigInteger(stat.getReadmission()), floatToBigInteger(stat.getPatientExperience()), 
+        //     floatToBigInteger(stat.getEffectiveness()), floatToBigInteger(stat.getTimeliness()), 
+        //     floatToBigInteger(stat.getMedicalImagingEfficiency()), getPenalty(contractAddress)).send();
+        
+    }
+
+    // public BigInteger floatToBigInteger(float floatValue){
+
+    //     // Convert float to BigDecimal
+    //     BigDecimal decimalValue = BigDecimal.valueOf(floatValue);
+
+    //     // Multiply by a scale factor to maintain decimal places
+    //     BigDecimal scaledValue = decimalValue.multiply(BigDecimal.valueOf(100)); // Preserve only 2 decimal places
+
+    //     // Convert to BigInteger
+    //     return scaledValue.toBigInteger().clearBit(0)
+
+    // }
+
+    // public float bigIntegerToFloat(BigInteger bigIntValue){
+
+    //     BigDecimal scaledValue = new BigDecimal(bigIntValue);
+        
+    //     BigDecimal decimalValue = scaledValue.divide(BigDecimal.valueOf(100));
+
+    //     return decimalValue.floatValue();
+
+    // }
+
 
 
 

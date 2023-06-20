@@ -16,6 +16,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Statistic;
 import sg.edu.nus.iss.server.services.HospitalSgService;
 
 @CrossOrigin(origins="*")
@@ -38,5 +39,39 @@ public class HospitalSgController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
+
+    @PostMapping(path = "/statistic/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateStatistic(@RequestBody String payload) throws Exception{
+
+        JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
+        JsonObject jsonStat = jo.getJsonObject("statistic");
+
+        Statistic stat = new Statistic();
+        stat.setMortality(jsonStat.getInt("mortality"));
+        stat.setPatientSafety(jsonStat.getInt("patientSafety"));
+        stat.setReadmission(jsonStat.getInt("readmission"));
+        stat.setPatientExperience(jsonStat.getInt("patientExperience"));
+        stat.setEffectiveness(jsonStat.getInt("effectiveness"));
+        stat.setTimeliness(jsonStat.getInt("timeliness"));
+        stat.setMedicalImagingEfficiency(jsonStat.getInt("medicalImagingEfficiency"));
+        // stat.setMortality((float) jsonStat.getJsonNumber("mortality").doubleValue());
+        // stat.setPatientSafety((float) jsonStat.getJsonNumber("patientSafety").doubleValue());
+        // stat.setReadmission((float) jsonStat.getJsonNumber("readmission").doubleValue());
+        // stat.setPatientExperience((float) jsonStat.getJsonNumber("patientExperience").doubleValue());
+        // stat.setEffectiveness((float) jsonStat.getJsonNumber("effectiveness").doubleValue());
+        // stat.setTimeliness((float) jsonStat.getJsonNumber("timeliness").doubleValue());
+        // stat.setMedicalImagingEfficiency((float) jsonStat.getJsonNumber("medicalImagingEfficiency").doubleValue());
+
+        String accountPassword = jo.getString("accountPassword");
+
+        hospSgSvc.updateStatistic(stat,accountPassword);
+
+        System.out.println("in HospitalSg controller, done updateStatistic()");
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+    }
+
+    
 
 }

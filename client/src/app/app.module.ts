@@ -20,6 +20,8 @@ import { SearchHospitalComponent } from './components/search-hospital.component'
 import { HospitalReviewComponent } from './components/hospital-review.component';
 import { SignUpHospitalComponent } from './components/sign-up-hospital.component';
 import { SignUpMohComponent } from './components/sign-up-moh.component';
+import { HospitalHomeComponent } from './components/hospital-home.component';
+import { StatisticComponent } from './components/statistic.component';
 
 
 @NgModule({
@@ -32,7 +34,9 @@ import { SignUpMohComponent } from './components/sign-up-moh.component';
     SearchHospitalComponent,
     HospitalReviewComponent,
     SignUpHospitalComponent,
-    SignUpMohComponent
+    SignUpMohComponent,
+    HospitalHomeComponent,
+    StatisticComponent
   ],
   imports: [
     BrowserModule,
