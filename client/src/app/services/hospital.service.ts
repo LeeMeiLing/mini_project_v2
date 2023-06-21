@@ -12,6 +12,7 @@ export class HospitalService {
   constructor(private http:HttpClient, private jwtCookieSvc: JwtCookieService) { }
 
   HOSPITAL_URL = environment.apiHospitalUrl;
+  HOSPITAL_SG_URL = environment.apiHospitalSgUrl;
   token!: string | null;
 
   getHospitalList(name:string){
@@ -118,6 +119,8 @@ export class HospitalService {
     return this.http.post(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, payload , { headers });
   }
 
+  ////////////////////////////////////
+
   registerHospital(form:any){
 
     const headers = new HttpHeaders().set('Content-Type','application/json')
@@ -132,7 +135,7 @@ export class HospitalService {
     Content-Type: application/json
     Accept: application/json
   */
-  authenticate(form:any){
+  authenticateHospital(form:any){
     const headers = new HttpHeaders().set('Content-Type','application/json')
                                       .set('Accept','application/json');
     
@@ -152,6 +155,41 @@ export class HospitalService {
 
   }
 
+  /*
+    Log In
+    /POST /api/hospitals/authenticate/moh
+    Content-Type: application/json
+    Accept: application/json
+  */
+    authenticateMoh(form:any){
+      const headers = new HttpHeaders().set('Content-Type','application/json')
+                                        .set('Accept','application/json');
+      
+      return lastValueFrom(
+        this.http.post(this.HOSPITAL_URL + '/authenticate/moh', form, { headers , observe: 'response' })
+                  .pipe(
+                    tap( 
+                      response => { this.token = response.headers.get('Authorization');
+                                    if(this.token){
+                                      this.jwtCookieSvc.setJwt(this.token)
+                                      console.log(this.jwtCookieSvc.getJwt()); // debug
+                                    }
+                                    
+                    })
+                  )
+      );                                                   
+  
+    }
+
+  //////////////////////////////////////////////
+
+  // GET /api/hospitals/sg/hospital/{ethAddress}
+  getHospitalByEthAddress(ethAddress:string){
+    const headers = new HttpHeaders().set('Accept','application/json');
+
+    return this.http.get(`${this.HOSPITAL_SG_URL}/hospital/${ethAddress}`, { headers });
+  }
+
   updateStatistic(form:any, password:string){
 
     // POST /api/hospitals/sg/statistic/update
@@ -165,17 +203,28 @@ export class HospitalService {
 
     console.log(payload); // debug
 
-    return this.http.post(`${this.HOSPITAL_URL}/sg/statistic/update`, payload , { headers });
+    return this.http.post(`${this.HOSPITAL_SG_URL}/statistic/update`, payload , { headers });
   }
 
-  getStatistic(statIndex:number){
+  getStatistic(statIndex:number, facilityId?:string){
 
-    // GET /api/hospitals/sg/statistic/{statIndex}
+    // GET /api/hospitals/sg/statistic/{statIndex}?facilityId=
     const headers = new HttpHeaders().set('Accept','application/json');
 
-    return this.http.get(`${this.HOSPITAL_URL}/sg/statistic/${statIndex}`, { headers });
+    let params;
+
+    if(facilityId){
+      params = new HttpParams().set('facilityId', facilityId);
+    }
+
+    return this.http.get(`${this.HOSPITAL_SG_URL}/statistic/${statIndex}`, { headers, params });
 
   }
 
+  getMohList(){
+    const headers = new HttpHeaders().set('Accept','application/json');
+
+    return this.http.get(`${this.HOSPITAL_URL}/moh`, { headers });
+  }
 
 }

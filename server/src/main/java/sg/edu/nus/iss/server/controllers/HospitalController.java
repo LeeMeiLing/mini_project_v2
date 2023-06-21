@@ -27,12 +27,11 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonReader;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
-import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 import sg.edu.nus.iss.server.services.HospitalService;
 
 @CrossOrigin(origins="*")
@@ -201,6 +200,18 @@ public class HospitalController {
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
     }
+
+    @GetMapping(path="/moh", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getMohList(){
+
+        List<Moh> mohList = hospSvc.getMohList();
+
+        JsonArrayBuilder arrB = Json.createArrayBuilder();
+        mohList.stream().map(m -> m.toJson()).forEach(j -> arrB.add(j));
+
+        return ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
+    }
+
 
     // @PostMapping(path ={"/hospital/testaccount"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     // public ResponseEntity<String> testAccount(@RequestBody String payload) throws IOException, CipherException{

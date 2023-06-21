@@ -50,6 +50,8 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
+            System.out.println("error here !!!");
+            ex.printStackTrace();
             return false;
         }
 
@@ -89,6 +91,21 @@ public class HospitalSgRepository {
 
     }
 
+    public Optional<HospitalSg> findHospitalSgByFacilityId(String facilityId){
+
+         try{
+
+            HospitalSg hosp = jdbcTemplate.queryForObject(SqlQueryConstant.FIND_HOSPITAL_SG_BY_FACILITYID, BeanPropertyRowMapper.newInstance(HospitalSg.class), facilityId);
+            return Optional.of(hosp);
+
+        // catch exception if ethAddress not found or more than one entry found for the same eth Address
+        }catch(Exception ex){
+            return Optional.empty();
+        }
+
+    }
+
+
     public boolean updateStatistic(Integer ethStatIndex, String contractAddress){
 
          try{
@@ -103,16 +120,16 @@ public class HospitalSgRepository {
         
     }
 
-    public Optional<String> getContractAddressByStatisticIndex(Integer statIndex){
+    // public Optional<String> getContractAddressByStatisticIndex(Integer statIndex){
 
-        String contractAddress = null;
+    //     String contractAddress = null;
 
-        contractAddress = jdbcTemplate.queryForObject(SqlQueryConstant.GET_STATISTIC_CONTRACT_ADDRESS, String.class, statIndex);
+    //     contractAddress = jdbcTemplate.queryForObject(SqlQueryConstant.GET_STATISTIC_CONTRACT_ADDRESS, String.class, statIndex);
         
-        if(contractAddress != null){
-            return Optional.of(contractAddress);
-        }
+    //     if(contractAddress != null){
+    //         return Optional.of(contractAddress);
+    //     }
         
-        return Optional.empty();
-    }
+    //     return Optional.empty();
+    // }
 }

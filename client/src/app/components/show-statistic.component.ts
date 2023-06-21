@@ -14,6 +14,7 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
   param$!:Subscription;
   statIndex!: number;
   statistic!:Statistic;
+  dateUpdated!:Date;
 
   constructor(private activateRoute:ActivatedRoute, private hospSvc:HospitalService){}
 
@@ -36,6 +37,7 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
     this.hospSvc.getStatistic(this.statIndex).subscribe({
       next:(r:any)=>{
         this.statistic = r as Statistic;
+        this.timestampToDate();
       },
       error: (err)=>{
         console.error('error getStatistic: ', err);
@@ -44,6 +46,13 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
         console.log('complete getStatistic: ', this.statistic);
       }
     });
+
+  }
+
+  timestampToDate(){
+
+    // Convert Solidity timestamp to Date object
+    this.dateUpdated = new Date(parseInt(this.statistic['timestamp']) * 1000); // Multiply by 1000 to convert from seconds to milliseconds
 
   }
 

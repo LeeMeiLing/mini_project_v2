@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { JwtCookieService } from '../services/jwt-cookie.service';
 import { HospitalService } from '../services/hospital.service';
+import { HospitalSg, Moh } from '../models';
+import { Web3Service } from '../services/web3.service';
 
 @Component({
   selector: 'app-login',
@@ -20,9 +22,11 @@ export class LoginComponent implements OnInit{
   showUserForm:boolean = true;
   showHospitalForm!: boolean;
   showMohForm!: boolean;
+  mohList!: Moh[];
+  // facilityId!:string;
 
   constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService, 
-    private hospSvc:HospitalService, private jwtCookieSvc: JwtCookieService){}
+    private hospSvc:HospitalService, private jwtCookieSvc: JwtCookieService, private web3Svc:Web3Service){}
 
   ngOnInit(): void {
     console.log('>> in OnInit');
@@ -53,6 +57,18 @@ export class LoginComponent implements OnInit{
     if(this.form.value['signInMethod'] == 'moh'){
       this.showMohForm = true;
       this.mohForm = this.createMohForm();
+      this.hospSvc.getMohList().subscribe({
+        next: (r:any)=>{
+          this.mohList = r as Moh[];
+          console.log('mohList ', this.mohList)
+        },
+        error: (err)=>{
+          console.error(err)
+        },
+        complete: ()=>{
+          console.log('completed getMohList')
+        }
+      })
     }
   }
 
@@ -70,10 +86,10 @@ export class LoginComponent implements OnInit{
     });
   }
 
-  // TODO:
+ 
   createMohForm():FormGroup{
     return this.fb.group({
-      ethAddress:this.fb.control<string>('',[Validators.required, Validators.minLength(42), Validators.maxLength(42)]),
+      countryCode:this.fb.control<string>('',[Validators.required]),
       accountPassword:this.fb.control<string>('',[Validators.required])
     });
   }
@@ -105,16 +121,21 @@ export class LoginComponent implements OnInit{
 
   }
 
-  // TODO
   async signInAsHospital(){
-    
+
     try{
 
-      const result = await this.hospSvc.authenticate(this.hospitalForm.value);
+      const result = await this.hospSvc.authenticateHospital(this.hospitalForm.value);
       console.log('result: ', result) // debug
       const status = result.status
       console.log('sign in as hospital, status ', status) // debug
-      
+      // this.hospSvc.getHospitalByEthAddress(this.form.value['ethAddress']).subscribe({
+      //   next:(r:any)=>{
+      //     this.facilityId = r as HospitalSg['facilityId']
+      //     console.log('facilityId: ' + this.facilityId)
+      //   }
+      // });
+
       this.router.navigate(['/home/hospital']);
 
     }catch(err:any){
@@ -131,7 +152,61 @@ export class LoginComponent implements OnInit{
 
     }
 
-  
   }
+
+  async signInAsMoh(){
+
+    try{
+
+      const currentAccount =  await this.web3Svc.web3.eth.requestAccounts(); // all lower case
+      const currentAccountAddress= this.web3Svc.web3.utils.toChecksumAddress(currentAccount[0]); // convert to checksum form for comparison
+      
+      const selectedMoh = this.mohList.find(moh => moh.countryCode == this.mohForm.value['countryCode']);
+
+      if(currentAccountAddress === selectedMoh!['mohEthAddress']){
+        
+        console.log('address matched! '); // debug
+
+        try{
+
+          const authMohForm = {
+            mohEthAddress: currentAccountAddress,
+            accountPassword: this.mohForm.value['accountPassword']
+          }
+
+          const result = await this.hospSvc.authenticateMoh(authMohForm);
+          console.log('result: ', result) // debug
+          const status = result.status
+          console.log('sign in as moh, status ', status) // debug
+
+          this.router.navigate(['/home/moh',this.mohForm.value['countryCode']]);
+    
+        }catch(err:any){
+    
+          console.error(err); // err is a HttpErrorResponse
+          // display login error
+    
+          if(err.status == 400){ // wrong eth Address
+            alert(err.error)
+          }
+          if(err.status == 401){ // wrong account password
+            alert(err.error)
+          }
+    
+        }
+      }else{
+        alert('Please make sure you are currently connected using the correct account on MetaMask ');
+      }
+     
+    }catch(err){
+
+      alert(err);
+      console.error(err);
+
+    }
+
+  }
+
+  
 
 }

@@ -115,10 +115,15 @@ public class SqlQueryConstant {
 
     public static final String FIND_HOSPITAL_SG_BY_ETH_ADDRESS = "select * from sg_hospitals where eth_address = ?";
 
+    public static final String FIND_HOSPITAL_SG_BY_FACILITYID = "select * from sg_hospitals where facility_id = ?";
 
     // insert into statistics (eth_stat_index, hosp_contract_address, supporting_documents) values (?,?,?);
     public static final String INSERT_STATISTIC = "insert into statistics (eth_stat_index, hosp_contract_address) values (?,?)";
 
     public static final String GET_STATISTIC_CONTRACT_ADDRESS = "select hosp_contract_address from statistics where eth_stat_index = ? ";
+
+    public static final String GET_ALL_MOH = "select * from moh";
+
+    public static final String GET_MOH_BY_ETH_ADDRESS = "select * from moh where moh_eth_address = ?";
 
 }

@@ -7,7 +7,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 import sg.edu.nus.iss.server.models.User;
+import sg.edu.nus.iss.server.repositories.HospitalRepository;
 import sg.edu.nus.iss.server.repositories.HospitalSgRepository;
 import sg.edu.nus.iss.server.repositories.UserRepository;
 
@@ -19,6 +21,9 @@ public class UserService {
 
     @Autowired
     private HospitalSgRepository hospSgRepo;
+
+    @Autowired
+    private HospitalRepository hospRepo;
 
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     
@@ -60,5 +65,14 @@ public class UserService {
         throw new RuntimeException("Cannot find hospital with eth_address" + ethAddress);
     }
 
+    public Moh getMohByEthAddress(String mohEthAddress){
+
+         Optional<Moh> opt = hospRepo.getMohByEthAddress(mohEthAddress);
+
+        if(opt.isPresent()){
+            return opt.get();
+        }
+        throw new RuntimeException("Cannot find hospital with eth_address" + mohEthAddress);
+    }
    
 }

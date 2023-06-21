@@ -24,6 +24,7 @@ public class EthereumService {
 
     private Web3j web3j;
     private Credentials credentials;
+    private StaticGasProvider staticGasProvider;
 
     public EthereumService(String infuraUrl, String privateKey) {
 
@@ -35,6 +36,8 @@ public class EthereumService {
         System.out.println(">>> private Key " + privateKey); // debug
         credentials = Credentials.create(privateKey);
         System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
+
+        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(900000000),BigInteger.valueOf(3000000));
 
         // // @GANACHE
         // web3j = Web3j.build(new HttpService("http://localhost:8545"));
@@ -64,9 +67,7 @@ public class EthereumService {
 
         System.out.println(">>> credentials address " + credentials.getAddress());
 
-        EthHospitalReview contract = EthHospitalReview.deploy(web3j, credentials,
-                new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)))
-                .send();
+        EthHospitalReview contract = EthHospitalReview.deploy(web3j, credentials, staticGasProvider).send();
 
         System.out.println(">>> in eth svc, contract address: " + contract.getContractAddress()); //debug
         return contract;
@@ -76,7 +77,7 @@ public class EthereumService {
     // TODO: use MOH's credentials from front end to get contract
     public EthHospitalReview getEthHospitalReviewContract(String contractAddress){
 
-        EthHospitalReview contract = EthHospitalReview.load(contractAddress, web3j, credentials, new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)));
+        EthHospitalReview contract = EthHospitalReview.load(contractAddress, web3j, credentials, staticGasProvider);
         return contract;
 
     }
@@ -94,7 +95,7 @@ public class EthereumService {
 
         // deploy
         HospitalCredentials contract = HospitalCredentials.deploy(web3j, credentials, 
-            new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)), mohEthAddress, license).send();
+            staticGasProvider, mohEthAddress, license).send();
 
         System.out.println(">>> in eth svc, deployed Hosp Credentials contract address: " + contract.getContractAddress()); //debug
         
@@ -104,7 +105,7 @@ public class EthereumService {
 
     public HospitalCredentials loadHospitalCredentialsContract(String contractAddress, Credentials credentials){
 
-        return HospitalCredentials.load(contractAddress, web3j, credentials,  new StaticGasProvider(BigInteger.valueOf(875000000), BigInteger.valueOf(3000000)));
+        return HospitalCredentials.load(contractAddress, web3j, credentials,  staticGasProvider);
     }
 
     // read Penalty, use app's credential

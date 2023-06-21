@@ -1,1 +1,49 @@
-<p>show-statistic works!</p>
+<!-- Statistic of {{hospital}} -->
+<a [routerLink]="['/home/hospital']">Back to Home</a>
+
+<div *ngIf="statistic">
+    updated on {{dateUpdated | date: 'MMM d, y'}}
+
+    <table>
+        <tr>
+            <td>Mortality rate</td>
+            <td>{{statistic.mortality}}</td>
+        </tr>
+        <tr>
+            <td>Patient safety</td>
+            <td>{{statistic.patientSafety}}</td>
+        </tr>
+        <tr>
+            <td>Patient readmission rate</td>
+            <td>{{statistic.readmission}}</td>
+        </tr>
+        <tr>
+            <td>Patient experience</td>
+            <td>{{statistic.patientExperience}}</td>
+        </tr>
+        <tr>
+            <td>Effectiveness of care</td>
+            <td>{{statistic.effectiveness}}</td>
+        </tr>
+        <tr>
+            <td>Timeliness of care</td>
+            <td>{{statistic.timeliness}}</td>
+        </tr>
+        <tr>
+            <td>Efficient use of medical imaging</td>
+            <td>{{statistic.medicalImagingEfficiency}}</td>
+        </tr>
+        <tr>
+            <td>Timestamp</td>
+            <td>{{dateUpdated | date: 'MMM d, y'}}</td>
+        </tr>
+        <tr>
+            <td>Verified</td>
+            <td>
+                <span *ngIf="statistic.verified">yes</span>
+                <span *ngIf="!statistic.verified">no</span>
+            </td>
+        </tr>
+    </table>
+
+</div>

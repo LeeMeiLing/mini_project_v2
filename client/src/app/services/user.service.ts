@@ -56,25 +56,5 @@ export class UserService {
 
   }
 
-
-  // getKeyStorePassword() {
-
-  //   const headers = new HttpHeaders().set('Accept','application/json');
-
-  //   return this.http.get(this.USER_URL + '/getKeyStorePassword', {headers});
-
-  // }
-
-  // registerHospital(form:any){
-
-  //   const headers = new HttpHeaders().set('Content-Type','application/json')
-  //                                    .set('Accept','application/json');
-
-  //   return this.http.post(`${this.USER_URL}/register/healthcareprovider/${form.countryCode}`, form, { headers });
-  // }
-  
-
-
-
 }
 

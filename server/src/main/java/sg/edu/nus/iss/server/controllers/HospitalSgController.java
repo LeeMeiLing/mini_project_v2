@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
@@ -27,7 +28,7 @@ import sg.edu.nus.iss.server.services.HospitalSgService;
 public class HospitalSgController {
 
     @Autowired
-    private HospitalSgService hospSgSvc;;
+    private HospitalSgService hospSgSvc;
     
     @PostMapping(path = "/register/hospital", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> registerHospitalSg(@RequestBody String payload) throws Exception{
@@ -69,11 +70,11 @@ public class HospitalSgController {
 
     }
 
-    // GET /api/hospitals/sg/statistic/{statIndex}
+    // GET /api/hospitals/sg/statistic/{statIndex}?facilityId=123456
     @GetMapping(path = "/statistic/{statIndex}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getStatistic(@PathVariable int statIndex){
+    public ResponseEntity<String> getStatistic(@PathVariable int statIndex, @RequestParam(required = false) String facilityId){
         
-        Statistic stat = hospSgSvc.getStatistic(statIndex);
+        Statistic stat = hospSgSvc.getStatisticByFacilityIdAndStatIndex(facilityId, statIndex);
 
         return ResponseEntity.status(HttpStatus.OK).body(stat.toJson().toString());
     }

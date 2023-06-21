@@ -37,6 +37,7 @@ import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 import sg.edu.nus.iss.server.repositories.HospitalRepository;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 
@@ -428,6 +429,9 @@ public class HospitalService {
 
     }
 
-    
+    public List<Moh> getMohList(){
+        
+        return hospitalRepo.getMohList();
+    }
 
 }

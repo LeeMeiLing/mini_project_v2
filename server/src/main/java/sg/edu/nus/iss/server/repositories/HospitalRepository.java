@@ -8,101 +8,32 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import sg.edu.nus.iss.server.constants.Constant;
+import jakarta.json.JsonObject;
 import sg.edu.nus.iss.server.constants.SqlQueryConstant;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
-import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 
 @Repository
 public class HospitalRepository {
     
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    // private final Integer LIMIT = 20;
-
-    // private final String INSERT_HOSPITAL = """
-    //         insert into hospitals (facility_id, facility_name, address, city, state, zip_code, county_name,
-    //         phone_number, hospital_type, hospital_ownership, emergency_services, hospital_overall_rating ) 
-    //         values (?,?,?,?,?,?,?,?,?,?,?,?)
-    //     """;
-    
-    // private final String UPDATE_HOSPITAL = """
-    //     update hospitals set facility_name = ? , address = ? , city = ? , state = ? , zip_code = ? , 
-    //     county_name = ? , phone_number = ? , hospital_type = ? , hospital_ownership = ? , emergency_services = ? ,
-    //     hospital_overall_rating = ? where facility_id = ?
-    // """;
-
-    // private final String QUERY_ALL_STATES = """
-    //     select distinct state from hospitals order by state
-    // """;
-
-    // private final String QUERY_CITIES = """
-    //     select distinct city from hospitals where state = ? order by city
-    // """;
-
-
-    // private final String COUNT = "select count(*) ";
-    // private final String SELECT = "select * ";
-
-    // // GET /api/hospitals/search
-    // private final String QUERY_HOSPITALS_ALL = """
-    //     from hospitals 
-    // """;
-
-    // // GET /api/hospitals/search?name=name
-    // private final String QUERY_HOSPITALS_BY_NAME = """
-    //     from hospitals where facility_name like ? 
-    // """;
-
-    // // GET /api/hospitals/search/{state}
-    // private final String QUERY_HOSPITALS_BY_STATE = """
-    //     from hospitals where state = ? 
-    // """;
-
-    // // GET /api/hospitals/search/{state}?name=name
-    // private final String QUERY_HOSPITALS_BY_STATE_NAME = """
-    //     from hospitals where state = ? and facility_name like ? 
-    // """;
-
-    // // GET /api/hospitals/search/{state}/{city}
-    // private final String QUERY_HOSPITALS_BY_STATE_CITY = """
-    //     from hospitals where state = ? and city = ? 
-    // """;
-
-    // // GET /api/hospitals/search/{state}/{city}?name=name
-    // private final String QUERY_HOSPITALS_BY_STATE_CITY_NAME = """
-    //     from hospitals where state = ? and city = ? and facility_name like ? 
-    // """;
-
-    // private final String LIMIT_OFFSET = """
-    //     limit ? offset ?
-    // """;
-
-    // private final String SORT_ASC = """
-    //     and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating 
-    // """;
-
-    // private final String SORT_DESC = """
-    //     and hospital_overall_rating in ('1','2','3','4','5') order by hospital_overall_rating desc 
-    // """;
 
     public boolean insert(Hospital h){
         
@@ -701,45 +632,22 @@ public class HospitalRepository {
         return reviewSummary;
     }
     
-    // public boolean insertHospitalSg(HospitalSg h){
+    public List<Moh> getMohList(){
 
-    //     try{
-    //         jdbcTemplate.update(SqlQueryConstant.INSERT_SG_HOSPITAL, new PreparedStatementSetter() {
-
-    //             @Override
-    //             public void setValues(PreparedStatement ps) throws SQLException {
-    //                 ps.setString(1, h.getFacilityId());
-    //                 ps.setString(2, h.getFacilityName());
-    //                 ps.setString(3, h.getLicense());
-    //                 ps.setBoolean(4, h.isRegistered());
-    //                 ps.setBoolean(5, h.isJciAccredited());
-    //                 ps.setString(6,h.getAddress());
-    //                 ps.setString(7,h.getStreetName());
-    //                 ps.setString(8,h.getZipCode());
-    //                 ps.setString(9,h.getCountryCode());
-    //                 ps.setString(10,h.getPhoneNumber());
-    //                 ps.setString(11,h.getHospitalOwnership());
-    //                 ps.setString(12,h.getEmergencyServices());
-    //                 ps.setString(13,h.getEthAddress());
-    //                 ps.setString(14,h.getAccountPassword());
-    //                 ps.setBytes(15,h.getEncryptedKeyStore());
-                    
-    //             }
-                
-    //         });
-
-    //         return true;
+        return jdbcTemplate.query(SqlQueryConstant.GET_ALL_MOH, BeanPropertyRowMapper.newInstance(Moh.class));
+          
+    }
     
-    //     }catch(Exception ex){
-    //         return false;
-    //     }
+    public Optional<Moh> getMohByEthAddress(String mohEthAddress){
 
-    // }
+        try{
+            Moh moh = jdbcTemplate.queryForObject(SqlQueryConstant.GET_MOH_BY_ETH_ADDRESS, BeanPropertyRowMapper.newInstance(Moh.class), mohEthAddress);
 
+            return Optional.of(moh);
+        }catch(Exception ex){
+            return Optional.empty();
+        }
+          
+    }
 
-    // public String getMohAddress(String countryCode){
-
-    //     return null;
-    // }
-    
 }

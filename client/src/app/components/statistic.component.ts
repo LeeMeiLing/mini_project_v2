@@ -17,6 +17,7 @@ export class StatisticComponent implements OnInit{
   constructor(private fb:FormBuilder, private hospSvc:HospitalService, private router:Router){}
 
   ngOnInit(): void {
+
     this.form = this.createForm();
   }
 
@@ -24,13 +25,13 @@ export class StatisticComponent implements OnInit{
 
     return this.fb.group({ 
 
-      mortality: this.fb.control<number | undefined>( undefined ,[Validators.required]),
-      patientSafety: this.fb.control<number | undefined>( undefined ,[Validators.required]),
-      readmission: this.fb.control<number | undefined>( undefined ,[Validators.required]),
-      patientExperience: this.fb.control<number | undefined>( undefined ,[Validators.required]),
-      effectiveness: this.fb.control<number | undefined>( undefined ,[Validators.required]),
-      timeliness: this.fb.control<number | undefined>( undefined ,[Validators.required]),
-      medicalImagingEfficiency: this.fb.control<number | undefined>( undefined ,[Validators.required]),
+      mortality: this.fb.control<number | undefined>( undefined ,[Validators.required, Validators.min(0), Validators.max(100)]),
+      patientSafety: this.fb.control<number | undefined>( undefined ,[Validators.required, Validators.min(0), Validators.max(100)]),
+      readmission: this.fb.control<number | undefined>( undefined ,[Validators.required, Validators.min(0), Validators.max(100)]),
+      patientExperience: this.fb.control<number | undefined>( undefined ,[Validators.required, Validators.min(0), Validators.max(100)]),
+      effectiveness: this.fb.control<number | undefined>( undefined ,[Validators.required, Validators.min(0), Validators.max(100)]),
+      timeliness: this.fb.control<number | undefined>( undefined ,[Validators.required, Validators.min(0), Validators.max(100)]),
+      medicalImagingEfficiency: this.fb.control<number | undefined>( undefined ,[Validators.required, Validators.min(0), Validators.max(100)]),
 
     })
 

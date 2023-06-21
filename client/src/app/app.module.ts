@@ -19,11 +19,12 @@ import { HospitalComponent } from './components/hospital.component';
 import { SearchHospitalComponent } from './components/search-hospital.component';
 import { HospitalReviewComponent } from './components/hospital-review.component';
 import { SignUpHospitalComponent } from './components/sign-up-hospital.component';
-import { SignUpMohComponent } from './components/sign-up-moh.component';
 import { HospitalHomeComponent } from './components/hospital-home.component';
 import { StatisticComponent } from './components/statistic.component';
 import { ShowStatisticComponent } from './components/show-statistic.component';
 import { MohHomeComponent } from './components/moh-home.component';
+import { MohSgHomeComponent } from './components/moh-sg-home.component';
+import { MohUsHomeComponent } from './components/moh-us-home.component';
 
 
 @NgModule({
@@ -36,11 +37,12 @@ import { MohHomeComponent } from './components/moh-home.component';
     SearchHospitalComponent,
     HospitalReviewComponent,
     SignUpHospitalComponent,
-    SignUpMohComponent,
     HospitalHomeComponent,
     StatisticComponent,
     ShowStatisticComponent,
-    MohHomeComponent
+    MohHomeComponent,
+    MohSgHomeComponent,
+    MohUsHomeComponent
   ],
   imports: [
     BrowserModule,

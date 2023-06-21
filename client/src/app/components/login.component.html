@@ -37,12 +37,30 @@
         </table>
     </form>
 
+    <form [formGroup]="mohForm" (ngSubmit)="signInAsMoh()" *ngIf="showMohForm">
+        <table>
+            <tr>
+                Please make sure you are currently connected using the correct account on MetaMask
+            </tr>
+            <tr>
+                Country:
+                <select formControlName="countryCode">
+                    <option *ngFor="let moh of mohList" value="{{moh.countryCode}}">{{moh.countryName}}</option>
+                </select>
+            </tr>
+            <tr>
+                Password: <input type="password" formControlName="accountPassword">
+            </tr>
+            <tr>
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Sign In</button>
+            </tr>
+        </table>
+    </form>
+    
     <hr>
     <a [routerLink]="['/signup']">Sign Up As User</a>
     <br>
     <a [routerLink]="['/signupHospital']">Sign Up As Healthcare Provider</a>
-    <br>
-    <a [routerLink]="['/signupMOH']">Sign Up As MOH</a>
+
     
 </div>
-

@@ -114,17 +114,6 @@ export class SignUpHospitalComponent implements OnInit{
 
   }
 
-  // createFormMOH():FormGroup{
-  //   return this.fb.group({
-
-  //     updateFrequency:this.fb.control<string>('',[Validators.required]) ,
-  //     registered; // MOH to verify
-  //     jciAccredited; // MOH to verify
-  //     penalty; // MOH to set penalty rule
-
-  //   });
-  // }
-
   async register(){
 
     if(await this.privateKeyNotMatched()){

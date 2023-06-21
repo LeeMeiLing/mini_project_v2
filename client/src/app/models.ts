@@ -59,6 +59,25 @@ export interface ReviewSummary {
 
 }
 
+export interface HospitalSg{
+
+    facilityId: string; // to be assign UUID
+    facilityName: string;
+    license: string;
+    registered: boolean; // MOH to verify
+    jciAccredited: boolean; // MOH to verify
+    address: string; 
+    streetName: string;
+    zipCode: string;
+    countryCode: string; // drop down option
+    phoneNumber: string;
+    hospitalOwnership: string; 
+    emergencyServices: string; // yes or no
+    ethAddress: string; // get from metamask
+    contractAddress: string; // to be assign
+
+}
+
 export interface Statistic {
 
     mortality: number;
@@ -71,4 +90,10 @@ export interface Statistic {
     timestamp: string; 
     verified: boolean;
 
+}
+
+export interface Moh {
+    countryCode: string,
+    countryName: string,
+    mohEthAddress: string
 }

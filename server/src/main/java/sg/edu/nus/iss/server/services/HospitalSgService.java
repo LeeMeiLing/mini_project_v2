@@ -117,19 +117,53 @@ public class HospitalSgService {
 
     }
 
-    public Statistic getStatistic(Integer statIndex){
+    // public Statistic getStatistic(Integer statIndex){
 
-        // get contract address by statIndex
-        Optional<String> opt = hospSgRepo.getContractAddressByStatisticIndex(statIndex);
+    //     // get contract address by statIndex
+    //     Optional<String> opt = hospSgRepo.getContractAddressByStatisticIndex(statIndex);
+
+    //     String contractAddress = null;
+
+    //     if(opt.isPresent()){
+    //         contractAddress = opt.get();
+    //     }
+
+    //     if(contractAddress == null){
+    //         throw new ResultNotFoundException("contractAddress");
+    //     }
+
+    //     try{
+    //         // get statistic from contract
+    //         Statistic stat = ethSvc.getStatistic(contractAddress, statIndex);
+    //         return stat;
+
+    //     }catch(Exception ex){
+    //         throw new ResultNotFoundException("statistic " + statIndex );
+
+    //     }
+
+    // }
+
+     public Statistic getStatisticByFacilityIdAndStatIndex(String facilityId,Integer statIndex){
+
+        // if facilityId == null, get facilityId from current user
+        if(facilityId == null){
+            String ethAddress = customAuthenticationManagerForHospital.getCurrentUser();
+            facilityId = hospSgRepo.findHospitalSgByEthAddress(ethAddress).get().getFacilityId();
+        }
+
+        // get contract address by facilityId
+        Optional<HospitalSg> opt = hospSgRepo.findHospitalSgByFacilityId(facilityId);
 
         String contractAddress = null;
 
         if(opt.isPresent()){
-            contractAddress = opt.get();
+            HospitalSg hosp = opt.get();
+            contractAddress = hosp.getContractAddress();
         }
-
+        
         if(contractAddress == null){
-            throw new ResultNotFoundException("contractAddress");
+            throw new ResultNotFoundException("facilityId " + facilityId);
         }
 
         try{
@@ -143,5 +177,7 @@ public class HospitalSgService {
         }
 
     }
+
+
 
 }

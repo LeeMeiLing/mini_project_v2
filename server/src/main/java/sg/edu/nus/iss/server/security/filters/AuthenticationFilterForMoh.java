@@ -17,8 +17,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 
-public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticationFilter{
+public class AuthenticationFilterForMoh extends UsernamePasswordAuthenticationFilter{
 
     private String secretKey;
 
@@ -34,19 +35,19 @@ public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticat
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
-        System.out.println(">>> in attemptauthentication() of AuthenticationFilterForHospital "); // debug
+        System.out.println(">>> in attemptauthentication() of AuthenticationFilterForMoh "); // debug
         
         try{
 
-            HospitalSg hospitalSg = new ObjectMapper().readValue(request.getInputStream(), HospitalSg.class);
-            System.out.println(">>> In Authentication Filter attemptAuthentication(), " + hospitalSg.getEthAddress()); // debug
-            Authentication authentication = new UsernamePasswordAuthenticationToken(hospitalSg.getEthAddress(), hospitalSg.getAccountPassword());
+            Moh moh = new ObjectMapper().readValue(request.getInputStream(), Moh.class);
+            System.out.println(">>> In Authentication Filter attemptAuthentication(), " + moh.getMohEthAddress()); // debug
+            Authentication authentication = new UsernamePasswordAuthenticationToken(moh.getMohEthAddress(), moh.getAccountPassword());
             System.out.println(">>> current authentication manager is: " + this.getAuthenticationManager().getClass());
             return this.getAuthenticationManager().authenticate(authentication);
         
         }catch(IOException ex){
 
-            System.out.println("catch AuthenticationFilterForHospital IOexception: " + ex);
+            System.out.println("catch AuthenticationFilterForMoh IOexception: " + ex);
             throw new RuntimeException(); // to send back a 400 response instead of 403
 
         }
@@ -83,3 +84,4 @@ public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticat
 
     
 }
+
