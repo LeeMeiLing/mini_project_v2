@@ -2,6 +2,7 @@ package sg.edu.nus.iss.server.services;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
@@ -130,18 +131,13 @@ public class EthereumService {
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
 
         // update stat into contract
-        contract.updateStatistic(BigInteger.valueOf(stat.getMortality()), BigInteger.valueOf(stat.getPatientSafety()), 
-            BigInteger.valueOf(stat.getReadmission()), BigInteger.valueOf(stat.getPatientExperience()), 
-            BigInteger.valueOf(stat.getEffectiveness()), BigInteger.valueOf(stat.getTimeliness()), 
-            BigInteger.valueOf(stat.getMedicalImagingEfficiency()), getPenalty(contractAddress)).send();
+         contract.updateStatistic(doubleToBigInteger(stat.getMortality()), doubleToBigInteger(stat.getPatientSafety()), 
+            doubleToBigInteger(stat.getReadmission()), doubleToBigInteger(stat.getPatientExperience()), 
+            doubleToBigInteger(stat.getEffectiveness()), doubleToBigInteger(stat.getTimeliness()), 
+            doubleToBigInteger(stat.getMedicalImagingEfficiency()), getPenalty(contractAddress)).send();
 
         // get statistic index and return
         return contract.getStatisticsSize().send().subtract(BigInteger.ONE);
-
-        // return contract.updateStatistic(floatToBigInteger(stat.getMortality()), floatToBigInteger(stat.getPatientSafety()), 
-        //     floatToBigInteger(stat.getReadmission()), floatToBigInteger(stat.getPatientExperience()), 
-        //     floatToBigInteger(stat.getEffectiveness()), floatToBigInteger(stat.getTimeliness()), 
-        //     floatToBigInteger(stat.getMedicalImagingEfficiency()), getPenalty(contractAddress)).send();
         
     }
 
@@ -151,40 +147,35 @@ public class EthereumService {
 
         Tuple9<BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, Boolean>  result = 
             contract.statistics(BigInteger.valueOf(statIndex)).send();
-
-        Statistic stat = new Statistic(result.component1().intValue(), result.component2().intValue(), result.component3().intValue(),
-           result.component4().intValue(), result.component5().intValue(), result.component6().intValue(),
-           result.component7().intValue(), result.component8().toString(), result.component9());
         
+        Statistic stat = new Statistic(bigIntegerToDouble(result.component1()), bigIntegerToDouble(result.component2()), bigIntegerToDouble(result.component3()),
+           bigIntegerToDouble(result.component4()), bigIntegerToDouble(result.component5()), bigIntegerToDouble(result.component6()),
+           bigIntegerToDouble(result.component7()), result.component8().toString(), result.component9());
+     
         return stat;
     }
 
+     public BigInteger doubleToBigInteger(Double doubleValue){
 
-    // public BigInteger floatToBigInteger(float floatValue){
+        // Convert double to BigDecimal
+        BigDecimal decimalValue = BigDecimal.valueOf(doubleValue);
 
-    //     // Convert float to BigDecimal
-    //     BigDecimal decimalValue = BigDecimal.valueOf(floatValue);
+        // Multiply by a scale factor to maintain decimal places
+        BigDecimal scaledValue = decimalValue.multiply(BigDecimal.valueOf(100)); // Preserve only 2 decimal places
 
-    //     // Multiply by a scale factor to maintain decimal places
-    //     BigDecimal scaledValue = decimalValue.multiply(BigDecimal.valueOf(100)); // Preserve only 2 decimal places
+        // Convert to BigInteger
+        return scaledValue.toBigInteger();
 
-    //     // Convert to BigInteger
-    //     return scaledValue.toBigInteger().clearBit(0)
+    }
 
-    // }
+     public Double bigIntegerToDouble(BigInteger bigIntValue){
 
-    // public float bigIntegerToFloat(BigInteger bigIntValue){
-
-    //     BigDecimal scaledValue = new BigDecimal(bigIntValue);
+        BigDecimal scaledValue = new BigDecimal(bigIntValue);
         
-    //     BigDecimal decimalValue = scaledValue.divide(BigDecimal.valueOf(100));
+        BigDecimal decimalValue = scaledValue.divide(BigDecimal.valueOf(100));
 
-    //     return decimalValue.floatValue();
+        return decimalValue.doubleValue();
 
-    // }
-
-
-
-
+    }
 
 }

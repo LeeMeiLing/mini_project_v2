@@ -5,21 +5,21 @@ import jakarta.json.JsonObject;
 
 public class Statistic {
 
-    private Integer mortality;
-    private Integer  patientSafety;
-    private Integer  readmission;
-    private Integer  patientExperience;
-    private Integer  effectiveness;
-    private Integer  timeliness;
-    private Integer  medicalImagingEfficiency;
+    private Double mortality;
+    private Double  patientSafety;
+    private Double  readmission;
+    private Double  patientExperience;
+    private Double  effectiveness;
+    private Double  timeliness;
+    private Double  medicalImagingEfficiency;
     private String timestamp; // created on chain
     private boolean verified;
     
     public Statistic() {
     }
 
-    public Statistic(Integer mortality, Integer patientSafety, Integer readmission, Integer patientExperience,
-            Integer effectiveness, Integer timeliness, Integer medicalImagingEfficiency, String timestamp,
+    public Statistic(Double mortality, Double patientSafety, Double readmission, Double patientExperience,
+            Double effectiveness, Double timeliness, Double medicalImagingEfficiency, String timestamp,
             boolean verified) {
         this.mortality = mortality;
         this.patientSafety = patientSafety;
@@ -31,47 +31,46 @@ public class Statistic {
         this.timestamp = timestamp;
         this.verified = verified;
     }
-
-    public Integer getMortality() {
+     public Double getMortality() {
         return mortality;
     }
-    public void setMortality(Integer mortality) {
+    public void setMortality(Double mortality) {
         this.mortality = mortality;
     }
-    public Integer getPatientSafety() {
+    public Double getPatientSafety() {
         return patientSafety;
     }
-    public void setPatientSafety(Integer patientSafety) {
+    public void setPatientSafety(Double patientSafety) {
         this.patientSafety = patientSafety;
     }
-    public Integer getReadmission() {
+    public Double getReadmission() {
         return readmission;
     }
-    public void setReadmission(Integer readmission) {
+    public void setReadmission(Double readmission) {
         this.readmission = readmission;
     }
-    public Integer getPatientExperience() {
+    public Double getPatientExperience() {
         return patientExperience;
     }
-    public void setPatientExperience(Integer patientExperience) {
+    public void setPatientExperience(Double patientExperience) {
         this.patientExperience = patientExperience;
     }
-    public Integer getEffectiveness() {
+    public Double getEffectiveness() {
         return effectiveness;
     }
-    public void setEffectiveness(Integer effectiveness) {
+    public void setEffectiveness(Double effectiveness) {
         this.effectiveness = effectiveness;
     }
-    public Integer getTimeliness() {
+    public Double getTimeliness() {
         return timeliness;
     }
-    public void setTimeliness(Integer timeliness) {
+    public void setTimeliness(Double timeliness) {
         this.timeliness = timeliness;
     }
-    public Integer getMedicalImagingEfficiency() {
+    public Double getMedicalImagingEfficiency() {
         return medicalImagingEfficiency;
     }
-    public void setMedicalImagingEfficiency(Integer medicalImagingEfficiency) {
+    public void setMedicalImagingEfficiency(Double medicalImagingEfficiency) {
         this.medicalImagingEfficiency = medicalImagingEfficiency;
     }
     public String getTimestamp() {
@@ -110,4 +109,6 @@ public class Statistic {
                 .build();
     }
 
+   
+    
 }
