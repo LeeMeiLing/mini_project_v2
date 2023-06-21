@@ -2,20 +2,17 @@ package sg.edu.nus.iss.server.services;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
-import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tuples.generated.Tuple9;
 import org.web3j.tx.gas.StaticGasProvider;
 
 import sg.edu.nus.iss.server.models.EthHospitalReview;
@@ -117,7 +114,7 @@ public class EthereumService {
 
     }
 
-    public TransactionReceipt updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception {
+    public BigInteger updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception {
 
         // create credentials from keystore & password
         File file = File.createTempFile("temp","txt");
@@ -133,16 +130,35 @@ public class EthereumService {
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
 
         // update stat into contract
-        return contract.updateStatistic(BigInteger.valueOf(stat.getMortality()), BigInteger.valueOf(stat.getPatientSafety()), 
+        contract.updateStatistic(BigInteger.valueOf(stat.getMortality()), BigInteger.valueOf(stat.getPatientSafety()), 
             BigInteger.valueOf(stat.getReadmission()), BigInteger.valueOf(stat.getPatientExperience()), 
             BigInteger.valueOf(stat.getEffectiveness()), BigInteger.valueOf(stat.getTimeliness()), 
             BigInteger.valueOf(stat.getMedicalImagingEfficiency()), getPenalty(contractAddress)).send();
+
+        // get statistic index and return
+        return contract.getStatisticsSize().send().subtract(BigInteger.ONE);
+
         // return contract.updateStatistic(floatToBigInteger(stat.getMortality()), floatToBigInteger(stat.getPatientSafety()), 
         //     floatToBigInteger(stat.getReadmission()), floatToBigInteger(stat.getPatientExperience()), 
         //     floatToBigInteger(stat.getEffectiveness()), floatToBigInteger(stat.getTimeliness()), 
         //     floatToBigInteger(stat.getMedicalImagingEfficiency()), getPenalty(contractAddress)).send();
         
     }
+
+    public Statistic getStatistic(String contractAddress, Integer statIndex) throws Exception{
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        Tuple9<BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, Boolean>  result = 
+            contract.statistics(BigInteger.valueOf(statIndex)).send();
+
+        Statistic stat = new Statistic(result.component1().intValue(), result.component2().intValue(), result.component3().intValue(),
+           result.component4().intValue(), result.component5().intValue(), result.component6().intValue(),
+           result.component7().intValue(), result.component8().toString(), result.component9());
+        
+        return stat;
+    }
+
 
     // public BigInteger floatToBigInteger(float floatValue){
 

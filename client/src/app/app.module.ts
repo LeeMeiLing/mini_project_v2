@@ -22,6 +22,8 @@ import { SignUpHospitalComponent } from './components/sign-up-hospital.component
 import { SignUpMohComponent } from './components/sign-up-moh.component';
 import { HospitalHomeComponent } from './components/hospital-home.component';
 import { StatisticComponent } from './components/statistic.component';
+import { ShowStatisticComponent } from './components/show-statistic.component';
+import { MohHomeComponent } from './components/moh-home.component';
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import { StatisticComponent } from './components/statistic.component';
     SignUpHospitalComponent,
     SignUpMohComponent,
     HospitalHomeComponent,
-    StatisticComponent
+    StatisticComponent,
+    ShowStatisticComponent,
+    MohHomeComponent
   ],
   imports: [
     BrowserModule,

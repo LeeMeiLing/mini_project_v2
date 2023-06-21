@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,13 +66,26 @@ public class HospitalSgController {
 
         String accountPassword = jo.getString("accountPassword");
 
-        hospSgSvc.updateStatistic(stat,accountPassword);
+        Integer statIndex = hospSgSvc.updateStatistic(stat,accountPassword);
 
         System.out.println("in HospitalSg controller, done updateStatistic()");
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        JsonObject result = Json.createObjectBuilder().add("statIndex", statIndex).build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result.toString());
 
     }
+
+    // GET /api/hospitals/sg/statistic/{statIndex}
+    @GetMapping(path = "/statistic/{statIndex}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getStatistic(@PathVariable int statIndex){
+        
+        Statistic stat = hospSgSvc.getStatistic(statIndex);
+
+        return ResponseEntity.status(HttpStatus.OK).body(stat.toJson().toString());
+    }
+
+
 
     
 

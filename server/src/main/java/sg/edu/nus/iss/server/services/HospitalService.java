@@ -391,7 +391,7 @@ public class HospitalService {
             System.out.println(
                     "contract.reviews(0):" + contract.reviews(new BigInteger(String.valueOf(0))).send().component6());
 
-            // check if comments has been amended , FOR USE DURING READ REVIEW
+            // TODO: check if comments has been amended , FOR USE DURING READ REVIEW
             if (no.equals(contract.reviews(new BigInteger(String.valueOf(0))).send().component6())) {
                 System.out.println("Is match: !!!");
             }

@@ -1,5 +1,6 @@
 package sg.edu.nus.iss.server.services;
 
+import java.math.BigInteger;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.web3j.crypto.Keys;
 
 import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
+import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalSg;
@@ -22,9 +24,6 @@ public class HospitalSgService {
 
     @Autowired
     private HospitalSgRepository hospSgRepo;
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
     private EthereumService ethSvc;
@@ -67,7 +66,8 @@ public class HospitalSgService {
 
     }
 
-    public void updateStatistic(Statistic stat, String accountPassword) throws UpdateStatisticFailedException{
+    @Transactional(rollbackFor = UpdateStatisticFailedException.class)
+    public Integer updateStatistic(Statistic stat, String accountPassword) throws UpdateStatisticFailedException{
 
         // get current user eth address
         String ethAddress = customAuthenticationManagerForHospital.getCurrentUser();
@@ -81,11 +81,33 @@ public class HospitalSgService {
             HospitalSg hosp = opt.get();
             keyStore = hosp.getEncryptedKeyStore();
             contractAddress = hosp.getContractAddress();
+        }else{
+            throw new UpdateStatisticFailedException("hospitalSg not found for eth Address: " + ethAddress);
+        }
+
+        if(keyStore == null){
+            throw new UpdateStatisticFailedException("keyStore not found for eth Address " + ethAddress);
+
+        }
+
+        if(contractAddress == null){
+            throw new UpdateStatisticFailedException("contract address not found for eth Address " + ethAddress);
+
         }
 
         try{
-            ethSvc.updateStatistic(stat, accountPassword, keyStore, contractAddress);
-            System.out.println(">>> In HospSgSvc, done updateing Stat");
+            // update contract
+            BigInteger index = ethSvc.updateStatistic(stat, accountPassword, keyStore, contractAddress);
+            System.out.println(">>> In HospSgSvc, done updating Eth Stat");
+
+            // update MySQL
+            boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); // TODO: supporting doc
+
+            if(!inserted){
+                throw new UpdateStatisticFailedException("Failed to update statistic in MySQL");
+            }
+
+            return index.intValue();
 
         }catch(Exception ex){
             ex.printStackTrace();
@@ -93,6 +115,32 @@ public class HospitalSgService {
 
         }
 
+    }
+
+    public Statistic getStatistic(Integer statIndex){
+
+        // get contract address by statIndex
+        Optional<String> opt = hospSgRepo.getContractAddressByStatisticIndex(statIndex);
+
+        String contractAddress = null;
+
+        if(opt.isPresent()){
+            contractAddress = opt.get();
+        }
+
+        if(contractAddress == null){
+            throw new ResultNotFoundException("contractAddress");
+        }
+
+        try{
+            // get statistic from contract
+            Statistic stat = ethSvc.getStatistic(contractAddress, statIndex);
+            return stat;
+
+        }catch(Exception ex){
+            throw new ResultNotFoundException("statistic " + statIndex );
+
+        }
 
     }
 

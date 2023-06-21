@@ -10,6 +10,7 @@ import { SignUpHospitalComponent } from './components/sign-up-hospital.component
 import { SignUpMohComponent } from './components/sign-up-moh.component';
 import { HospitalHomeComponent } from './components/hospital-home.component';
 import { StatisticComponent } from './components/statistic.component';
+import { ShowStatisticComponent } from './components/show-statistic.component';
 
 const routes: Routes = [
   { path:'', component:LoginComponent},
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path:'hospital/:facilityId',component:HospitalComponent},
   { path:'reviewHospital/:facilityId',component:HospitalReviewComponent},
   { path:'statistic',component:StatisticComponent},
+  { path:'statistic/:statIndex',component:ShowStatisticComponent},
   { path:'**', redirectTo:'/', pathMatch:'full'}
 ];
 

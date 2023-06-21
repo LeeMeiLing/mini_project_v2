@@ -1,5 +1,8 @@
 package sg.edu.nus.iss.server.models;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+
 public class Statistic {
 
     private Integer mortality;
@@ -12,7 +15,23 @@ public class Statistic {
     private String timestamp; // created on chain
     private boolean verified;
     
-    
+    public Statistic() {
+    }
+
+    public Statistic(Integer mortality, Integer patientSafety, Integer readmission, Integer patientExperience,
+            Integer effectiveness, Integer timeliness, Integer medicalImagingEfficiency, String timestamp,
+            boolean verified) {
+        this.mortality = mortality;
+        this.patientSafety = patientSafety;
+        this.readmission = readmission;
+        this.patientExperience = patientExperience;
+        this.effectiveness = effectiveness;
+        this.timeliness = timeliness;
+        this.medicalImagingEfficiency = medicalImagingEfficiency;
+        this.timestamp = timestamp;
+        this.verified = verified;
+    }
+
     public Integer getMortality() {
         return mortality;
     }
@@ -76,6 +95,19 @@ public class Statistic {
                 + ", verified=" + verified + "]";
     }
 
-    
+    public JsonObject toJson(){
+
+        return Json.createObjectBuilder()
+                .add("mortality", mortality)
+                .add("patientSafety", patientSafety)
+                .add("readmission", readmission)
+                .add("patientExperience", patientExperience)
+                .add("effectiveness", effectiveness)
+                .add("timeliness", timeliness)
+                .add("medicalImagingEfficiency", medicalImagingEfficiency)
+                .add("timestamp", timestamp)
+                .add("verified", verified)
+                .build();
+    }
 
 }

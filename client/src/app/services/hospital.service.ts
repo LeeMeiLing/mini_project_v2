@@ -154,7 +154,7 @@ export class HospitalService {
 
   updateStatistic(form:any, password:string){
 
-    // POST /api/hospitals/hospital/{facilityId}/review
+    // POST /api/hospitals/sg/statistic/update
     const headers = new HttpHeaders().set('Accept','application/json')
     .set('Content-Type', 'application/json');
 
@@ -166,6 +166,15 @@ export class HospitalService {
     console.log(payload); // debug
 
     return this.http.post(`${this.HOSPITAL_URL}/sg/statistic/update`, payload , { headers });
+  }
+
+  getStatistic(statIndex:number){
+
+    // GET /api/hospitals/sg/statistic/{statIndex}
+    const headers = new HttpHeaders().set('Accept','application/json');
+
+    return this.http.get(`${this.HOSPITAL_URL}/sg/statistic/${statIndex}`, { headers });
+
   }
 
 

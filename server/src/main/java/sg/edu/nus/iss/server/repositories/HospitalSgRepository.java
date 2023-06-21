@@ -88,4 +88,31 @@ public class HospitalSgRepository {
         }
 
     }
+
+    public boolean updateStatistic(Integer ethStatIndex, String contractAddress){
+
+         try{
+            
+            jdbcTemplate.update(SqlQueryConstant.INSERT_STATISTIC, ethStatIndex, contractAddress);
+            return true;
+    
+        }catch(Exception ex){
+
+            return false;
+        }
+        
+    }
+
+    public Optional<String> getContractAddressByStatisticIndex(Integer statIndex){
+
+        String contractAddress = null;
+
+        contractAddress = jdbcTemplate.queryForObject(SqlQueryConstant.GET_STATISTIC_CONTRACT_ADDRESS, String.class, statIndex);
+        
+        if(contractAddress != null){
+            return Optional.of(contractAddress);
+        }
+        
+        return Optional.empty();
+    }
 }
