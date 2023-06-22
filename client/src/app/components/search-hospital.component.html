@@ -1,10 +1,36 @@
 <div>
     <a [routerLink]="['/home']">Back to Home</a>
     <h2>Find A Hospital</h2>
-    <form [formGroup]="form" (ngSubmit)="searchHospitals()">
+
+    
+    <form [formGroup]="countryCodeForm">
+        Country:
+        <select formControlName="countryCode" (ngModelChange)="onCountryCodeChange()">
+            <option *ngFor="let moh of mohList" value="{{moh.countryCode}}">{{moh.countryName}}</option>
+        </select>
+    </form>
+    
+    <form [formGroup]="form" (ngSubmit)="searchSgHospitals()" *ngIf="showSgForm">
+
+        Location: 
+        <select formControlName="city">
+            <option value="">--All Cities--</option>
+            <option *ngFor="let city of cities" value="{{city}}">{{city}}</option>
+        </select>
+    
+        <input type="text" formControlName="hospitalName" placeholder="Enter Hospital Name">
+
+    <button mat-raised-button color="primary" type="submit">Search</button>
+    <button type="button" (click)="sort()" [disabled]="disableSort">
+        Sort by Rating <span *ngIf="descending">v</span>&nbsp;
+        <button type="button" (click)="undoSort()"><span *ngIf="disableSort">o</span><span *ngIf="!disableSort">x</span></button>
+    </button>
+    </form>
+
+    <form [formGroup]="form" (ngSubmit)="searchUsHospitals()" *ngIf="showUsForm">
 
             Location: 
-            <select formControlName="state" (ngModelChange)="onChange()" >
+            <select formControlName="state" (ngModelChange)="onStateChange()" >
                 <option value="">--All States--</option>
                 <option *ngFor="let state of states" value="{{state}}">{{state}}</option>
             </select>

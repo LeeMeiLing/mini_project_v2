@@ -68,7 +68,7 @@ export class LoginComponent implements OnInit{
         complete: ()=>{
           console.log('completed getMohList')
         }
-      })
+      });
     }
   }
 

@@ -19,10 +19,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import jakarta.json.JsonObject;
 import sg.edu.nus.iss.server.constants.SqlQueryConstant;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
@@ -134,6 +132,8 @@ public class HospitalRepository {
         else if(!sortByRating){
             queryString =  SqlQueryConstant.QUERY_HOSPITALS_ALL;
         }
+
+        System.out.println("queryString: " + queryString);
         
         return queryHospitals(queryString, ps, false, false);
 
@@ -241,11 +241,11 @@ public class HospitalRepository {
         String finalQueryString = null;
 
         if(sortByRating && descending){
-            finalQueryString = SqlQueryConstant.SELECT + queryString + SqlQueryConstant.SORT_DESC + SqlQueryConstant.LIMIT_OFFSET;
+            finalQueryString = SqlQueryConstant.SELECT + queryString + "and " +SqlQueryConstant.SORT_DESC + SqlQueryConstant.LIMIT_OFFSET;
         }
 
         else if(sortByRating && !descending){
-            finalQueryString = SqlQueryConstant.SELECT + queryString + SqlQueryConstant.SORT_ASC + SqlQueryConstant.LIMIT_OFFSET;
+            finalQueryString = SqlQueryConstant.SELECT + queryString + "and " + SqlQueryConstant.SORT_ASC + SqlQueryConstant.LIMIT_OFFSET;
         }
 
         else if(!sortByRating){
@@ -253,6 +253,9 @@ public class HospitalRepository {
         }
 
         try{
+
+            System.out.println("final queryString: " + finalQueryString);
+
             List<Hospital> hospitals = jdbcTemplate.query(finalQueryString, ps, BeanPropertyRowMapper.newInstance(Hospital.class));
             if(!hospitals.isEmpty()){
                 System.out.println(" in queryHospitals: " + hospitals);
