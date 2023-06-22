@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-
+import jwt_decode from "jwt-decode";
+import { decodedToken } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +24,9 @@ export class JwtCookieService {
     this.cookieService.delete(this.jwtCookieName);
   }
 
-  public decodeToken(token:string):string{
+  public decodeToken(token:string):decodedToken{
 
-    return '';
+    return jwt_decode(token)
+  
   }
 }

@@ -9,42 +9,46 @@ import { HospitalService } from '../services/hospital.service';
 })
 export class MohSgHomeComponent implements OnInit{
 
-  hospitalsPendingVerified!:HospitalSg[];
+  hospitalsPendingVerify!:HospitalSg[];
+  hospitalsPendingStatVerify!:HospitalSg[];
+  allHospitalSg!:HospitalSg[];
 
   constructor(private hospSvc:HospitalService){}
 
   ngOnInit(): void {
-    this.hospSvc.getHospitalSgByPendingVerified().subscribe({
+    this.hospSvc.getHospitalSgByPendingVerify().subscribe({
       next:(r:any)=>{
-        this.hospitalsPendingVerified = r as HospitalSg[];
+        this.hospitalsPendingVerify = r as HospitalSg[];
       },
       error: (err)=>{
         console.error(err)
       },
       complete:()=>{
-        console.log('completed getHospitalSgByPendingVerified', this.hospitalsPendingVerified)
+        console.log('completed getHospitalSgByPendingVerify')
       }
     });
-    // this.hospSvc.getHospitalSgByStatPendingVerification().subscribe({
+
+    this.hospSvc.getHospitalSgByStatPendingVerify().subscribe({
+      next:(r:any)=>{
+        this.hospitalsPendingStatVerify = r as HospitalSg[];
+      },
+      error: (err)=>{
+        console.error(err)
+      },
+      complete:()=>{
+        console.log('completed getHospitalSgByStatPendingVerify')
+      }
+    });
+
+    // this.hospSvc.getHospitalSgList().subscribe({
     //   next:(r:any)=>{
-    //     this.hospitalsPendingVerified = r as HospitalSg[];
+    //     this.allHospitalSg = r as HospitalSg[];
     //   },
     //   error: (err)=>{
     //     console.error(err)
     //   },
     //   complete:()=>{
-    //     console.log('completed getHospitalSgByPendingVerified')
-    //   }
-    // });
-    // this.hospSvc.getHospitalSgByPendingVerified().subscribe({
-    //   next:(r:any)=>{
-    //     this.hospitalsPendingVerified = r as HospitalSg[];
-    //   },
-    //   error: (err)=>{
-    //     console.error(err)
-    //   },
-    //   complete:()=>{
-    //     console.log('completed getHospitalSgByPendingVerified')
+    //     console.log('completed getAllHospitalSg')
     //   }
     // });
 

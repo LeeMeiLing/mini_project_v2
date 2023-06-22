@@ -121,7 +121,7 @@ public class HospitalSgRepository {
         
     }
 
-    public Optional<List<HospitalSg>> getHospitalsByPendingVerification(){
+    public Optional<List<HospitalSg>> getHospitalsByPendingVerify(){
 
          try{
 
@@ -130,6 +130,22 @@ public class HospitalSgRepository {
             return Optional.of(hospitals);
 
         }catch(Exception ex){
+            return Optional.empty();
+        }
+
+    }
+
+
+    public Optional<List<HospitalSg>> getHospitalsByStatPendingVerify() {
+
+        try{
+
+            // return empty list if not found
+            List<HospitalSg> hospitals = jdbcTemplate.query(SqlQueryConstant.FIND_HOSPITAL_SG_BY_STAT_VERIFICATION_STATUS, BeanPropertyRowMapper.newInstance(HospitalSg.class), false);
+            return Optional.of(hospitals);
+
+        }catch(Exception ex){
+            ex.printStackTrace();
             return Optional.empty();
         }
 

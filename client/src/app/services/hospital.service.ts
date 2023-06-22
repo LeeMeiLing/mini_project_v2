@@ -15,14 +15,14 @@ export class HospitalService {
   HOSPITAL_SG_URL = environment.apiHospitalSgUrl;
   token!: string | null;
 
-  getHospitalList(name:string){
+  // getHospitalList(name:string){
     
-    // GET /api/hospitals?name=name&limit=20
-    const headers = new HttpHeaders().set('Accept','application/json');
-    const params = new HttpParams().set('name',name).set('limit', 20);
+  //   // GET /api/hospitals?name=name&limit=20
+  //   const headers = new HttpHeaders().set('Accept','application/json');
+  //   const params = new HttpParams().set('name',name).set('limit', 20);
 
-    return this.http.get(this.HOSPITAL_URL,{ headers, params });
-  }
+  //   return this.http.get(this.HOSPITAL_URL,{ headers, params });
+  // }
 
   getStates(){
     // GET /api/hospitals/states
@@ -228,9 +228,23 @@ export class HospitalService {
   }
 
   // GET /api/hospitals/sg/pending-verified
-  getHospitalSgByPendingVerified(){
+  getHospitalSgByPendingVerify(){
     const headers = new HttpHeaders().set('Accept','application/json');
 
-    return this.http.get(`${this.HOSPITAL_SG_URL}/pending-verified`, { headers });
+    return this.http.get(`${this.HOSPITAL_SG_URL}/pending-verify`, { headers });
+  }
+
+  getHospitalSgByStatPendingVerify(){
+    const headers = new HttpHeaders().set('Accept','application/json');
+
+    return this.http.get(`${this.HOSPITAL_SG_URL}/statistic/pending-verify`, { headers });
+  }
+
+
+
+  getHospitalSgList(state:string, city:string, name:string, offset:number, sortByRating:boolean, descending:boolean){
+    const headers = new HttpHeaders().set('Accept','application/json');
+
+    return this.http.get(`${this.HOSPITAL_SG_URL}`, { headers });
   }
 }

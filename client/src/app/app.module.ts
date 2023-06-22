@@ -11,6 +11,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { LoginComponent } from './components/login.component';
 import { SignUpComponent } from './components/sign-up.component';
 
+
 import { CookieService  } from 'ngx-cookie-service';
 import { JwtCookieService } from './services/jwt-cookie.service';
 import { JwtInterceptor } from './http-interceptors/jwt-interceptor';
@@ -25,6 +26,7 @@ import { ShowStatisticComponent } from './components/show-statistic.component';
 import { MohHomeComponent } from './components/moh-home.component';
 import { MohSgHomeComponent } from './components/moh-sg-home.component';
 import { MohUsHomeComponent } from './components/moh-us-home.component';
+import { HospitalSgComponent } from './components/hospital-sg.component';
 
 
 @NgModule({
@@ -42,7 +44,8 @@ import { MohUsHomeComponent } from './components/moh-us-home.component';
     ShowStatisticComponent,
     MohHomeComponent,
     MohSgHomeComponent,
-    MohUsHomeComponent
+    MohUsHomeComponent,
+    HospitalSgComponent
   ],
   imports: [
     BrowserModule,

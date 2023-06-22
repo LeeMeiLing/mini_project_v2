@@ -179,11 +179,23 @@ public class HospitalSgService {
 
     }
 
-    public List<HospitalSg> getHospitalsByPendingVerification(){
+    public List<HospitalSg> getHospitalsByPendingVerify(){
 
-        Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByPendingVerification();
+        Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByPendingVerify();
 
         if(opt.isPresent()){
+            return opt.get(); // return empty list if not found
+        }
+
+        return null;
+    }
+
+    public List<HospitalSg> getHospitalsByStatPendingVerify() {
+
+         Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByStatPendingVerify();
+
+        if(opt.isPresent()){
+            System.out.println("in svc stat pending ver: " + opt.get());
             return opt.get(); // return empty list if not found
         }
 

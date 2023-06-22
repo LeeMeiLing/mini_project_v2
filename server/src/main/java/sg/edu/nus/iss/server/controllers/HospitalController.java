@@ -98,8 +98,6 @@ public class HospitalController {
 
         System.out.println(">>> in controller search Hospitals"); // dbeug
 
-        
-
         List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset,sortByRating,descending);
 
         if(hospitals.isEmpty()){

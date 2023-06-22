@@ -30,6 +30,9 @@ export class HospitalComponent implements OnInit, OnDestroy{
             this.hospital = r['hospital'];
             this.totalReview = r['totalReview'];
             console.log(this.hospital)
+
+            // const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt());
+            // console.log('decoded token: ', decodedToken['userRole'])
           },
           error: err => console.error(err),
           complete: () => console.log('completed getHospital()')
@@ -37,8 +40,6 @@ export class HospitalComponent implements OnInit, OnDestroy{
       }
     );
 
-    this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt());
-    
   }
 
   ngOnDestroy(): void {

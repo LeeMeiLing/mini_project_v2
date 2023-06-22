@@ -81,12 +81,12 @@ public class HospitalSgController {
         return ResponseEntity.status(HttpStatus.OK).body(stat.toJson().toString());
     }
 
-    // GET /api/hospitals/sg/pending-verified
-    @GetMapping(path = "/pending-verified", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getHospitalsByPendingVerification(){
+    // GET /api/hospitals/sg/pending-verify
+    @GetMapping(path = "/pending-verify", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospitalsByPendingVerify(){
         
 
-        List<HospitalSg> hospitals = hospSgSvc.getHospitalsByPendingVerification();
+        List<HospitalSg> hospitals = hospSgSvc.getHospitalsByPendingVerify();
 
         JsonArrayBuilder arrB = Json.createArrayBuilder();
         
@@ -99,6 +99,46 @@ public class HospitalSgController {
         return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
 
     }
+
+    // GET /api/hospitals/sg/statistic/pending-verify
+    @GetMapping(path = "/statistic/pending-verify", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospitalsByStatPendingVerify(){
+        
+
+        List<HospitalSg> hospitals = hospSgSvc.getHospitalsByStatPendingVerify();
+
+        System.out.println("stat pending ver: " + hospitals);
+        
+        JsonArrayBuilder arrB = Json.createArrayBuilder();
+        
+        if(hospitals == null){
+            return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString()); // return empty JsonArray
+        }
+        
+        hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
+
+        return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
+
+    }
     
+    // GET /api/hospitals/sg
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospitalsSgList(){
+        
+
+        List<HospitalSg> hospitals = hospSgSvc.getHospitalsByStatPendingVerify();
+
+        JsonArrayBuilder arrB = Json.createArrayBuilder();
+        
+        if(hospitals == null){
+            return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString()); // return empty JsonArray
+        }
+        
+        hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
+
+        return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
+
+    }
+
 
 }

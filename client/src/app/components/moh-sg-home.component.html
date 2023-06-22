@@ -3,12 +3,12 @@
 <!-- Hospitals registered, pending verification & set update freq, penalty -->
 <!-- select * from sg_hospitals where verified = false; -->
 <div>
-    <h3 *ngIf="hospitalsPendingVerified">
-        <span *ngIf="hospitalsPendingVerified.length > 0">New registered hospitals pending verification ({{hospitalsPendingVerified.length}})</span>
-        <span *ngIf="hospitalsPendingVerified.length == 0">No new registered hospitals pending verification</span>
+    <h3 *ngIf="hospitalsPendingVerify">
+        <span *ngIf="hospitalsPendingVerify.length > 0">New registered hospitals pending verification ({{hospitalsPendingVerify.length}})</span>
+        <span *ngIf="hospitalsPendingVerify.length == 0">No new registered hospitals pending verification</span>
     </h3>
     <table>
-        <tr *ngFor="let h of hospitalsPendingVerified">
+        <tr *ngFor="let h of hospitalsPendingVerify">
             <a [routerLink]="['/hospital/sg/:facilityId']">{{h.facilityName}}</a>
         </tr>
     </table>
@@ -16,7 +16,15 @@
 
 <!-- Hospitals submitted updated statistic, pending verification -->
 <div>
-
+    <h3 *ngIf="hospitalsPendingStatVerify">
+        <span *ngIf="hospitalsPendingStatVerify.length > 0">Hospitals with statistic pending verification ({{hospitalsPendingStatVerify.length}})</span>
+        <span *ngIf="hospitalsPendingStatVerify.length == 0">No hospitals with pending statistic verification</span>
+    </h3>
+    <table>
+        <tr *ngFor="let h of hospitalsPendingStatVerify">
+            <a [routerLink]="['/hospital/sg/:facilityId']">{{h.facilityName}}</a>
+        </tr>
+    </table>
 </div>
 
 <!-- List of All Hospital Registered in Singapore -->

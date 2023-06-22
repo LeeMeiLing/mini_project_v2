@@ -97,3 +97,9 @@ export interface Moh {
     countryName: string,
     mohEthAddress: string
 }
+
+export interface decodedToken{
+    exp:number,
+    sub:string,
+    userRole:string
+}

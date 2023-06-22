@@ -128,4 +128,12 @@ public class SqlQueryConstant {
    
     public static final String  FIND_HOSPITAL_SG_BY_VERIFICATION_STATUS = "select * from sg_hospitals where registered = ?";
 
+    public static final String  FIND_HOSPITAL_SG_BY_STAT_VERIFICATION_STATUS = """
+        select * from sg_hospitals where facility_id in (
+        select distinct(facility_id) from sg_hospitals right join 
+        statistics on sg_hospitals.contract_address = statistics.hosp_contract_address
+        where statistics.verified = ?)
+    """;
+
+
 }
