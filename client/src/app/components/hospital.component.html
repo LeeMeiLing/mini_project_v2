@@ -1,6 +1,7 @@
 <div>
     <mat-card>
-        <a [routerLink]="['/searchHospital']">Back to Search</a>
+        <a [routerLink]="['/searchHospital']" *ngIf="userRole == 'user'">Back to Search</a>
+        <a [routerLink]="['/home/moh/us']" *ngIf="userRole == 'moh'"></a>
         <mat-card-title>
             <span>{{hospital.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{hospital.hospitalOverallRating}}/5</span>
         </mat-card-title>

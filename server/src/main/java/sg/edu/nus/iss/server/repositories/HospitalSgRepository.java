@@ -150,6 +150,151 @@ public class HospitalSgRepository {
         }
 
     }
+
+
+    public Optional<List<HospitalSg>> findHospitalsByOwnershipAndName(String hospitalOwnership, String name,
+            Integer offset, Boolean sortByRating, Boolean descending) {
+
+        String queryString = SqlQueryConstant.QUERY_HOSPITAL_SG_BY_OWNERSHIP_NAME;
+
+        if(sortByRating && descending){
+            queryString = queryString +SqlQueryConstant.HOSP_SG_SORT_DESC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else if(sortByRating && !descending){
+            queryString = queryString + SqlQueryConstant.HOSP_SG_SORT_ASC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else{
+            queryString = queryString + SqlQueryConstant.LIMIT_OFFSET;
+
+        }
+
+        System.out.println("in findHospitalsByOwnershipAndName: " + queryString);// debug
+
+        List<HospitalSg> hospitalSgList = jdbcTemplate.query(queryString,new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, hospitalOwnership);
+                ps.setString(2, "%" + name + "%");              
+                ps.setInt(3, SqlQueryConstant.LIMIT);
+                ps.setInt(4, offset * SqlQueryConstant.LIMIT);
+            }
+            
+        },BeanPropertyRowMapper.newInstance(HospitalSg.class));
+
+        if(!hospitalSgList.isEmpty()){
+            return Optional.of(hospitalSgList);
+        }else{
+            return Optional.empty();
+        }
+        
+    }
+
+    public Optional<List<HospitalSg>> findHospitalsByOwnership(String hospitalOwnership, Integer offset,
+            Boolean sortByRating, Boolean descending) {
+
+        String queryString = SqlQueryConstant.QUERY_HOSPITAL_SG_BY_OWNERSHIP;
+
+        if(sortByRating && descending){
+            queryString = queryString +SqlQueryConstant.HOSP_SG_SORT_DESC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else if(sortByRating && !descending){
+            queryString = queryString + SqlQueryConstant.HOSP_SG_SORT_ASC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else{
+            queryString = queryString + SqlQueryConstant.LIMIT_OFFSET;
+
+        }
+
+        List<HospitalSg> hospitalSgList = jdbcTemplate.query(queryString,new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, hospitalOwnership);
+                ps.setInt(2, SqlQueryConstant.LIMIT);
+                ps.setInt(3, offset * SqlQueryConstant.LIMIT);
+            }
+            
+        },BeanPropertyRowMapper.newInstance(HospitalSg.class));
+
+        if(!hospitalSgList.isEmpty()){
+            return Optional.of(hospitalSgList);
+        }else{
+            return Optional.empty();
+        }
+    }
+
+
+    public Optional<List<HospitalSg>> findHospitalsByName(String name, Integer offset, Boolean sortByRating,
+            Boolean descending) {
+
+        String queryString = SqlQueryConstant.QUERY_HOSPITAL_SG_BY_NAME;
+
+        if(sortByRating && descending){
+            queryString = queryString +SqlQueryConstant.HOSP_SG_SORT_DESC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else if(sortByRating && !descending){
+            queryString = queryString + SqlQueryConstant.HOSP_SG_SORT_ASC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else{
+            queryString = queryString + SqlQueryConstant.LIMIT_OFFSET;
+
+        }
+
+        System.out.println("in findHospitalsByOwnershipAndName: " + queryString);// debug
+
+        List<HospitalSg> hospitalSgList = jdbcTemplate.query(queryString,new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, "%" + name + "%");              
+                ps.setInt(2, SqlQueryConstant.LIMIT);
+                ps.setInt(3, offset * SqlQueryConstant.LIMIT);
+            }
+            
+        },BeanPropertyRowMapper.newInstance(HospitalSg.class));
+
+        if(!hospitalSgList.isEmpty()){
+            return Optional.of(hospitalSgList);
+        }else{
+            return Optional.empty();
+        }
+    }
+
+
+    public Optional<List<HospitalSg>> findAllHospitals(Integer offset, Boolean sortByRating, Boolean descending) {
+
+        String queryString;
+
+        if(sortByRating && descending){
+            queryString = SqlQueryConstant.QUERY_ALL_HOSPITAL_SG +SqlQueryConstant.HOSP_SG_SORT_DESC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else if(sortByRating && !descending){
+            queryString = SqlQueryConstant.QUERY_ALL_HOSPITAL_SG + SqlQueryConstant.HOSP_SG_SORT_ASC +SqlQueryConstant.LIMIT_OFFSET;
+
+        }else{
+            queryString = SqlQueryConstant.QUERY_ALL_HOSPITAL_SG + SqlQueryConstant.LIMIT_OFFSET;
+
+        }
+
+        System.out.println("in findHospitalsByOwnershipAndName: " + queryString);// debug
+
+        List<HospitalSg> hospitalSgList = jdbcTemplate.query(queryString,new PreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setInt(1, SqlQueryConstant.LIMIT);
+                ps.setInt(2, offset * SqlQueryConstant.LIMIT);
+            }
+            
+        },BeanPropertyRowMapper.newInstance(HospitalSg.class));
+
+        if(!hospitalSgList.isEmpty()){
+            return Optional.of(hospitalSgList);
+        }else{
+            return Optional.empty();
+        }
+    }
     
 
     // public Optional<String> getContractAddressByStatisticIndex(Integer statIndex){

@@ -240,11 +240,24 @@ export class HospitalService {
     return this.http.get(`${this.HOSPITAL_SG_URL}/statistic/pending-verify`, { headers });
   }
 
-
-
-  getHospitalSgList(state:string, city:string, name:string, offset:number, sortByRating:boolean, descending:boolean){
+  // GET /api/hospitals/sg?hospitalOwnership=xx&name=xx&offset=0&sortByRating=true&descending=true
+  getHospitalSgList(hospitalOwnership:string, name:string, offset:number, sortByRating:boolean, descending:boolean){
     const headers = new HttpHeaders().set('Accept','application/json');
+    let params;
 
-    return this.http.get(`${this.HOSPITAL_SG_URL}`, { headers });
+    if(hospitalOwnership && name){
+      params = new HttpParams().set('hospitalOwnership', hospitalOwnership).set('name',name).set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
+    }
+    if(hospitalOwnership && !name){
+      params = new HttpParams().set('hospitalOwnership', hospitalOwnership).set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
+    }
+    if(!hospitalOwnership && name){
+      params = new HttpParams().set('name',name).set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
+    }
+    if(!hospitalOwnership && !name){
+      params = new HttpParams().set('offset',offset).set('sortByRating',sortByRating).set('descending',descending);
+    }
+
+    return this.http.get(`${this.HOSPITAL_SG_URL}`, { headers, params });
   }
 }

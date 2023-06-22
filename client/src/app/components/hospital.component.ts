@@ -18,6 +18,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
   totalReview!:number;
   reviews:HospitalReview[] = [];
   reviewSummary!: ReviewSummary;
+  userRole!:string;
 
   constructor(private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router, private jwtCookieSvc:JwtCookieService){}
  
@@ -30,9 +31,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
             this.hospital = r['hospital'];
             this.totalReview = r['totalReview'];
             console.log(this.hospital)
-
-            // const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt());
-            // console.log('decoded token: ', decodedToken['userRole'])
+            this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
           },
           error: err => console.error(err),
           complete: () => console.log('completed getHospital()')

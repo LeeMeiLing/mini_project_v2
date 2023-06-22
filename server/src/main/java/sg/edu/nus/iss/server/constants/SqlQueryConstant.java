@@ -126,14 +126,28 @@ public class SqlQueryConstant {
 
     public static final String GET_MOH_BY_ETH_ADDRESS = "select * from moh where moh_eth_address = ?";
    
-    public static final String  FIND_HOSPITAL_SG_BY_VERIFICATION_STATUS = "select * from sg_hospitals where registered = ?";
+    public static final String FIND_HOSPITAL_SG_BY_VERIFICATION_STATUS = "select * from sg_hospitals where registered = ?";
 
-    public static final String  FIND_HOSPITAL_SG_BY_STAT_VERIFICATION_STATUS = """
+    public static final String FIND_HOSPITAL_SG_BY_STAT_VERIFICATION_STATUS = """
         select * from sg_hospitals where facility_id in (
         select distinct(facility_id) from sg_hospitals right join 
         statistics on sg_hospitals.contract_address = statistics.hosp_contract_address
         where statistics.verified = ?)
     """;
 
+    public static final String QUERY_HOSPITAL_SG_BY_OWNERSHIP_NAME = "select * from sg_hospitals where hospital_ownership = ? and facility_name like ? ";
+
+    public static final String HOSP_SG_SORT_ASC = "order by hospital_overall_rating ";
+
+    public static final String HOSP_SG_SORT_DESC = "order by hospital_overall_rating desc ";
+
+    public static final String QUERY_HOSPITAL_SG_BY_OWNERSHIP = "select * from sg_hospitals where hospital_ownership = ? ";
+
+    public static final String QUERY_HOSPITAL_SG_BY_NAME = "select * from sg_hospitals where facility_name like ? ";
+
+    public static final String QUERY_ALL_HOSPITAL_SG = "select * from sg_hospitals ";
+
+
+    
 
 }

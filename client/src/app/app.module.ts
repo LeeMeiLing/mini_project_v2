@@ -23,7 +23,6 @@ import { SignUpHospitalComponent } from './components/sign-up-hospital.component
 import { HospitalHomeComponent } from './components/hospital-home.component';
 import { StatisticComponent } from './components/statistic.component';
 import { ShowStatisticComponent } from './components/show-statistic.component';
-import { MohHomeComponent } from './components/moh-home.component';
 import { MohSgHomeComponent } from './components/moh-sg-home.component';
 import { MohUsHomeComponent } from './components/moh-us-home.component';
 import { HospitalSgComponent } from './components/hospital-sg.component';
@@ -42,7 +41,6 @@ import { HospitalSgComponent } from './components/hospital-sg.component';
     HospitalHomeComponent,
     StatisticComponent,
     ShowStatisticComponent,
-    MohHomeComponent,
     MohSgHomeComponent,
     MohUsHomeComponent,
     HospitalSgComponent

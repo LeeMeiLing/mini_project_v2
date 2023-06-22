@@ -71,7 +71,8 @@ export interface HospitalSg{
     zipCode: string;
     countryCode: string; // drop down option
     phoneNumber: string;
-    hospitalOwnership: string; 
+    hospitalOwnership: string;
+    hospitalOverallRating: string, // from patient review 
     emergencyServices: string; // yes or no
     ethAddress: string; // get from metamask
     contractAddress: string; // to be assign

@@ -14,6 +14,7 @@ import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
+import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.Statistic;
@@ -201,6 +202,45 @@ public class HospitalSgService {
 
         return null;
     }
+
+    public List<HospitalSg> getHospitalsSgList(String hospitalOwnership, String name, Integer offset,
+            Boolean sortByRating, Boolean descending) {
+
+
+        Optional<List<HospitalSg>> opt;
+
+        if (hospitalOwnership != null) {
+
+            if (name != null) {
+                // search with hospitalOwnership & name
+                opt = hospSgRepo.findHospitalsByOwnershipAndName(hospitalOwnership, name, offset, sortByRating, descending);
+            } else {
+                // search with hospitalOwnership
+                opt = hospSgRepo.findHospitalsByOwnership(hospitalOwnership, offset, sortByRating, descending);
+            }
+        } else {
+
+            if (name != null) {
+                // search with name
+                opt = hospSgRepo.findHospitalsByName(name, offset, sortByRating, descending);
+            } else {
+                // search all without filter
+                opt = hospSgRepo.findAllHospitals(offset, sortByRating, descending);
+            }
+        }
+
+        if (opt.isPresent()) {
+            return opt.get();
+        } else {
+            throw new ResultNotFoundException("Hospital");
+        }
+
+    }
+
+    // public Integer countResult(String hospitalOwnership, String name, Boolean sortByRating, Boolean descending) {
+
+    //     return hospSgRepo.countResult(hospitalOwnership, name, sortByRating, descending);
+    // }
 
 
 

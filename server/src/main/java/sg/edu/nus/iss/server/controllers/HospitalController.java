@@ -101,9 +101,7 @@ public class HospitalController {
         List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset,sortByRating,descending);
 
         if(hospitals.isEmpty()){
-            System.out.println("hospital list is empty, result not found");
-            hospSvc.countResult(state,city,name,sortByRating,descending);
-            // throw not found exception ? todo!!!!
+            throw new ResultNotFoundException("Hospital");
         }
 
         JsonArrayBuilder arrB = Json.createArrayBuilder();

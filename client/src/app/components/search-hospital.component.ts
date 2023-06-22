@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HospitalService } from '../services/hospital.service';
-import { Hospital, Moh } from '../models';
+import { Hospital, HospitalSg, Moh } from '../models';
 import { tap } from 'rxjs';
 
 @Component({
@@ -15,7 +15,8 @@ export class SearchHospitalComponent implements OnInit{
   form!:FormGroup;
   states!:string[];
   cities!:string[];
-  hospitals!:Hospital[] | null;
+  hospitals!:Hospital[] |null;
+  hospitalSgList!:HospitalSg[] |null;
   offset:number = 0;
   descending:boolean = false;
   sortByRating:boolean = false;
@@ -47,28 +48,15 @@ export class SearchHospitalComponent implements OnInit{
       }
     });
 
-  
-    // this.hospitalSvc.getStates().pipe(
-    //   tap(r => this.states = r as string[])
-    // ).subscribe({
-    //   next: ()=> {
-    //     console.log(this.states)
-    //   },
-    //   error: err=>{
-    //     console.error(err)
-    //   },
-    //   complete:() => {
-    //     console.log('completed get states') // debug
-    //   }
-    // });
-
   }
 
   onCountryCodeChange(){
 
     this.offset = 0;
     this.hospitals = null;
-     
+    this.hospitalSgList = null;
+
+
     this.showSgForm = false;
     this.showUsForm = false;
 
@@ -132,13 +120,48 @@ export class SearchHospitalComponent implements OnInit{
 
   createSgForm(): FormGroup {
     return this.fb.group({
-      city:this.fb.control<string>(''),
+      hospitalOwnership:this.fb.control<string>(''),
       hospitalName:this.fb.control<string>('')
     });
   }
 
   searchSgHospitals(){
 
+    this.form.valueChanges.subscribe(
+      (value) => { 
+        console.log('Form value changed:', value);
+        this.offset = 0;
+        this.hospitals = null;
+        this.hospitalSgList = null;
+
+      }
+    );
+
+    console.log('in searchSgHospital()');
+
+    this.hospitalSvc.getHospitalSgList
+    (this.form.value['hospitalOwnership'], this.form.value['hospitalName'], this.offset, this.sortByRating, this.descending )?.pipe(
+        tap((r:any) => {
+          this.seeResponse = r
+          this.hospitalSgList = r['results'] as HospitalSg[];
+          this.count = r['count'];
+        }),
+      ).subscribe({
+        next: ()=> {
+          console.log(this.seeResponse);
+          console.log(this.hospitals);
+          console.log(this.count);
+          console.log('count/20 ', this.count/20)
+        },
+        error: err=>{
+          this.hospitals = [];
+          this.count = 0;
+          console.error(err)
+        },
+        complete:() => {
+          console.log('completed search Sg Hospital') // debug
+        }
+      });
   }
 
   createUsForm():FormGroup{
@@ -156,10 +179,12 @@ export class SearchHospitalComponent implements OnInit{
         console.log('Form value changed:', value);
         this.offset = 0;
         this.hospitals = null;
+        this.hospitalSgList = null;
+
       }
     );
 
-    console.log('in searchHospital()');
+    console.log('in searchUsHospital()');
 
     console.log('state', this.form.value['state']);
     console.log('city', this.form.value['city']);
@@ -180,7 +205,9 @@ export class SearchHospitalComponent implements OnInit{
           console.log('count/20 ', this.count/20)
         },
         error: err=>{
-          console.error(err)
+          this.hospitals = [];
+          this.count = 0;
+          console.error(err);
         },
         complete:() => {
           console.log('completed search Hospital') // debug
@@ -193,24 +220,47 @@ export class SearchHospitalComponent implements OnInit{
     this.sortByRating = true;
     this.descending = !this.descending;
     console.log('sort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
-    this.searchUsHospitals();
+
+    if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
+      this.searchSgHospitals();
+    }
+    else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
+      this.searchUsHospitals();
+    }
+    
   }
 
   undoSort(){
     this.sortByRating = false;
     this.disableSort = !this.disableSort;
     console.log('undoSort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
-    this.searchUsHospitals();
+
+    if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
+      this.searchSgHospitals();
+    }
+    else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
+      this.searchUsHospitals();
+    }
   }
 
   loadNextPage(){
     this.offset++;
-    this.searchUsHospitals();
+     if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
+      this.searchSgHospitals();
+    }
+    else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
+      this.searchUsHospitals();
+    }
   }
 
   loadPreviousPage(){
     this.offset--;
-    this.searchUsHospitals();
+    if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
+      this.searchSgHospitals();
+    }
+    else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
+      this.searchUsHospitals();
+    }
   }
 
 }

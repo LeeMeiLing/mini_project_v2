@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
+import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.Statistic;
 import sg.edu.nus.iss.server.services.HospitalSgService;
@@ -121,23 +124,33 @@ public class HospitalSgController {
 
     }
     
-    // GET /api/hospitals/sg
+    // GET /api/hospitals/sg?hospitalOwnership=xx&name=xx&offset=0&sortByRating=true&descending=true
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getHospitalsSgList(){
+    public ResponseEntity<String> getHospitalsSgList(@RequestParam(required = false) String hospitalOwnership ,@RequestParam(required = false) String name ,@RequestParam Integer offset,
+        @RequestParam Boolean sortByRating ,@RequestParam Boolean descending){
         
 
-        List<HospitalSg> hospitals = hospSgSvc.getHospitalsByStatPendingVerify();
+        List<HospitalSg> hospitals = hospSgSvc.getHospitalsSgList(hospitalOwnership,name,offset,sortByRating,descending);
+
+         if(hospitals.isEmpty()){
+           throw new ResultNotFoundException("Hospital");
+        }
 
         JsonArrayBuilder arrB = Json.createArrayBuilder();
-        
-        if(hospitals == null){
-            return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString()); // return empty JsonArray
-        }
-        
         hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
+        JsonArray hospitalArray = arrB.build();
 
-        return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
+        JsonObjectBuilder joB = Json.createObjectBuilder();
+        joB.add("results", hospitalArray);
 
+        Integer totalResult = hospitals.size();
+        joB.add("count", totalResult);
+
+        JsonObject payload = joB.build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+        
     }
 
 
