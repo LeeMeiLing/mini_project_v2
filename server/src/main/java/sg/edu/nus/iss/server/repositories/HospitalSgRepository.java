@@ -2,6 +2,7 @@ package sg.edu.nus.iss.server.repositories;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +120,21 @@ public class HospitalSgRepository {
         }
         
     }
+
+    public Optional<List<HospitalSg>> getHospitalsByPendingVerification(){
+
+         try{
+
+            // return empty list if not found
+            List<HospitalSg> hospitals = jdbcTemplate.query(SqlQueryConstant.FIND_HOSPITAL_SG_BY_VERIFICATION_STATUS, BeanPropertyRowMapper.newInstance(HospitalSg.class), false);
+            return Optional.of(hospitals);
+
+        }catch(Exception ex){
+            return Optional.empty();
+        }
+
+    }
+    
 
     // public Optional<String> getContractAddressByStatisticIndex(Integer statIndex){
 

@@ -1,1 +1,26 @@
-<p>moh-sg-home works!</p>
+<h2>Ministry of Health Singapore</h2>
+
+<!-- Hospitals registered, pending verification & set update freq, penalty -->
+<!-- select * from sg_hospitals where verified = false; -->
+<div>
+    <h3 *ngIf="hospitalsPendingVerified">
+        <span *ngIf="hospitalsPendingVerified.length > 0">New registered hospitals pending verification ({{hospitalsPendingVerified.length}})</span>
+        <span *ngIf="hospitalsPendingVerified.length == 0">No new registered hospitals pending verification</span>
+    </h3>
+    <table>
+        <tr *ngFor="let h of hospitalsPendingVerified">
+            <a [routerLink]="['/hospital/sg/:facilityId']">{{h.facilityName}}</a>
+        </tr>
+    </table>
+</div>
+
+<!-- Hospitals submitted updated statistic, pending verification -->
+<div>
+
+</div>
+
+<!-- List of All Hospital Registered in Singapore -->
+<!-- select * from sg_hospitals; -->
+<div>
+
+</div>

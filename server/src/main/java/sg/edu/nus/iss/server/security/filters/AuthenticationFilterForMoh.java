@@ -72,6 +72,7 @@ public class AuthenticationFilterForMoh extends UsernamePasswordAuthenticationFi
         System.out.println(">>> Woohoo authentication worked"); // debug
         // send back a JWT 
         String token = JWT.create()
+                          .withClaim("userRole", "moh")
                           .withSubject(authResult.getName())
                           .withExpiresAt(new Date(System.currentTimeMillis() + 7200000))
                           .sign(Algorithm.HMAC512(this.getSecretKey()));

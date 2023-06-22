@@ -87,7 +87,7 @@ export interface Statistic {
     effectiveness: number;
     timeliness: number;
     medicalImagingEfficiency: number;
-    timestamp: string; 
+    timestamp: string;
     verified: boolean;
 
 }

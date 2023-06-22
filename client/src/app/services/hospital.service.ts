@@ -181,6 +181,12 @@ export class HospitalService {
   
     }
 
+    getMohList(){
+      const headers = new HttpHeaders().set('Accept','application/json');
+  
+      return this.http.get(`${this.HOSPITAL_URL}/moh`, { headers });
+    }
+
   //////////////////////////////////////////////
 
   // GET /api/hospitals/sg/hospital/{ethAddress}
@@ -221,10 +227,10 @@ export class HospitalService {
 
   }
 
-  getMohList(){
+  // GET /api/hospitals/sg/pending-verified
+  getHospitalSgByPendingVerified(){
     const headers = new HttpHeaders().set('Accept','application/json');
 
-    return this.http.get(`${this.HOSPITAL_URL}/moh`, { headers });
+    return this.http.get(`${this.HOSPITAL_SG_URL}/pending-verified`, { headers });
   }
-
 }

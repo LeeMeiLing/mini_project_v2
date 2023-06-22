@@ -125,5 +125,7 @@ public class SqlQueryConstant {
     public static final String GET_ALL_MOH = "select * from moh";
 
     public static final String GET_MOH_BY_ETH_ADDRESS = "select * from moh where moh_eth_address = ?";
+   
+    public static final String  FIND_HOSPITAL_SG_BY_VERIFICATION_STATUS = "select * from sg_hospitals where registered = ?";
 
 }

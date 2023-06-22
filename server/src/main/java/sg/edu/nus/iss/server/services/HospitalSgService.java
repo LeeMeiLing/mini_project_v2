@@ -1,6 +1,7 @@
 package sg.edu.nus.iss.server.services;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,6 +177,17 @@ public class HospitalSgService {
 
         }
 
+    }
+
+    public List<HospitalSg> getHospitalsByPendingVerification(){
+
+        Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByPendingVerification();
+
+        if(opt.isPresent()){
+            return opt.get(); // return empty list if not found
+        }
+
+        return null;
     }
 
 

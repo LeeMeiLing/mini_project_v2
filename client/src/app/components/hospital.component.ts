@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HospitalService } from '../services/hospital.service';
 import { Hospital, HospitalReview, ReviewSummary } from '../models';
+import { JwtCookieService } from '../services/jwt-cookie.service';
 
 @Component({
   selector: 'app-hospital',
@@ -18,7 +19,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
   reviews:HospitalReview[] = [];
   reviewSummary!: ReviewSummary;
 
-  constructor(private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router){}
+  constructor(private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router, private jwtCookieSvc:JwtCookieService){}
  
   ngOnInit(): void {
     this.param$ = this.actiavtedRoute.params.subscribe(
@@ -34,7 +35,10 @@ export class HospitalComponent implements OnInit, OnDestroy{
           complete: () => console.log('completed getHospital()')
         });
       }
-    )
+    );
+
+    this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt());
+    
   }
 
   ngOnDestroy(): void {

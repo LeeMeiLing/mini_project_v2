@@ -179,7 +179,9 @@ export class LoginComponent implements OnInit{
           const status = result.status
           console.log('sign in as moh, status ', status) // debug
 
-          this.router.navigate(['/home/moh',this.mohForm.value['countryCode']]);
+          const cc = this.mohForm.value['countryCode'].toLowerCase();
+          this.router.navigate([`/home/moh/${cc}`]);
+
     
         }catch(err:any){
     

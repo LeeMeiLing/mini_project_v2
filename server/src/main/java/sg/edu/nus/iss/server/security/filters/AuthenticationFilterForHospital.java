@@ -71,6 +71,7 @@ public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticat
         System.out.println(">>> Woohoo authentication worked"); // debug
         // send back a JWT 
         String token = JWT.create()
+                          .withClaim("userRole", "hospital")
                           .withSubject(authResult.getName())
                           .withExpiresAt(new Date(System.currentTimeMillis() + 7200000))
                           .sign(Algorithm.HMAC512(this.getSecretKey()));

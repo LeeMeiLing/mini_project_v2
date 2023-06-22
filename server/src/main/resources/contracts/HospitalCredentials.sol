@@ -74,10 +74,24 @@ contract HospitalCredentials{
         registered = true;
     }
 
-    function verifyStatistic() public approver{
-        uint index = statistics.length - 1;
-        Statistic storage stat = statistics[index];
+    function verifyStatistic(uint _index) public approver{
+        Statistic storage stat = statistics[_index];
         stat.verified = true;
+    }
+
+    function checkStatisticPastDue() public view returns(bool){
+
+        // past due valid only if already updated once but updateFreq is set
+        if(lastUpdate > 0 && updateFrequency > 0){
+            if( block.timestamp > (lastUpdate + updateFrequency * 1 days) ) {
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
     }
 
     function getLatestStat() public view returns(Statistic memory){

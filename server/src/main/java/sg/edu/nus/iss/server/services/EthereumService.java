@@ -37,7 +37,7 @@ public class EthereumService {
         credentials = Credentials.create(privateKey);
         System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
 
-        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(900000000),BigInteger.valueOf(3000000));
+        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(2000000000L),BigInteger.valueOf(1500000));
 
         // // @GANACHE
         // web3j = Web3j.build(new HttpService("http://localhost:8545"));
@@ -83,6 +83,8 @@ public class EthereumService {
     }
 
     public HospitalCredentials deployHospitalCredentialsContract(byte[] keyStore, String accountPassword, String mohEthAddress, String license) throws Exception{
+
+        System.out.println("staticGasProvider: " + staticGasProvider);
 
         File file = File.createTempFile("temp","txt");
         FileWriter writer = new FileWriter(file);

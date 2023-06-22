@@ -1,6 +1,7 @@
 package sg.edu.nus.iss.server.controllers;
 
 import java.io.StringReader;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import sg.edu.nus.iss.server.models.HospitalSg;
@@ -79,8 +81,24 @@ public class HospitalSgController {
         return ResponseEntity.status(HttpStatus.OK).body(stat.toJson().toString());
     }
 
+    // GET /api/hospitals/sg/pending-verified
+    @GetMapping(path = "/pending-verified", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospitalsByPendingVerification(){
+        
 
+        List<HospitalSg> hospitals = hospSgSvc.getHospitalsByPendingVerification();
 
+        JsonArrayBuilder arrB = Json.createArrayBuilder();
+        
+        if(hospitals == null){
+            return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString()); // return empty JsonArray
+        }
+        
+        hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
+
+        return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
+
+    }
     
 
 }

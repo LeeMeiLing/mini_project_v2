@@ -171,5 +171,25 @@ public class HospitalSg {
         return hosp;
 
     }
+
+    public JsonObject toJson(){
+
+        return Json.createObjectBuilder()
+            .add("facilityId",facilityId)
+            .add("facilityName",facilityName)
+            .add("license",license)
+            .add("registered",registered)
+            .add("jciAccredited",jciAccredited)
+            .add("address",address)
+            .add("streetName",streetName)
+            .add("zipCode",zipCode)
+            .add("countryCode",countryCode)
+            .add("phoneNumber",phoneNumber)
+            .add("hospitalOwnership",hospitalOwnership)
+            .add("emergencyServices",emergencyServices)
+            .add("ethAddress",ethAddress)
+            .add("contractAddress",contractAddress)
+            .build();
+    }
     
 }

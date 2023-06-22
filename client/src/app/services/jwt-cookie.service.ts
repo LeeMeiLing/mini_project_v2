@@ -22,4 +22,9 @@ export class JwtCookieService {
   public deleteJwt(): void {
     this.cookieService.delete(this.jwtCookieName);
   }
+
+  public decodeToken(token:string):string{
+
+    return '';
+  }
 }
