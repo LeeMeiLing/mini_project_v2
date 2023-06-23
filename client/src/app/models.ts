@@ -99,8 +99,16 @@ export interface Moh {
     mohEthAddress: string
 }
 
-export interface decodedToken{
+export interface MohDecodedToken{
     exp:number,
     sub:string,
-    userRole:string
+    userRole:string,
+    countryCode:string
+}
+
+export interface HospitalDecodedToken{
+    exp:number,
+    sub:string,
+    userRole:string,
+    facilityId:string
 }

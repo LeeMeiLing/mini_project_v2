@@ -370,6 +370,7 @@ public class HospitalService {
                         .addReview(facilityId, new BigInteger(String.valueOf(reviewId)), review.getPatientId(),
                                 new BigInteger(String.valueOf(review.getOverallRating())), no)
                         .send();
+                System.out.println("Transaction receipt: " + ethReviewIndex);
                 String returnedIndex = ethReviewIndex.getLogs().get(0).getData();
                 Integer reviewIndex = Integer.decode(returnedIndex);
                 // save review index to review table
@@ -384,6 +385,7 @@ public class HospitalService {
                 System.out.println("review Index: " + reviewIndex);
 
             } catch (Exception ex) {
+                ex.printStackTrace();
                 throw new PostReviewFailedException("Error interacting with smart contract: " + ex);
 
             }

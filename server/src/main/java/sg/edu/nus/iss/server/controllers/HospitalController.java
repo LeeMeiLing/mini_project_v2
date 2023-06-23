@@ -181,7 +181,7 @@ public class HospitalController {
         }
 
         JsonObjectBuilder joB = Json.createObjectBuilder();
-        joB.add("totalReview", hospSvc.getReviewCountByFacilityId(facilityId));
+        joB.add("totalReview", totalReview);
 
         JsonArrayBuilder reviewArrBuilder = Json.createArrayBuilder();
         reviews.stream().map(r -> r.toJson()).forEach(j -> reviewArrBuilder.add(j));

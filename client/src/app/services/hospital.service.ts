@@ -101,14 +101,23 @@ export class HospitalService {
     return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}`, { headers });
   }
 
-  getHospitalReview(facilityId:string){
+  getHospitalReview(countryCode:string, facilityId:string){
     // GET /api/hospitals/hospital/{facilityId}/review
     const headers = new HttpHeaders().set('Accept','application/json');
 
-    return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, { headers });
+
+    if(countryCode == 'us'){
+      return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, { headers });
+    }
+
+    if(countryCode == 'sg'){
+      return this.http.get(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/review`, { headers });
+    }
+
+    return;
   }
 
-  postHospitalReview(facilityId:string, review:any){
+  postHospitalReview(countryCode:string, facilityId:string, review:any){
 
     // POST /api/hospitals/hospital/{facilityId}/review
     const headers = new HttpHeaders().set('Accept','application/json')
@@ -116,7 +125,16 @@ export class HospitalService {
 
     const payload = review 
 
-    return this.http.post(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, payload , { headers });
+    if(countryCode == 'us'){
+      return this.http.post(`${this.HOSPITAL_URL}/hospital/${facilityId}/review`, payload , { headers });
+    }
+
+    if(countryCode == 'sg'){
+      return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/review`, payload , { headers });
+    }
+
+    return;
+
   }
 
   ////////////////////////////////////
@@ -189,12 +207,20 @@ export class HospitalService {
 
   //////////////////////////////////////////////
 
-  // GET /api/hospitals/sg/hospital/{ethAddress}
-  getHospitalByEthAddress(ethAddress:string){
+  // //GET /api/hospitals/sg/hospital/{ethAddress}
+  // getHospitalSgByEthAddress(ethAddress:string){
+  //   const headers = new HttpHeaders().set('Accept','application/json');
+
+  //   return this.http.get(`${this.HOSPITAL_SG_URL}/hospital/${ethAddress}`, { headers });
+  // }
+
+  // GET api/hospitals/sg/hospital/{facilityId}
+  getHospitalSgByFacilityId(facilityId:string){
     const headers = new HttpHeaders().set('Accept','application/json');
 
-    return this.http.get(`${this.HOSPITAL_SG_URL}/hospital/${ethAddress}`, { headers });
+    return this.http.get(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}`, { headers });
   }
+
 
   updateStatistic(form:any, password:string){
 

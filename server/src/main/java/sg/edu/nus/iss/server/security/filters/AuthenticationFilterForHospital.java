@@ -17,6 +17,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForHospital;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForMoh;
 
 public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticationFilter{
 
@@ -72,6 +74,7 @@ public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticat
         // send back a JWT 
         String token = JWT.create()
                           .withClaim("userRole", "hospital")
+                          .withClaim("facilityId", ((CustomAuthenticationManagerForHospital) this.getAuthenticationManager()).getFacilityId(authResult))
                           .withSubject(authResult.getName())
                           .withExpiresAt(new Date(System.currentTimeMillis() + 7200000))
                           .sign(Algorithm.HMAC512(this.getSecretKey()));

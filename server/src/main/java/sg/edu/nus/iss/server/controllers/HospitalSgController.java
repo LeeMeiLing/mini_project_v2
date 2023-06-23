@@ -1,12 +1,16 @@
 package sg.edu.nus.iss.server.controllers;
 
 import java.io.StringReader;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -22,7 +27,12 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
+import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
+import sg.edu.nus.iss.server.models.EthHospitalReview;
+import sg.edu.nus.iss.server.models.Hospital;
+import sg.edu.nus.iss.server.models.HospitalReview;
+import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.Statistic;
 import sg.edu.nus.iss.server.services.HospitalSgService;
@@ -105,7 +115,7 @@ public class HospitalSgController {
 
     // GET /api/hospitals/sg/statistic/pending-verify
     @GetMapping(path = "/statistic/pending-verify", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getHospitalsByStatPendingVerify(){
+    public ResponseEntity<String> getHospitalsByStatPendingVerify() throws Exception{
         
 
         List<HospitalSg> hospitals = hospSgSvc.getHospitalsByStatPendingVerify();
@@ -150,8 +160,82 @@ public class HospitalSgController {
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
-        
+    }
+
+    // GET api/hospitals/sg/hospital/{facilityId}
+     @GetMapping(path ={"/hospital/{facilityId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospitalSgByFacilityId(@PathVariable String facilityId) throws Exception{
+
+        HospitalSg hospital = hospSgSvc.findHospitalSgById(facilityId);
+
+        JsonObjectBuilder joB = Json.createObjectBuilder();
+
+        joB.add("hospital", hospital.toJson());
+        joB.add("totalReview", hospSgSvc.getHospitalSgReviewCountByFacilityId(facilityId));
+        Integer latestVerifiedStat = hospSgSvc.getLatestVerifiedStatIndex(facilityId);
+        if(latestVerifiedStat >= 0){
+            joB.add("latestStatIndex", latestVerifiedStat);
+        }
+
+        JsonObject payload = joB.build();
+
+        System.out.println("in controller getHospitalSgByFacilityId: " + payload.toString()); // debug
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+    }
+
+     /*
+     * // POST /api/hospitals/sg/hospital/{facilityId}/review
+     */
+    @PostMapping(path ={"/hospital/{facilityId}/review"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> postHospitalReview(@PathVariable String facilityId, @RequestBody HospitalReview hospitalReview)
+    throws Exception{
+
+        boolean posted = hospSgSvc.postHospitalReview(facilityId, hospitalReview);
+
+        JsonObject payload =  Json.createObjectBuilder().add("posted", posted).build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
     }
 
 
+     /*
+     * GET /api/hospitals/sg/hospital/{facilityId}/review
+     *  this.reviews = r['reviews'];
+        this.totalReview = r['totalReview'];
+        this.reviewSummary = r['reviewSummary'];
+     */
+    @GetMapping(path ={"/hospital/{facilityId}/review"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getHospitalReviews(@PathVariable String facilityId){
+
+        Integer totalReview = hospSgSvc.getHospitalSgReviewCountByFacilityId(facilityId);
+
+        List<HospitalReview> reviews = null;
+        HospitalReviewSummary reviewSummary;
+
+        if(totalReview > 0){
+
+            reviews = hospSgSvc.getHospitalReviews(facilityId);
+            reviewSummary =  hospSgSvc.getHospitalSgReviewSummary(facilityId);
+
+        }else{
+            throw new ResultNotFoundException("Reviews");
+        }
+
+        JsonObjectBuilder joB = Json.createObjectBuilder();
+        joB.add("totalReview", totalReview);
+
+        JsonArrayBuilder reviewArrBuilder = Json.createArrayBuilder();
+        reviews.stream().map(r -> r.toJson()).forEach(j -> reviewArrBuilder.add(j));
+        joB.add("reviews", reviewArrBuilder.build());
+
+        joB.add("reviewSummary", reviewSummary.toJson());
+
+        JsonObject payload = joB.build();
+        
+        System.out.println("in controller getHospital: " + payload.toString()); // debug
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+    }
 }

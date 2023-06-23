@@ -129,12 +129,6 @@ export class LoginComponent implements OnInit{
       console.log('result: ', result) // debug
       const status = result.status
       console.log('sign in as hospital, status ', status) // debug
-      // this.hospSvc.getHospitalByEthAddress(this.form.value['ethAddress']).subscribe({
-      //   next:(r:any)=>{
-      //     this.facilityId = r as HospitalSg['facilityId']
-      //     console.log('facilityId: ' + this.facilityId)
-      //   }
-      // });
 
       this.router.navigate(['/home/hospital']);
 

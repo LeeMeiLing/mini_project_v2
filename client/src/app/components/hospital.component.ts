@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HospitalService } from '../services/hospital.service';
-import { Hospital, HospitalReview, ReviewSummary } from '../models';
+import { Hospital, HospitalReview, HospitalSg, ReviewSummary } from '../models';
 import { JwtCookieService } from '../services/jwt-cookie.service';
 
 @Component({
@@ -14,30 +14,35 @@ export class HospitalComponent implements OnInit, OnDestroy{
 
   param$!:Subscription;
   facilityId!:string;
-  hospital!:Hospital;
+  hospitalCountry!:string;
   totalReview!:number;
   reviews:HospitalReview[] = [];
   reviewSummary!: ReviewSummary;
   userRole!:string;
+  countryCode!:string;
 
-  constructor(private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router, private jwtCookieSvc:JwtCookieService){}
+  hospital!:Hospital;
+  hospitalSg!:HospitalSg;
+
+  statIndex!:number;
+
+
+  constructor(private activatedRoute:ActivatedRoute, private hospitalSvc:HospitalService, 
+    private router:Router, private jwtCookieSvc:JwtCookieService){}
  
   ngOnInit(): void {
-    this.param$ = this.actiavtedRoute.params.subscribe(
-      (params) => {
-        this.facilityId = params['facilityId'];
-        this.hospitalSvc.getHospital(this.facilityId).subscribe({
-          next: (r:any) => {
-            this.hospital = r['hospital'];
-            this.totalReview = r['totalReview'];
-            console.log(this.hospital)
-            this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
-          },
-          error: err => console.error(err),
-          complete: () => console.log('completed getHospital()')
-        });
-      }
-    );
+    this.param$ = this.activatedRoute.params.subscribe({
+      next: (params) => {
+          this.facilityId = params['facilityId'];
+          this.hospitalCountry = params['hospitalCountry'];
+          this.userRole = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).userRole;
+          if(this.userRole == 'moh'){
+            this.countryCode = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).countryCode.toLowerCase();
+          }
+          this.getHospital()
+      },
+      
+    });
 
   }
 
@@ -45,8 +50,45 @@ export class HospitalComponent implements OnInit, OnDestroy{
     this.param$.unsubscribe();
   }
 
+  getHospital(){
+
+    if(this.hospitalCountry == 'us'){
+      this.hospitalSvc.getHospital(this.facilityId).subscribe({
+        next: (r:any) => {
+          this.hospital = r['hospital'];
+          this.totalReview = r['totalReview'];
+          console.log(this.hospital)
+          
+        },
+        error: err => console.error(err),
+        complete: () => console.log('completed getHospitalUs()')
+      });
+    }
+
+    if(this.hospitalCountry == 'sg'){
+      this.hospitalSvc.getHospitalSgByFacilityId(this.facilityId).subscribe({
+        next: (r:any) => {
+          this.hospitalSg = r['hospital'];
+          this.totalReview = r['totalReview'];
+          this.statIndex = r['latestStatIndex']
+          console.log(this.hospitalSg)
+          
+        },
+        error: (err) => console.error(err),
+        complete: () => console.log('completed getHospitalSg()')
+      });
+    }
+    
+  }
+  
+
+  goToStatistic(){
+    this.router.navigate(['/statistic', this.statIndex])
+  }
+
   showReview(){
-    this.hospitalSvc.getHospitalReview(this.facilityId).subscribe({
+
+    this.hospitalSvc.getHospitalReview(this.hospitalCountry,this.facilityId)?.subscribe({
       next: (r:any) => {
         this.reviews = r['reviews'];
         this.totalReview = r['totalReview'];
@@ -55,10 +97,19 @@ export class HospitalComponent implements OnInit, OnDestroy{
       error: err => console.error(err),
       complete: () => console.log('completed getHospitalReview()')
     });
+  
   }
 
   goToReview(){
-    this.router.navigate(['/reviewHospital',this.hospital.facilityId])
+
+    if(this.hospitalCountry == 'us'){
+      this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospital.facilityId])
+    } 
+    
+    if(this.hospitalCountry == 'sg'){
+      this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospitalSg.facilityId])
+    }
+    
   }
 
 }

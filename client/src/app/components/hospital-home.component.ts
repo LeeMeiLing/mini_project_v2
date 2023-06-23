@@ -9,17 +9,9 @@ import { Subscription } from 'rxjs';
 })
 export class HospitalHomeComponent implements OnInit{
 
-  param$!:Subscription;
-  // facilityId!:string;
-
-  // constructor(private activatedRoute:ActivatedRoute){}
 
   ngOnInit(): void {
-    // this.param$ = this.activatedRoute.params.subscribe({
-    //   next: (params) => {
-    //     this.facilityId = params['facilityId']
-    //   }
-    // })
+
   }
 
 }

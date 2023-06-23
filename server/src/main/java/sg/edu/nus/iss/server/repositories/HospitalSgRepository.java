@@ -1,17 +1,27 @@
 package sg.edu.nus.iss.server.repositories;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.iss.server.constants.SqlQueryConstant;
+import sg.edu.nus.iss.server.models.HospitalReview;
+import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
 
 
@@ -94,7 +104,7 @@ public class HospitalSgRepository {
 
     public Optional<HospitalSg> findHospitalSgByFacilityId(String facilityId){
 
-         try{
+        try{
 
             HospitalSg hosp = jdbcTemplate.queryForObject(SqlQueryConstant.FIND_HOSPITAL_SG_BY_FACILITYID, BeanPropertyRowMapper.newInstance(HospitalSg.class), facilityId);
             return Optional.of(hosp);
@@ -136,20 +146,20 @@ public class HospitalSgRepository {
     }
 
 
-    public Optional<List<HospitalSg>> getHospitalsByStatPendingVerify() {
+    // public Optional<List<HospitalSg>> getHospitalsByStatPendingVerify() {
 
-        try{
+    //     try{
 
-            // return empty list if not found
-            List<HospitalSg> hospitals = jdbcTemplate.query(SqlQueryConstant.FIND_HOSPITAL_SG_BY_STAT_VERIFICATION_STATUS, BeanPropertyRowMapper.newInstance(HospitalSg.class), false);
-            return Optional.of(hospitals);
+    //         // return empty list if not found
+    //         List<HospitalSg> hospitals = jdbcTemplate.query(SqlQueryConstant.FIND_HOSPITAL_SG_BY_STAT_VERIFICATION_STATUS, BeanPropertyRowMapper.newInstance(HospitalSg.class), false);
+    //         return Optional.of(hospitals);
 
-        }catch(Exception ex){
-            ex.printStackTrace();
-            return Optional.empty();
-        }
+    //     }catch(Exception ex){
+    //         ex.printStackTrace();
+    //         return Optional.empty();
+    //     }
 
-    }
+    // }
 
 
     public Optional<List<HospitalSg>> findHospitalsByOwnershipAndName(String hospitalOwnership, String name,
@@ -295,18 +305,188 @@ public class HospitalSgRepository {
             return Optional.empty();
         }
     }
+
+
+    public List<String> getContractAddressFromStat() {
+            
+        List<String> contracts = jdbcTemplate.queryForList(SqlQueryConstant.FIND_DISTINCT_CONTRACT_ADDRESS, String.class);
+        System.out.println(">>> " + contracts);
+        return contracts;
+
+    }
+
+
+    public Optional<HospitalSg> findHospitalSgByContractAddress(String contractAddress) {
+        try{
+
+            HospitalSg hosp = jdbcTemplate.queryForObject(SqlQueryConstant.FIND_HOSPITAL_SG_BY_CONTRACT, BeanPropertyRowMapper.newInstance(HospitalSg.class), contractAddress);
+            return Optional.of(hosp);
+
+        // catch exception if ethAddress not found or more than one entry found for the same eth Address
+        }catch(Exception ex){
+            return Optional.empty();
+        }
+    }
+
+    public Integer insertHospitalReview(HospitalReview review){
+
+        // facility_id, facility_eth_address, reviewer, patientNRIC,
+        // nurse_communication, doctor_communication, staff_responsiveness, communication_about_medicines,
+        // discharge_information, care_transition, cleanliness, quietness, overallRating, willingness_to_recommend, comments
+
+        KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+
+        PreparedStatementCreator psc = new PreparedStatementCreator() {
+
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(SqlQueryConstant.INSERT_HOSPITAL_REVIEW_SG, new String[]{"id"});
+                ps.setString(1, review.getFacilityId());
+                ps.setString(2, review.getReviewer());
+                ps.setString(3, review.getPatientId());
+                ps.setInt(4, review.getNurseCommunication());
+                ps.setInt(5, review.getDoctorCommunication());
+                ps.setInt(6, review.getStaffResponsiveness());
+                ps.setInt(7, review.getCommunicationAboutMedicines());
+                ps.setInt(8, review.getDischargeInformation());
+                ps.setInt(9, review.getCareTransition());
+                ps.setInt(10, review.getCleanliness());
+                ps.setInt(11, review.getQuietness());
+                ps.setInt(12, review.getOverallRating());
+                ps.setInt(13, review.getWillingnessToRecommend());
+                ps.setString(14, review.getComments());
+                ps.setDate(15, review.getReviewDate());
+
+                return ps;
+            }
+            
+        };
+
+        try{
+
+            jdbcTemplate.update(psc,generatedKeyHolder);
+            return generatedKeyHolder.getKey().intValue();
+
+        }catch(Exception ex){
+
+            System.out.println("in HospitalSgRepo insertHospitalReview() catch exception: " + ex );
+            return -1;
+
+        }
+            
+    }
+
+    public boolean saveEthReviewIndex(Integer reviewId, Integer reviewIndex){
+        
+        try{
+            jdbcTemplate.update(SqlQueryConstant.INSERT_REVIEW_INDEX_SG_HOSPITAL, new PreparedStatementSetter() {
+
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+
+                    ps.setInt(1, reviewIndex);
+                    ps.setInt(2, reviewId);
+                    
+                }
+                
+            });
+
+            return true;
+    
+        }catch(Exception ex){
+            System.out.println("in update catch: " + ex);
+            return false;
+        }
+    }
     
 
-    // public Optional<String> getContractAddressByStatisticIndex(Integer statIndex){
+     public Integer getReviewCountByFacilityId(String facilityId){
 
-    //     String contractAddress = null;
+       PreparedStatementSetter ps = new PreparedStatementSetter() {
 
-    //     contractAddress = jdbcTemplate.queryForObject(SqlQueryConstant.GET_STATISTIC_CONTRACT_ADDRESS, String.class, statIndex);
+        @Override
+        public void setValues(PreparedStatement ps) throws SQLException {
+            ps.setString(1, facilityId);
+        }
         
-    //     if(contractAddress != null){
-    //         return Optional.of(contractAddress);
-    //     }
-        
-    //     return Optional.empty();
-    // }
+       };
+
+        return jdbcTemplate.query(SqlQueryConstant.COUNT_REVIEW_SG_HOSPITAL, ps, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+                Integer count = -1;
+
+                while(rs.next()){
+                    count = rs.getInt(1); // if facilityId not found, will return 0
+                }
+
+                System.out.println(">>> In repoSg countReview: " + count); // debug
+                return count;
+            }
+            
+        });
+    }
+
+
+    public Optional<List<HospitalReview>> getHospitalReviews(String facilityId){
+
+        try{
+            List<HospitalReview> reviews = jdbcTemplate.query(SqlQueryConstant.QUERY_REVIEW_SG_HOSPITAL_BY_HOSPITAL, new PreparedStatementSetter() {
+
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+                    ps.setString(1, facilityId);
+                }
+                
+            }, BeanPropertyRowMapper.newInstance(HospitalReview.class));
+
+            System.out.println("get Reviews: " + reviews);
+            if(!reviews.isEmpty()){
+                return Optional.of(reviews);
+            }else{
+                return Optional.empty();
+            }
+
+        }catch(Exception ex){
+            return Optional.empty();
+        }
+
+    }
+
+    public HospitalReviewSummary getHospitalReviewSummary(String facilityId){
+
+        HospitalReviewSummary reviewSummary = jdbcTemplate.queryForObject(SqlQueryConstant.QUERY_REVIEW_SUMMARY_SG_HOSPITAL_BY_HOSPITAL, BeanPropertyRowMapper.newInstance(HospitalReviewSummary.class), facilityId);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SqlQueryConstant.COUNT_REVIEW_RATING_SG_HOSPITAL_BY_HOSPITAL, facilityId);
+
+        while(rs.next()){
+
+            Integer rating = rs.getInt("overall_rating");
+            switch(rating){
+                case 1: reviewSummary.setCountOfRatingOne( rs.getInt("count"));
+                case 2: reviewSummary.setCountOfRatingTwo( rs.getInt("count"));
+                case 3: reviewSummary.setCountOfRatingThree( rs.getInt("count"));
+                case 4: reviewSummary.setCountOfRatingFour( rs.getInt("count"));
+                case 5: reviewSummary.setCountOfRatingFive( rs.getInt("count"));
+            }
+           
+        }
+    
+        return reviewSummary;
+    }
+
+
+    public boolean updateHospitalSgOverallRating(Float newAvgRating, String facilityId) {
+
+         try{
+            
+            jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_RATING, String.valueOf(newAvgRating), facilityId);
+            return true;
+    
+        }catch(Exception ex){
+            System.out.println("in update catch: " + ex);
+            return false;
+        }
+    }
 }

@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.Moh;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForMoh;
 
 public class AuthenticationFilterForMoh extends UsernamePasswordAuthenticationFilter{
 
@@ -73,6 +74,7 @@ public class AuthenticationFilterForMoh extends UsernamePasswordAuthenticationFi
         // send back a JWT 
         String token = JWT.create()
                           .withClaim("userRole", "moh")
+                          .withClaim("countryCode", ((CustomAuthenticationManagerForMoh) this.getAuthenticationManager()).getCountryCode(authResult))
                           .withSubject(authResult.getName())
                           .withExpiresAt(new Date(System.currentTimeMillis() + 7200000))
                           .sign(Algorithm.HMAC512(this.getSecretKey()));

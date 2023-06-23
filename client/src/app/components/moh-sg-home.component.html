@@ -9,7 +9,7 @@
     </h3>
     <table>
         <tr *ngFor="let h of hospitalsPendingVerify">
-            <a [routerLink]="['/hospital/sg/:facilityId']">{{h.facilityName}}</a>
+            <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
         </tr>
     </table>
 </div>
@@ -22,7 +22,7 @@
     </h3>
     <table>
         <tr *ngFor="let h of hospitalsPendingStatVerify">
-            <a [routerLink]="['/hospital/sg/:facilityId']">{{h.facilityName}}</a>
+            <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
         </tr>
     </table>
 </div>
@@ -30,5 +30,13 @@
 <!-- List of All Hospital Registered in Singapore -->
 <!-- select * from sg_hospitals; -->
 <div>
-
+    <h3 *ngIf="allHospitalSg">
+        <span *ngIf="allHospitalSg.length > 0">Total Hospital in Singapore: {{allHospitalSg.length}}</span>
+        <span *ngIf="allHospitalSg.length == 0">No Hospital</span>
+    </h3>
+    <table>
+        <tr *ngFor="let h of allHospitalSg">
+            <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
+        </tr>
+    </table>
 </div>

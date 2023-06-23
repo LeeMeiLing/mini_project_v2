@@ -46,4 +46,9 @@ public class CustomAuthenticationManagerForHospital implements AuthenticationMan
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
     }
+
+    public String getFacilityId(Authentication authentication){
+
+        return  userSvc.findHospitalSgByEthAddress((String) authentication.getPrincipal()).getFacilityId();
+    }
 }

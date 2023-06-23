@@ -13,13 +13,18 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
 
   param$!:Subscription;
   facilityId!:string;
+  hospitalCountry!:string;
   form!:FormGroup
 
   constructor(private fb:FormBuilder, private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router){}
  
   ngOnInit(): void {
     this.param$ = this.actiavtedRoute.params.subscribe(
-      (params) => { this.facilityId = params['facilityId']; }
+      (params) => { 
+        this.facilityId = params['facilityId'];
+        this.hospitalCountry = params['hospitalCountry'];
+
+     }
     )
     this.form = this.createForm();
   }
@@ -49,12 +54,12 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
 
   postReview(){
     console.log(this.form.value)
-    this.hospitalSvc.postHospitalReview(this.facilityId, this.form.value).subscribe({
+    this.hospitalSvc.postHospitalReview(this.hospitalCountry, this.facilityId, this.form.value)?.subscribe({
       next:() => {},
       error: (err) => console.error(err),
       complete:()=>{
         alert('You have posted a review');
-        this.router.navigate(['/hospital',this.facilityId]);
+        this.router.navigate(['/hospital',this.hospitalCountry,this.facilityId]);
       }
     });
     

@@ -1,24 +1,28 @@
 package sg.edu.nus.iss.server.services;
 
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.web3j.crypto.Keys;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
-import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
+import sg.edu.nus.iss.server.models.HospitalReview;
+import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.Statistic;
 import sg.edu.nus.iss.server.repositories.HospitalSgRepository;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForHospital;
 
 @Service
@@ -29,6 +33,9 @@ public class HospitalSgService {
 
     @Autowired
     private EthereumService ethSvc;
+
+    @Autowired
+    private CustomAuthenticationManager customAuthenticationManager;
 
     @Autowired
     private CustomAuthenticationManagerForHospital customAuthenticationManagerForHospital;
@@ -191,17 +198,44 @@ public class HospitalSgService {
         return null;
     }
 
-    public List<HospitalSg> getHospitalsByStatPendingVerify() {
+    public List<HospitalSg> getHospitalsByStatPendingVerify() throws Exception {
 
-         Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByStatPendingVerify();
+        // ====Get Unverified stat from eth contract =========
+        // get distinct stat contract address
+        List<String> contracts = hospSgRepo.getContractAddressFromStat();
+        List<String> hospitalWithStatPending = new ArrayList<>();
 
-        if(opt.isPresent()){
-            System.out.println("in svc stat pending ver: " + opt.get());
-            return opt.get(); // return empty list if not found
+        for(String c : contracts){
+
+            List<Integer> unverifiedStatIndex = ethSvc.getUnverifiedStatIndex(c);
+            if(!unverifiedStatIndex.isEmpty()){
+                hospitalWithStatPending.add(c);
+            }
         }
 
-        return null;
+        // get HospitalSg by contract address & add to a list of HospitalSg
+        List<HospitalSg> hospitals = new ArrayList<>();
+        for(String c : hospitalWithStatPending){
+
+            Optional<HospitalSg> opt = hospSgRepo.findHospitalSgByContractAddress(c);
+            if(opt.isPresent()){
+                hospitals.add(opt.get());
+            }
+        } 
+
+        // return the list of HospitalSg
+        return hospitals;
+
+        //  Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByStatPendingVerify();
+        // if(opt.isPresent()){
+        //     System.out.println("in svc stat pending ver: " + opt.get());
+        //     return opt.get(); // return empty list if not found
+        // }
+        // return null;
+
     }
+
+   
 
     public List<HospitalSg> getHospitalsSgList(String hospitalOwnership, String name, Integer offset,
             Boolean sortByRating, Boolean descending) {
@@ -237,11 +271,132 @@ public class HospitalSgService {
 
     }
 
-    // public Integer countResult(String hospitalOwnership, String name, Boolean sortByRating, Boolean descending) {
+    public HospitalSg findHospitalSgById(String facilityId) {
 
-    //     return hospSgRepo.countResult(hospitalOwnership, name, sortByRating, descending);
-    // }
+        Optional<HospitalSg> opt = hospSgRepo.findHospitalSgByFacilityId(facilityId);
 
+        if (opt.isPresent()) {
+            return opt.get();
+        } else {
+            throw new ResultNotFoundException("Hospital ID: " + facilityId);
+        }
+    }
+
+    // TODO:
+    public Integer getHospitalSgReviewCountByFacilityId(String facilityId) {
+
+        return hospSgRepo.getReviewCountByFacilityId(facilityId);
+    }
+
+    @Transactional(rollbackFor = PostReviewFailedException.class)
+    public boolean postHospitalReview(String facilityId, HospitalReview review) throws Exception {
+
+        review.setFacilityId(facilityId);
+
+        // retrieve current user
+        review.setReviewer(customAuthenticationManager.getCurrentUser());
+
+        // set timestamp
+        review.setReviewDate(new java.sql.Date(new Date().getTime()));
+
+        // ===== perform in transaction =====
+
+        // save to MySql & get id >> for user to see own review
+        Integer reviewId = hospSgRepo.insertHospitalReview(review);
+
+        // update sg_hospital hospital_overall_rating
+        Float newAvgRating = getHospitalSgReviewSummary(facilityId).getAvgOverallRating();
+
+        boolean updated = hospSgRepo.updateHospitalSgOverallRating(newAvgRating, facilityId);
+        if(!updated){
+            throw new PostReviewFailedException("Failed to update new overall rating into sg_hospitals");
+        }
+
+        // save to Smart Contract & get ethReviewIndex >> for hospital owner to
+        // verify Patient
+        if (reviewId > 0) {
+
+            // get contract address from MySql
+            String contractAddress = findHospitalSgById(facilityId).getContractAddress();
+
+            // load the contract
+            HospitalCredentials contract = ethSvc.loadHospitalCredentialsContract(contractAddress, null);
+
+            // generate hash: md5(comments)
+            String toHash = review.getComments();
+            // Static getInstance method is called with hashing MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // digest() method is called to calculate message digest of an input, digest()
+            // return array of byte
+            byte[] digest = md.digest(toHash.getBytes());
+            // Convert byte array into signum representation
+            BigInteger no = new BigInteger(1, digest);
+
+            System.out.println("digest no: " + no); // debug
+
+            try {
+                // add review to Eth Smart Contract
+                TransactionReceipt ethReviewIndex = contract
+                        .addReview(new BigInteger(String.valueOf(reviewId)), review.getPatientId(),
+                                new BigInteger(String.valueOf(review.getOverallRating())), no)
+                        .send();
+                String returnedIndex = ethReviewIndex.getLogs().get(0).getData();
+                Integer reviewIndex = Integer.decode(returnedIndex);
+                // save review index to review table
+                boolean reviewIndexSaved = hospSgRepo.saveEthReviewIndex(reviewId, reviewIndex);
+
+                if (!reviewIndexSaved) {
+                    throw new PostReviewFailedException("Error in hospitalRepo.saveEthReviewIndex()");
+                }
+
+                // debug
+                System.out.println("TransactionReceipt of addReview(): " + ethReviewIndex);
+                System.out.println("review Index: " + reviewIndex);
+
+            } catch (Exception ex) {
+                throw new PostReviewFailedException("Error interacting with smart contract: " + ex);
+
+            }
+
+            // TODO: check if comments has been amended , FOR USE DURING READ REVIEW
+            if (no.equals(contract.reviews(new BigInteger(String.valueOf(0))).send().component5())) {
+                System.out.println("hashMessage is match: !!!");
+            }
+
+        } else {
+            throw new PostReviewFailedException("Error in hospitalRepo.insertHospitalReview()");
+        }
+
+        return true;
+
+    }
+
+    public List<HospitalReview> getHospitalReviews(String facilityId) {
+
+        Optional<List<HospitalReview>> opt = hospSgRepo.getHospitalReviews(facilityId);
+
+        if (opt.isPresent()) {
+            return opt.get();
+        } else {
+            throw new ResultNotFoundException("Review ");
+        }
+    }
+
+    public HospitalReviewSummary getHospitalSgReviewSummary(String facilityId) {
+
+        return hospSgRepo.getHospitalReviewSummary(facilityId);
+       
+    }
+
+    public Integer getLatestVerifiedStatIndex(String facilityId) throws Exception{
+
+        // get hosp contract address
+        String contractAddress = hospSgRepo.findHospitalSgByFacilityId(facilityId).get().getContractAddress();
+
+        // loop through stat to find the latest verified stat then return the index
+        return ethSvc.getLatestVerifiedStatIndex(contractAddress);
+
+    }
 
 
 }

@@ -54,6 +54,47 @@ public class SqlQueryConstant {
 
     public static final String QUERY_HOSPITAL_BY_ID = "select * from us_hospitals where facility_id = ? "; 
 
+
+    /*
+     * using sg_hospital_reviews for sg_hospitals
+     */
+
+    public static final String INSERT_HOSPITAL_REVIEW_SG = """
+        insert into sg_hospital_reviews (facility_id, reviewer, patient_id,
+        nurse_communication, doctor_communication, staff_responsiveness, communication_about_medicines,
+        discharge_information, care_transition, cleanliness, quietness, overall_rating, willingness_to_recommend, comments, review_date) 
+        values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """;
+
+    public static final String INSERT_REVIEW_INDEX_SG_HOSPITAL = "update sg_hospital_reviews set eth_review_index = ? where id = ? ";
+
+    public static final String COUNT_REVIEW_SG_HOSPITAL = "select count(*) from sg_hospital_reviews where facility_id = ?";
+
+    public static final String COUNT_REVIEW_RATING_SG_HOSPITAL_BY_HOSPITAL = "select overall_rating, count(*) as count from sg_hospital_reviews where facility_id = ? group by overall_rating";
+
+    public static final String QUERY_REVIEW_SUMMARY_SG_HOSPITAL_BY_HOSPITAL = """
+        select facility_id, 
+        avg(nurse_communication) as avg_nurse_comm, 
+        avg(doctor_communication) as avg_doctor_comm,
+        avg(staff_responsiveness) as avg_staff_responsiveness, 
+        avg(communication_about_medicines) as avg_comm_abt_med,
+        avg(discharge_information) as avg_discharge_info, 
+        avg(care_transition) as avg_care_transition, 
+        avg(cleanliness) as avg_cleanliness, 
+        avg(quietness) as avg_quietness, 
+        avg(overall_rating) as avg_overall_rating, 
+        avg(willingness_to_recommend) as avg_recommendation
+        from sg_hospital_reviews where facility_id = ?
+    """;
+
+    public static final String QUERY_REVIEW_SG_HOSPITAL_BY_HOSPITAL = "select * from sg_hospital_reviews where facility_id = ?";
+
+    // =========================================================
+
+    /*
+     * using us_hospital_reviews for us_hospitals
+     */
+
     public static final String INSERT_HOSPITAL_REVIEW = """
         insert into us_hospital_reviews (facility_id, reviewer, patient_id,
         nurse_communication, doctor_communication, staff_responsiveness, communication_about_medicines,
@@ -85,6 +126,8 @@ public class SqlQueryConstant {
     """;
 
     public static final String QUERY_REVIEW_US_HOSPITAL_BY_HOSPITAL = "select * from us_hospital_reviews where facility_id = ?";
+
+    // =========================================================
 
     public static final String INSERT_USER = "insert into users (user_email, user_password, user_name, mobile_number, gender) values (?, ?, ?, ?, ?)";
     
@@ -147,7 +190,12 @@ public class SqlQueryConstant {
 
     public static final String QUERY_ALL_HOSPITAL_SG = "select * from sg_hospitals ";
 
+    public static final String FIND_DISTINCT_CONTRACT_ADDRESS = "select distinct(hosp_contract_address) from statistics";
 
-    
+    public static final String FIND_HOSPITAL_SG_BY_CONTRACT = "select * from sg_hospitals where contract_address = ?";
+
+    public static final String UPDATE_SG_HOSPITAL_RATING = "update sg_hospitals set hospital_overall_rating = ? where facility_id = ?";
+
+
 
 }

@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.web3j.crypto.Credentials;
@@ -28,23 +30,23 @@ public class EthereumService {
 
     public EthereumService(String infuraUrl, String privateKey) {
 
-        // @INFURA SEPOLIA
-        web3j = Web3j.build(new HttpService(infuraUrl));
-        System.out.println(">>> InfuraURL " + infuraUrl); // debug
+        // // @INFURA SEPOLIA
+        // web3j = Web3j.build(new HttpService(infuraUrl));
+        // System.out.println(">>> InfuraURL " + infuraUrl); // debug
 
-        // @INFURA SEPOLIA
-        System.out.println(">>> private Key " + privateKey); // debug
-        credentials = Credentials.create(privateKey);
-        System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
+        // // @INFURA SEPOLIA
+        // System.out.println(">>> private Key " + privateKey); // debug
+        // credentials = Credentials.create(privateKey);
+        // System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
 
-        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(2000000000L),BigInteger.valueOf(1500000));
+        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(3500000000L),BigInteger.valueOf(1500000));
 
-        // // @GANACHE
-        // web3j = Web3j.build(new HttpService("http://localhost:8545"));
+        // @GANACHE
+        web3j = Web3j.build(new HttpService("http://localhost:8545"));
 
-        // // @GANACHE
-        // credentials = Credentials.create("0xb7791c35a9621dcc594e4d732df2634b7f87dbd43a9a826f7a1a0ccdda4898fb");
-        // System.out.println(">>> credentials address " + credentials.getAddress());
+        // @GANACHE
+        credentials = Credentials.create("0x5b941717a3a871384948ce16ca331139cab05bb918b092edd1fe4c330d476077");
+        System.out.println(">>> credentials address " + credentials.getAddress());
 
     }
 
@@ -107,6 +109,9 @@ public class EthereumService {
 
     public HospitalCredentials loadHospitalCredentialsContract(String contractAddress, Credentials credentials){
 
+        if(credentials == null){
+            return HospitalCredentials.load(contractAddress, web3j, this.credentials,  staticGasProvider);
+        }
         return HospitalCredentials.load(contractAddress, web3j, credentials,  staticGasProvider);
     }
 
@@ -179,6 +184,44 @@ public class EthereumService {
 
         return decimalValue.doubleValue();
 
+    }
+
+     public List<Integer> getUnverifiedStatIndex(String contractAddress) throws Exception{
+        // >> for each contract, get stat size
+        // >> loop through stat to check for unverified stat, get the index
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+        Integer statSize = contract.getStatisticsSize().send().intValue();
+        
+        Statistic stat;
+        List<Integer> unverifiedStatIndex = new ArrayList<>();
+
+        for(int i=0; i < statSize; i++){
+            stat = getStatistic(contractAddress, i);
+            if(!stat.isVerified()){
+                unverifiedStatIndex.add(i);
+            }
+        }
+
+        return unverifiedStatIndex;
+    }
+
+    public Integer getLatestVerifiedStatIndex(String contractAddress) throws Exception{
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+        Integer statSize = contract.getStatisticsSize().send().intValue();
+        
+        Statistic stat;
+        Integer latestVerifiedStatIndex = -1;
+
+        for(int i=0; i < statSize; i++){
+            
+            stat = getStatistic(contractAddress, i);
+            if(stat.isVerified()){
+                latestVerifiedStatIndex = i;
+            }
+        }
+
+        return latestVerifiedStatIndex;
     }
 
 }

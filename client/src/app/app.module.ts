@@ -26,6 +26,7 @@ import { ShowStatisticComponent } from './components/show-statistic.component';
 import { MohSgHomeComponent } from './components/moh-sg-home.component';
 import { MohUsHomeComponent } from './components/moh-us-home.component';
 import { HospitalSgComponent } from './components/hospital-sg.component';
+import { HospitalUsComponent } from './components/hospital-us.component';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { HospitalSgComponent } from './components/hospital-sg.component';
     ShowStatisticComponent,
     MohSgHomeComponent,
     MohUsHomeComponent,
-    HospitalSgComponent
+    HospitalSgComponent,
+    HospitalUsComponent
   ],
   imports: [
     BrowserModule,
