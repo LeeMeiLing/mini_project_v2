@@ -192,7 +192,7 @@ export class LoginComponent implements OnInit{
         }
       }else{
         alert('Please make sure you are currently connected using the correct account on MetaMask ');
-      }
+      } 
      
     }catch(err){
 

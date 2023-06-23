@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { LoginComponent } from './components/login.component';
@@ -27,6 +27,9 @@ import { MohSgHomeComponent } from './components/moh-sg-home.component';
 import { MohUsHomeComponent } from './components/moh-us-home.component';
 import { HospitalSgComponent } from './components/hospital-sg.component';
 import { HospitalUsComponent } from './components/hospital-us.component';
+import { StatisticListComponent } from './components/statistic-list.component';
+import { ReviewListComponent } from './components/review-list.component';
+import { PasswordComponent } from './components/password.component';
 
 
 @NgModule({
@@ -45,12 +48,16 @@ import { HospitalUsComponent } from './components/hospital-us.component';
     MohSgHomeComponent,
     MohUsHomeComponent,
     HospitalSgComponent,
-    HospitalUsComponent
+    HospitalUsComponent,
+    StatisticListComponent,
+    ReviewListComponent,
+    PasswordComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MaterialModule,
+    FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
@@ -70,6 +77,7 @@ import { HospitalUsComponent } from './components/hospital-us.component';
       multi: true
     }
    ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+
 })
 export class AppModule { }

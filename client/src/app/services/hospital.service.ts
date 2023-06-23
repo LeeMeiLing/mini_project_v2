@@ -101,7 +101,7 @@ export class HospitalService {
     return this.http.get(`${this.HOSPITAL_URL}/hospital/${facilityId}`, { headers });
   }
 
-  getHospitalReview(countryCode:string, facilityId:string){
+  getHospitalReview(countryCode:string|null, facilityId:string|null){
     // GET /api/hospitals/hospital/{facilityId}/review
     const headers = new HttpHeaders().set('Accept','application/json');
 
@@ -285,5 +285,14 @@ export class HospitalService {
     }
 
     return this.http.get(`${this.HOSPITAL_SG_URL}`, { headers, params });
+  }
+
+  // PutMapping /api/hospitals/sg/hospital/{facilityId}/verify-credentials
+  verifyCredentials(facilityId:string, accountPassword:string){
+
+    const headers = new HttpHeaders().set('Accept','application/json')
+      .set('Content-Type', 'application/json');
+    const payload = { 'accountPassword': accountPassword}
+    return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/verify-credentials`, payload ,{ headers });
   }
 }

@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { HospitalService } from '../services/hospital.service';
 import { Hospital, HospitalReview, HospitalSg, ReviewSummary } from '../models';
 import { JwtCookieService } from '../services/jwt-cookie.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PasswordComponent } from './password.component';
 
 @Component({
   selector: 'app-hospital',
@@ -25,9 +27,10 @@ export class HospitalComponent implements OnInit, OnDestroy{
   hospitalSg!:HospitalSg;
 
   statIndex!:number;
+  verifyHospitalCredentialButton!:boolean;
+  accountPassword!:string;
 
-
-  constructor(private activatedRoute:ActivatedRoute, private hospitalSvc:HospitalService, 
+  constructor(public dialog:MatDialog, private activatedRoute:ActivatedRoute, private hospitalSvc:HospitalService, 
     private router:Router, private jwtCookieSvc:JwtCookieService){}
  
   ngOnInit(): void {
@@ -39,7 +42,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
           if(this.userRole == 'moh'){
             this.countryCode = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).countryCode.toLowerCase();
           }
-          this.getHospital()
+          this.getHospital();
       },
       
     });
@@ -61,7 +64,9 @@ export class HospitalComponent implements OnInit, OnDestroy{
           
         },
         error: err => console.error(err),
-        complete: () => console.log('completed getHospitalUs()')
+        complete: () => {
+          console.log('completed getHospitalUs()')
+        }
       });
     }
 
@@ -75,10 +80,47 @@ export class HospitalComponent implements OnInit, OnDestroy{
           
         },
         error: (err) => console.error(err),
-        complete: () => console.log('completed getHospitalSg()')
+        complete: () => {
+          if(this.userRole == 'moh' && this.countryCode == 'sg'){
+            this.showStatisticList();
+          }
+          console.log('completed getHospitalSg()');
+        }
       });
     }
     
+  }
+
+  showVerifyHospitalCredentialsButton(){
+    if(this.userRole=='moh' && this.countryCode=='sg' && !this.hospitalSg.registered){
+      return true;
+    }
+    return false;
+  }
+
+  async verifyCredentials(){
+    // pass accountpassowrd as payload
+    await this.openDialog();
+    // console.log("account password " , this.accountPassword)
+    // this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword).subscribe();
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(PasswordComponent, {
+      width: '250px',
+      data: {accountPassword: this.accountPassword}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      this.accountPassword = result;
+      console.log("account password " , this.accountPassword)
+      this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword).subscribe();
+    });
+  }
+
+  showStatisticList() {
+    this.router.navigate(['/hospital',this.hospitalCountry,this.facilityId,'statistic-list'])
   }
   
 
@@ -88,28 +130,32 @@ export class HospitalComponent implements OnInit, OnDestroy{
 
   showReview(){
 
-    this.hospitalSvc.getHospitalReview(this.hospitalCountry,this.facilityId)?.subscribe({
-      next: (r:any) => {
-        this.reviews = r['reviews'];
-        this.totalReview = r['totalReview'];
-        this.reviewSummary = r['reviewSummary'];
-      },
-      error: err => console.error(err),
-      complete: () => console.log('completed getHospitalReview()')
-    });
+    // this.hospitalSvc.getHospitalReview(this.hospitalCountry,this.facilityId)?.subscribe({
+    //   next: (r:any) => {
+    //     this.reviews = r['reviews'];
+    //     this.totalReview = r['totalReview'];
+    //     this.reviewSummary = r['reviewSummary'];
+    //   },
+    //   error: err => console.error(err),
+    //   complete: () => console.log('completed getHospitalReview()')
+    // });
+
+    this.router.navigate(['/hospital',this.hospitalCountry,this.facilityId,'review-list'])
   
   }
 
   goToReview(){
 
-    if(this.hospitalCountry == 'us'){
-      this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospital.facilityId])
-    } 
+    // if(this.hospitalCountry == 'us'){
+    //   this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospital.facilityId])
+    // } 
     
-    if(this.hospitalCountry == 'sg'){
-      this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospitalSg.facilityId])
-    }
-    
+    // if(this.hospitalCountry == 'sg'){
+    //   this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospitalSg.facilityId])
+    // }
+
+    this.router.navigate(['/reviewHospital',this.hospitalCountry,this.facilityId]);
+
   }
 
 }

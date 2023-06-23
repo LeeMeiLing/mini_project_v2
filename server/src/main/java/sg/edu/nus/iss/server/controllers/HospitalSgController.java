@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
+import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
 import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
@@ -237,5 +239,22 @@ public class HospitalSgController {
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
+    }
+
+    // PutMapping /api/hospitals/sg/hospital/{facilityId}/verify-credentials
+     @PostMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> verifyCredentials(@PathVariable String facilityId, @RequestBody String payload) throws VerificationFailedException {
+
+        System.out.println("payload: " + payload);
+        JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
+        String accountPassword = jo.getString("accountPassword");
+        
+        boolean verified = hospSgSvc.verifyLicense(facilityId, accountPassword);
+
+        if(verified){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }else{
+            throw new VerificationFailedException("Failed to verify hospital credentials");
+        }
     }
 }

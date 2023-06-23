@@ -21,18 +21,43 @@
     </mat-card>
 
     <br>
-    <span *ngIf="totalReview > 0">
-        <button type="button" (click)="showReview()">
-            Reviews ({{totalReview}})
-        </button>
-    </span>
-    <span *ngIf="totalReview == 0">No Review Yet</span>
-    <span><button type="button" (click)="goToReview()">Add A Review</button></span>
-    <span *ngIf="statIndex"><button type="button" (click)="goToStatistic()">Statistic</button></span>
+    <ng-template *ngIf="userRole == 'user'">
+        <span *ngIf="totalReview > 0">
+            <button type="button" (click)="showReview()">
+                Reviews ({{totalReview}})
+            </button>
+        </span>
+        <span *ngIf="totalReview == 0">No Review Yet</span>
+        <span><button type="button" (click)="goToReview()">Add A Review</button></span>
+        <span *ngIf="statIndex"><button type="button" (click)="goToStatistic()">Statistic</button></span>
+    </ng-template>
+
+    <ng-template *ngIf="userRole == 'hospital'">
+        <span *ngIf="totalReview > 0">
+            <button type="button" (click)="showReview()">
+                Reviews ({{totalReview}})
+            </button>
+        </span>
+        <span *ngIf="totalReview == 0">No Review Yet</span>
+    </ng-template>
+
+    <!-- <ng-template *ngIf="userRole == 'moh' && countryCode=='sg'">
+        <span *ngIf="showVerifyHospitalCredentialsButton()">
+            <button type="button" (click)="verifyCredentials()">Verify Hospital Credentials</button>
+        </span>
+    </ng-template> -->
+    <div *ngIf="userRole == 'moh' && countryCode=='sg'">
+        <span *ngIf="showVerifyHospitalCredentialsButton()">
+            <button type="button" (click)="verifyCredentials()">Verify Hospital Credentials</button>
+        </span>
+    </div>
     <br>
     <hr>
 
-    <div *ngIf="reviews.length > 0">
+    <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
+
+    <!-- <div *ngIf="reviews.length > 0">
         <h3>Patient Reviews</h3>
         <table>
             <tr>
@@ -92,7 +117,7 @@
                 </td>
             </tr>
         </table>
-    </div>
+    </div> -->
 
     <ng-template #showHospitalSg>
         <mat-card *ngIf="hospitalSg">
@@ -103,6 +128,18 @@
                 <span>{{hospitalSg.address}}, {{hospitalSg.streetName}}, {{hospitalSg.zipCode}}</span>
                 <br>
                 <span>{{hospitalSg.phoneNumber}}</span>
+                <br>
+                <span>License: {{hospitalSg.license}}</span>
+                <br>
+                <span>Registered: 
+                    <span *ngIf="hospitalSg.registered">Yes</span>
+                    <span *ngIf="!hospitalSg.registered">No</span>
+                </span>
+                <br>
+                <span>JCI Accredited: 
+                    <span *ngIf="hospitalSg.jciAccredited">Yes</span>
+                    <span *ngIf="!hospitalSg.jciAccredited">No</span>
+                </span>
                 <br>
                 <span>Emergency service available: {{hospitalSg.emergencyServices}}</span>
                 <br>

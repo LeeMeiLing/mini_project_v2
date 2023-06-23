@@ -479,7 +479,7 @@ public class HospitalSgRepository {
 
     public boolean updateHospitalSgOverallRating(Float newAvgRating, String facilityId) {
 
-         try{
+        try{
             
             jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_RATING, String.valueOf(newAvgRating), facilityId);
             return true;
@@ -488,5 +488,20 @@ public class HospitalSgRepository {
             System.out.println("in update catch: " + ex);
             return false;
         }
+    }
+
+
+    public boolean updateHospitalSgRegistered(String facilityId) {
+
+        try{
+            
+            jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_REGISTERED, true ,facilityId);
+            return true;
+    
+        }catch(Exception ex){
+            System.out.println("in update catch: " + ex);
+            return false;
+        }
+
     }
 }

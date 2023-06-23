@@ -51,4 +51,10 @@ public class CustomAuthenticationManagerForMoh implements AuthenticationManager 
 
         return  userSvc.getMohByEthAddress((String) authentication.getPrincipal()).getCountryCode();
     }
+
+    public Moh getMoh(){
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return  userSvc.getMohByEthAddress((String) authentication.getPrincipal());
+    }
 }

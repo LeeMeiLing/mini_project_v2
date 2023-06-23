@@ -73,6 +73,7 @@ export class SignUpHospitalComponent implements OnInit{
 
   async register(){
 
+    // TURN OFF FOR GANACHE ONLY !!!!!!!!!!!!!!!!!!!!!!!!!
     // if(await this.privateKeyNotMatched()){
     //   alert("Private key invalid. Please connect to the correct account and enter a valid private key.");
     //   return;

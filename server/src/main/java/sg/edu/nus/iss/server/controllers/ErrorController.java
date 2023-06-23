@@ -11,6 +11,7 @@ import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
+import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
 
 @RestControllerAdvice
 public class ErrorController {
@@ -39,9 +40,16 @@ public class ErrorController {
         
     }
 
-    
     @ExceptionHandler(UpdateStatisticFailedException.class)
     public ResponseEntity<String> handleUpdateStatisticFailedException(UpdateStatisticFailedException ex){
+
+        JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(payload.toString());
+        
+    }
+
+    @ExceptionHandler(VerificationFailedException.class)
+    public ResponseEntity<String> handleVerificationFailedException(VerificationFailedException ex){
 
         JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(payload.toString());

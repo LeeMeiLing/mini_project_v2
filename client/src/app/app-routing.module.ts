@@ -14,6 +14,8 @@ import { MohSgHomeComponent } from './components/moh-sg-home.component';
 import { MohUsHomeComponent } from './components/moh-us-home.component';
 import { HospitalSgComponent } from './components/hospital-sg.component';
 import { HospitalUsComponent } from './components/hospital-us.component';
+import { StatisticListComponent } from './components/statistic-list.component';
+import { ReviewListComponent } from './components/review-list.component';
 
 const routes: Routes = [
   { path:'', component:LoginComponent},
@@ -24,7 +26,12 @@ const routes: Routes = [
   { path:'home/moh/sg', component:MohSgHomeComponent},
   { path:'home/moh/us', component:MohUsHomeComponent},
   { path:'searchHospital', component:SearchHospitalComponent},
-  { path:'hospital/:hospitalCountry/:facilityId',component:HospitalComponent},
+  { path:'hospital/:hospitalCountry/:facilityId',component:HospitalComponent, 
+    children:[
+      { path:'review-list',component:ReviewListComponent },
+      { path:'statistic-list',component:StatisticListComponent }
+    ]
+  },
   { path:'reviewHospital/:hospitalCountry/:facilityId',component:HospitalReviewComponent},
   { path:'statistic',component:StatisticComponent},
   { path:'statistic/:statIndex',component:ShowStatisticComponent},

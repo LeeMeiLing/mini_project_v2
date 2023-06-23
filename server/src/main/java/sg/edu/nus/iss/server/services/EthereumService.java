@@ -2,6 +2,7 @@ package sg.edu.nus.iss.server.services;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
@@ -123,8 +125,7 @@ public class EthereumService {
 
     }
 
-    public BigInteger updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception {
-
+    public Credentials createCredentialsFromKeyStore(byte[] keyStore, String accountPassword) throws IOException, CipherException{
         // create credentials from keystore & password
         File file = File.createTempFile("temp","txt");
         FileWriter writer = new FileWriter(file);
@@ -132,7 +133,20 @@ public class EthereumService {
         writer.write(new String(keyStore, StandardCharsets.UTF_8));
         writer.close();
         
-        Credentials credentials = WalletUtils.loadCredentials(accountPassword, file);
+        return WalletUtils.loadCredentials(accountPassword, file);
+
+    }
+
+    public BigInteger updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception {
+
+        // // create credentials from keystore & password
+        // File file = File.createTempFile("temp","txt");
+        // FileWriter writer = new FileWriter(file);
+        
+        // writer.write(new String(keyStore, StandardCharsets.UTF_8));
+        // writer.close();
+        
+        Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
         System.out.println(">>>>>> in eth svc, credentials acc: " + credentials.getAddress()); // debug
 
         // load contract from contractAddress
@@ -222,6 +236,18 @@ public class EthereumService {
         }
 
         return latestVerifiedStatIndex;
+    }
+
+    public void verifyLicense(String contractAddress, byte[] keyStore, String accountPassword) throws Exception {
+
+        Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
+
+        System.out.println("In eth svc managed to create credentials: " + credentials.getAddress());
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        contract.verifyLicense().send();
+
     }
 
 }

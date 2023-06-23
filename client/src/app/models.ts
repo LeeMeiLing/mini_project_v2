@@ -112,3 +112,7 @@ export interface HospitalDecodedToken{
     userRole:string,
     facilityId:string
 }
+
+export interface DialogData {
+    accountPassword:string;
+}

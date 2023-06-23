@@ -16,14 +16,17 @@ import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
+import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 import sg.edu.nus.iss.server.models.Statistic;
 import sg.edu.nus.iss.server.repositories.HospitalSgRepository;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForHospital;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForMoh;
 
 @Service
 public class HospitalSgService {
@@ -39,6 +42,10 @@ public class HospitalSgService {
 
     @Autowired
     private CustomAuthenticationManagerForHospital customAuthenticationManagerForHospital;
+
+    @Autowired
+    private CustomAuthenticationManagerForMoh customAuthenticationManagerForMoh;
+
     
     @Transactional(rollbackFor = RegisterHospitalFailedException.class)
     public void registerHospitalSg(HospitalSg hospital, String accountPassword) throws Exception {
@@ -398,5 +405,52 @@ public class HospitalSgService {
 
     }
 
+    
+    public boolean verifyLicense(String facilityId, String accountPassword) throws VerificationFailedException {
+
+        HospitalSg hospital = hospSgRepo.findHospitalSgByFacilityId(facilityId).get();
+
+        Moh moh = customAuthenticationManagerForMoh.getMoh();
+
+        // update contract registered
+        try{
+            ethSvc.verifyLicense(hospital.getContractAddress(),moh.getEncryptedKeyStore(),accountPassword);
+        }catch(Exception ex){
+            throw new VerificationFailedException("Failed to verify license in smart contract");
+        }
+
+        // update MySQL sg_hospitals
+        boolean updated = hospSgRepo.updateHospitalSgRegistered(facilityId);
+
+        if(updated){
+            return true;
+        }else{
+            throw new VerificationFailedException("Failed to update sg_hospitals registered column");
+        }
+
+    }
+
+    public boolean setPenalty(String facilityId) {
+
+        return false;
+    }
+
+    public boolean setUpdateFrequency(String facilityId) {
+        
+        return false;
+    }
+
+    public boolean verifyStatistic(String facilityId) {
+        
+        return false;
+    }
+
+    // hospital owner to verify
+    public boolean verifyPatient(String facilityId) {
+        
+        return false;
+    }
+
+    
 
 }
