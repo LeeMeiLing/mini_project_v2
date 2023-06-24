@@ -504,4 +504,18 @@ public class HospitalSgRepository {
         }
 
     }
+
+    public boolean updateHospitalSgJci(String facilityId) {
+
+        try{
+            
+            jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_JCI, true ,facilityId);
+            return true;
+    
+        }catch(Exception ex){
+            System.out.println("in update catch: " + ex);
+            return false;
+        }
+
+    }
 }

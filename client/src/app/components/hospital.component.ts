@@ -2,10 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HospitalService } from '../services/hospital.service';
-import { Hospital, HospitalReview, HospitalSg, ReviewSummary } from '../models';
+import { Hospital, HospitalDecodedToken, HospitalReview, HospitalSg, MohDecodedToken, ReviewSummary } from '../models';
 import { JwtCookieService } from '../services/jwt-cookie.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PasswordComponent } from './password.component';
+import { FrequencyPenaltyComponent } from './frequency-penalty.component';
 
 @Component({
   selector: 'app-hospital',
@@ -22,6 +23,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
   reviewSummary!: ReviewSummary;
   userRole!:string;
   countryCode!:string;
+  userFacilityId!:string;
 
   hospital!:Hospital;
   hospitalSg!:HospitalSg;
@@ -29,6 +31,13 @@ export class HospitalComponent implements OnInit, OnDestroy{
   statIndex!:number;
   verifyHospitalCredentialButton!:boolean;
   accountPassword!:string;
+  toVerify!:string;
+  updateFrequency!: string;
+  penalty!: string;
+
+  currentUpdateFrequency!: string;
+  currentPenalty!: string;
+
 
   constructor(public dialog:MatDialog, private activatedRoute:ActivatedRoute, private hospitalSvc:HospitalService, 
     private router:Router, private jwtCookieSvc:JwtCookieService){}
@@ -38,10 +47,17 @@ export class HospitalComponent implements OnInit, OnDestroy{
       next: (params) => {
           this.facilityId = params['facilityId'];
           this.hospitalCountry = params['hospitalCountry'];
-          this.userRole = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).userRole;
+          this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
+          console.log('>> userRole: ', this.userRole)
           if(this.userRole == 'moh'){
-            this.countryCode = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).countryCode.toLowerCase();
+            const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as MohDecodedToken;
+            this.countryCode =decodedToken.countryCode.toLowerCase();
           }
+          //  if hospital can access hospital component !
+          // if(this.userRole == 'hospital'){
+          //   const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
+          //   this.userFacilityId = decodedToken.facilityId;
+          // }
           this.getHospital();
       },
       
@@ -82,8 +98,12 @@ export class HospitalComponent implements OnInit, OnDestroy{
         error: (err) => console.error(err),
         complete: () => {
           if(this.userRole == 'moh' && this.countryCode == 'sg'){
+            this.getCurrentUpdateFrequencyAndPenalty();
             this.showStatisticList();
           }
+          // if(this.userRole == 'hospital' && this.userFacilityId == this.facilityId){
+          //   this.getCurrentUpdateFrequencyAndPenalty();
+          // }
           console.log('completed getHospitalSg()');
         }
       });
@@ -91,17 +111,72 @@ export class HospitalComponent implements OnInit, OnDestroy{
     
   }
 
-  showVerifyHospitalCredentialsButton(){
-    if(this.userRole=='moh' && this.countryCode=='sg' && !this.hospitalSg.registered){
-      return true;
-    }
-    return false;
+  getCurrentUpdateFrequencyAndPenalty(){
+    this.hospitalSvc.getCurrentUpdateFrequencyAndPenalty(this.facilityId).subscribe({
+      next:(r : any)=>{
+        this.currentUpdateFrequency = r['currentUpdateFrequency'];
+        this.currentPenalty = r['currentPenalty'];
+      },
+      error: (err) => console.error(err),
+      complete: () => {
+        console.log('complete getCurrentUpdateFrequencyAndPenalty()')
+      }
+    });
   }
 
   verifyCredentials(){
 
+    this.toVerify = 'license'
     this.openDialog();
 
+  }
+
+  verifyJci(){
+
+    this.toVerify = 'jci'
+    this.openDialog();
+
+  }
+
+  setFrequencyAndPenalty(){
+    const dialogRef = this.dialog.open(FrequencyPenaltyComponent, {
+      width: '250px',
+      data: {
+        updateFrequency: this.updateFrequency,
+        penalty: this.penalty,
+        accountPassword: this.accountPassword
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      console.log('result: ', result);
+      this.updateFrequency = result.updateFrequency;
+      this.penalty = result.penalty;
+      this.accountPassword = result.accountPassword;
+
+      this.hospitalSvc.setFrequencyAndPenalty(this.facilityId, this.accountPassword, this.updateFrequency, this.penalty).subscribe({
+        next:()=>{
+          alert('Verification successful'); // TODO: display loading message while waiting
+        },
+        error:(err)=>{
+          console.error(err);
+          if(err.status == 401){
+            alert(err.error.error);
+          }
+          this.updateFrequency = '';
+          this.penalty='';
+          this.accountPassword = '';
+        },
+        complete:()=>{
+          this.updateFrequency = '';
+          this.penalty='';
+          this.accountPassword = '';
+          this.getHospital()
+        }
+      });
+    }
+    );
   }
 
   openDialog(): void {
@@ -114,7 +189,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
       console.log('The dialog was closed');
       this.accountPassword = result;
       console.log("account password " , this.accountPassword)
-      this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword).subscribe({
+      this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword, this.toVerify).subscribe({
         next:()=>{
           alert('Verification successful'); // TODO: display loading message while waiting
         },
@@ -123,8 +198,10 @@ export class HospitalComponent implements OnInit, OnDestroy{
           if(err.status == 401){
             alert(err.error.error);
           }
+          this.accountPassword = '';
         },
         complete:()=>{
+          this.accountPassword = '';
           this.getHospital()
         }
       });

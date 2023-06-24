@@ -21,7 +21,7 @@
     </mat-card>
 
     <br>
-    <ng-template *ngIf="userRole == 'user'">
+    <div *ngIf="userRole == 'user'">
         <span *ngIf="totalReview > 0">
             <button type="button" (click)="showReview()">
                 Reviews ({{totalReview}})
@@ -30,23 +30,42 @@
         <span *ngIf="totalReview == 0">No Review Yet</span>
         <span><button type="button" (click)="goToReview()">Add A Review</button></span>
         <span *ngIf="statIndex"><button type="button" (click)="goToStatistic()">Statistic</button></span>
-    </ng-template>
+    </div>
 
-    <ng-template *ngIf="userRole == 'hospital'">
+    <div *ngIf="userRole == 'hospital'">
         <span *ngIf="totalReview > 0">
             <button type="button" (click)="showReview()">
                 Reviews ({{totalReview}})
             </button>
         </span>
         <span *ngIf="totalReview == 0">No Review Yet</span>
-    </ng-template>
+    </div>
 
-    <ng-template *ngIf="userRole == 'moh' && countryCode=='sg'">
-        <span *ngIf="showVerifyHospitalCredentialsButton()">
+    <div *ngIf="userRole == 'moh' && countryCode=='sg'">
+
+        <p>
+            <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
+                Statistic update frequency: {{currentUpdateFrequency}} (days)
+                <br>
+                Penalty for late update: {{currentPenalty}} (Gwei)
+            </span>
+            <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
+                Update frequency and penalty has not been set
+            </span>
+        </p>
+
+        <span *ngIf="!hospitalSg.registered">
             <button type="button" (click)="verifyCredentials()">Verify Hospital Credentials</button>
         </span>
-    </ng-template>
-   
+        <br>
+        <span *ngIf="!hospitalSg.jciAccredited">
+            <button type="button" (click)="verifyJci()">Verify JCI Accreditation</button>
+        </span>
+        <span>
+            <button type="button" (click)="setFrequencyAndPenalty()">Set statistic update frequency and penalty</button>
+        </span>
+        <br>
+    </div>
 
     <br>
     <hr>

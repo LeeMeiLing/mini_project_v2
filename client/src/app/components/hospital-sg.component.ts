@@ -13,7 +13,7 @@ export class HospitalSgComponent implements OnInit{
   constructor(private jwtCookieSvc:JwtCookieService){}
 
   ngOnInit(): void {
-    this.userRole = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).userRole;
+    this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
   }
 
 }

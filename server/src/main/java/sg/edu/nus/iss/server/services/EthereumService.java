@@ -20,6 +20,7 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tuples.generated.Tuple9;
 import org.web3j.tx.gas.StaticGasProvider;
 
+import sg.edu.nus.iss.server.exceptions.UpdateContractFailedException;
 import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
 import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
@@ -66,11 +67,10 @@ public class EthereumService {
 
     }
 
-    // TODO: use MOH's credentials from front end to deploy contract
     // EthHospitalReview contract deployed by MOH
-    public EthHospitalReview deployEthHospitalReviewContract() throws Exception{
+    public EthHospitalReview deployEthHospitalReviewContract(byte[] keyStore, String accountPassword) throws Exception{
 
-        System.out.println(">>> credentials address " + credentials.getAddress());
+        Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
 
         EthHospitalReview contract = EthHospitalReview.deploy(web3j, credentials, staticGasProvider).send();
 
@@ -78,9 +78,14 @@ public class EthereumService {
         return contract;
 
     }
+    
+    public EthHospitalReview getEthHospitalReviewContract(String contractAddress, byte[] keyStore, String accountPassword) throws IOException, WrongPasswordException{
 
-    // TODO: use MOH's credentials from front end to get contract
-    public EthHospitalReview getEthHospitalReviewContract(String contractAddress){
+        Credentials credentials = this.credentials;
+
+        if(keyStore != null && accountPassword!= null){
+            credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
+        }
 
         EthHospitalReview contract = EthHospitalReview.load(contractAddress, web3j, credentials, staticGasProvider);
         return contract;
@@ -149,13 +154,6 @@ public class EthereumService {
 
     public BigInteger updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception {
 
-        // // create credentials from keystore & password
-        // File file = File.createTempFile("temp","txt");
-        // FileWriter writer = new FileWriter(file);
-        
-        // writer.write(new String(keyStore, StandardCharsets.UTF_8));
-        // writer.close();
-        
         Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
         System.out.println(">>>>>> in eth svc, credentials acc: " + credentials.getAddress()); // debug
 
@@ -260,6 +258,50 @@ public class EthereumService {
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
 
         contract.verifyLicense().send();
+
+    }
+
+    public void verifyJci(String contractAddress, byte[] keyStore, String accountPassword) throws Exception {
+
+        Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        contract.verifyJciAccredited().send();
+
+    }
+
+    public void setUpdateFrequencyandPenalty(String contractAddress, byte[] keyStore, String accountPassword ,
+        String updateFrequency, String penalty) throws WrongPasswordException, UpdateContractFailedException{
+
+        Credentials credentials;
+        try {
+            credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
+        } catch (IOException | WrongPasswordException e) {
+            throw new WrongPasswordException("Failed to create credentials due to invalid password");
+        }
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        try {
+            contract.setUpdateFrequency(BigInteger.valueOf(Long.parseLong(updateFrequency))).send();
+        } catch (Exception e) {
+            throw new UpdateContractFailedException("Failed to set update frequency in contract");
+        }
+
+        try {
+            contract.setPenalty(BigInteger.valueOf(Long.parseLong(penalty)*1000000000)).send();
+        } catch (Exception e) {
+            throw new UpdateContractFailedException("Failed to set penalty in contract");
+
+        }
+
+    }
+
+    public BigInteger getUpdateFrequency(String contractAddress) throws Exception{
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+        return contract.updateFrequency().send();
 
     }
 

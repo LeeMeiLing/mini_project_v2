@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { JwtCookieService } from '../services/jwt-cookie.service';
+import { HospitalDecodedToken } from '../models';
 
 @Component({
   selector: 'app-hospital-home',
@@ -14,9 +15,10 @@ export class HospitalHomeComponent implements OnInit{
   constructor(private jwtCookieSvc:JwtCookieService){}
 
   ngOnInit(): void {
-    this.userRole = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).userRole;
+    this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
     if(this.userRole == 'hospital'){
-      this.facilityId = this.jwtCookieSvc.decodeHospitalToken(this.jwtCookieSvc.getJwt()).facilityId;
+      const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
+      this.facilityId = decodedToken.facilityId;
     }
 
   }

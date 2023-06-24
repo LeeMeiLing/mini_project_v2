@@ -94,25 +94,37 @@ export interface Statistic {
 }
 
 export interface Moh {
-    countryCode: string,
-    countryName: string,
-    mohEthAddress: string
+    countryCode: string;
+    countryName: string;
+    mohEthAddress: string;
 }
 
 export interface MohDecodedToken{
-    exp:number,
-    sub:string,
-    userRole:string,
-    countryCode:string
+    exp:number;
+    sub:string;
+    userRole:string;
+    countryCode:string;
 }
 
 export interface HospitalDecodedToken{
-    exp:number,
-    sub:string,
-    userRole:string,
-    facilityId:string
+    exp:number;
+    sub:string;
+    userRole:string;
+    facilityId:string;
+}
+
+export interface UserDecodedToken{
+    exp:number;
+    sub:string;
+    userRole:string;
 }
 
 export interface DialogData {
     accountPassword:string | null;
+}
+
+export interface FrequencyPenaltyDialogData {
+    accountPassword:string | null;
+    updateFrequency:string | null;
+    penalty:string | null;
 }

@@ -3,7 +3,7 @@ import { HospitalService } from '../services/hospital.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { JwtCookieService } from '../services/jwt-cookie.service';
-import { HospitalReview, ReviewSummary } from '../models';
+import { HospitalReview, MohDecodedToken, ReviewSummary } from '../models';
 
 @Component({
   selector: 'app-review-list',
@@ -29,15 +29,15 @@ export class ReviewListComponent implements OnInit{
       next: (params)=>{
         this.facilityId = params.get('facilityId');
           this.hospitalCountry = params.get('hospitalCountry');
-          this.userRole = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).userRole;
+          this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
           if(this.userRole == 'moh'){
-            this.countryCode = this.jwtCookieSvc.decodeMohToken(this.jwtCookieSvc.getJwt()).countryCode.toLowerCase();
+            const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as MohDecodedToken;
+            this.countryCode =decodedToken.countryCode.toLowerCase();
           }
           console.log(this.hospitalCountry, this.facilityId, this.userRole)
           this.getHospitalReview();
       }
     });
-
     
   }
 

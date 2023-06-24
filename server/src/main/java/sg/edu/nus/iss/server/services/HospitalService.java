@@ -40,6 +40,7 @@ import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.Moh;
 import sg.edu.nus.iss.server.repositories.HospitalRepository;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManager;
+import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForMoh;
 
 @Service
 public class HospitalService {
@@ -54,6 +55,9 @@ public class HospitalService {
 
     @Autowired
     private CustomAuthenticationManager customAuthenticationManager;
+
+    @Autowired
+    private CustomAuthenticationManagerForMoh customAuthenticationManagerForMoh;
 
     @Autowired
     private EthereumService ethSvc;
@@ -305,6 +309,22 @@ public class HospitalService {
         }
     }
 
+    // public boolean deployEthHospitalReviewContract(String accountPassword) throws Exception{
+
+    //     // get keystore from MySQL
+    //     Moh moh = customAuthenticationManagerForMoh.getMoh();
+        
+    //     EthHospitalReview contract = ethSvc.deployEthHospitalReviewContract(moh.getEncryptedKeyStore(), accountPassword);
+    //     if(contract != null){
+    //         return true;
+    //     }
+
+    //     //save contract address to us_hospital_reviews
+    //     // update us_hospitals set review_contract_address = ?
+    //     return false;
+    
+    // }
+
     @Transactional(rollbackFor = PostReviewFailedException.class)
     public boolean postHospitalReview(String facilityId, HospitalReview review) throws Exception {
 
@@ -327,31 +347,17 @@ public class HospitalService {
 
             EthHospitalReview contract;
 
-            // check if contract address already exists
             String contractAddress = findHospitalById(facilityId).getReviewContractAddress();
 
-            if (contractAddress != null) {
-
-                contract = ethSvc.getEthHospitalReviewContract(contractAddress);
-                System.out.println(
-                        ">> In Hosp Svc (try, if) deployed contract address: " + contract.getContractAddress());
-
-            } else {
-                System.out.println(">> in Hosp Svc, else block:");
-
-                contract = ethSvc.deployEthHospitalReviewContract();
-
-                // save contract address into us_hospitals table in MySQL
-                boolean contractAddressSaved = hospitalRepo
-                        .saveReviewContractAddressForAll(contract.getContractAddress());
-                if (!contractAddressSaved) {
-                    throw new PostReviewFailedException("Error in hospitalRepo.saveReviewContractAddressForAll()");
-                }
-
-                System.out
-                        .println("In Hosp Svc (try, else) deployed contract address: " + contract.getContractAddress());
+            contract = ethSvc.getEthHospitalReviewContract(contractAddress,null,null);
+          
+            // save contract address into us_hospitals table in MySQL
+            boolean contractAddressSaved = hospitalRepo
+                    .saveReviewContractAddressForAll(contract.getContractAddress());
+            if (!contractAddressSaved) {
+                throw new PostReviewFailedException("Error in hospitalRepo.saveReviewContractAddressForAll()");
             }
-
+        
             // generate hash: md5(comments)
             String toHash = review.getComments();
             // Static getInstance method is called with hashing MD5
@@ -435,5 +441,8 @@ public class HospitalService {
         
         return hospitalRepo.getMohList();
     }
+
+    // verifyPatient by MOH
+    // Moh moh = customAuthenticationManagerForMoh.getMoh();
 
 }

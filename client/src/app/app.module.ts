@@ -30,6 +30,7 @@ import { HospitalUsComponent } from './components/hospital-us.component';
 import { StatisticListComponent } from './components/statistic-list.component';
 import { ReviewListComponent } from './components/review-list.component';
 import { PasswordComponent } from './components/password.component';
+import { FrequencyPenaltyComponent } from './components/frequency-penalty.component';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { PasswordComponent } from './components/password.component';
     HospitalUsComponent,
     StatisticListComponent,
     ReviewListComponent,
-    PasswordComponent
+    PasswordComponent,
+    FrequencyPenaltyComponent
   ],
   imports: [
     BrowserModule,

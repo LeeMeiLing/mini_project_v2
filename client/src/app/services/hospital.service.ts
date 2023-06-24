@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class HospitalService {
-
+  
   constructor(private http:HttpClient, private jwtCookieSvc: JwtCookieService) { }
 
   HOSPITAL_URL = environment.apiHospitalUrl;
@@ -287,12 +287,36 @@ export class HospitalService {
     return this.http.get(`${this.HOSPITAL_SG_URL}`, { headers, params });
   }
 
-  // PutMapping /api/hospitals/sg/hospital/{facilityId}/verify-credentials
-  verifyCredentials(facilityId:string, accountPassword:string){
+  // POST /api/hospitals/sg/hospital/{facilityId}/verify-credentials
+  verifyCredentials(facilityId:string, accountPassword:string, toVerify:string){
 
     const headers = new HttpHeaders().set('Accept','application/json')
       .set('Content-Type', 'application/json');
-    const payload = { 'accountPassword': accountPassword}
+    const payload = { 
+                      'accountPassword': accountPassword,
+                      "toVerify": toVerify
+                    }
     return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/verify-credentials`, payload ,{ headers, observe: 'response' });
   }
+
+  // POST /api/hospitals/sg/hospital/{facilityId}/update-frequency-penalty
+  setFrequencyAndPenalty(facilityId: string, accountPassword: string, updateFrequency: string, penalty: string) {
+    const headers = new HttpHeaders().set('Accept','application/json').set('Content-Type', 'application/json');
+    const payload = { 
+      'accountPassword': accountPassword,
+      'updateFrequency': updateFrequency,
+      'penalty': penalty,
+    }
+    return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/update-frequency-penalty`, payload ,{ headers, observe: 'response' });
+
+  }
+
+  // GET /api/hospitals/sg/hospital/{facilityId}/update-frequency-penalty
+  getCurrentUpdateFrequencyAndPenalty(facilityId:string){
+    const headers = new HttpHeaders().set('Accept','application/json');
+  
+    return this.http.get(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/update-frequency-penalty` ,{ headers });
+
+  }
+
 }

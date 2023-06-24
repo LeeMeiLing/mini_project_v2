@@ -15,6 +15,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
+import sg.edu.nus.iss.server.exceptions.UpdateContractFailedException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
 import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
 import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
@@ -46,8 +47,7 @@ public class HospitalSgService {
 
     @Autowired
     private CustomAuthenticationManagerForMoh customAuthenticationManagerForMoh;
-
-    
+   
     @Transactional(rollbackFor = RegisterHospitalFailedException.class)
     public void registerHospitalSg(HospitalSg hospital, String accountPassword) throws Exception {
 
@@ -437,16 +437,58 @@ public class HospitalSgService {
 
     }
 
-    public boolean setPenalty(String facilityId) {
+     public boolean verifyJci(String facilityId, String accountPassword) throws Exception {
 
-        return false;
+        HospitalSg hospital = hospSgRepo.findHospitalSgByFacilityId(facilityId).get();
+
+        Moh moh = customAuthenticationManagerForMoh.getMoh();
+
+        // update contract registered
+        try{
+            ethSvc.verifyJci(hospital.getContractAddress(),moh.getEncryptedKeyStore(),accountPassword);
+        }catch(Exception ex){
+            if(ex instanceof WrongPasswordException){
+                throw ex;
+            }
+            throw new VerificationFailedException("Failed to verify JCI accreditation in smart contract");
+        }
+
+        // update MySQL sg_hospitals
+        boolean updated = hospSgRepo.updateHospitalSgJci(facilityId);
+
+        if(updated){
+            return true;
+        }else{
+            throw new VerificationFailedException("Failed to update sg_hospitals jciAccredited column");
+        }
+
     }
 
-    public boolean setUpdateFrequency(String facilityId) {
+    public boolean setUpdateFrequencyandPenalty(String facilityId, String updateFrequency, String penalty, String accountPassword) throws UpdateContractFailedException, WrongPasswordException {
         
-        return false;
+        HospitalSg hospital = hospSgRepo.findHospitalSgByFacilityId(facilityId).get();
+
+        Moh moh = customAuthenticationManagerForMoh.getMoh();
+
+        ethSvc.setUpdateFrequencyandPenalty(hospital.getContractAddress(), moh.getEncryptedKeyStore() , accountPassword, updateFrequency, penalty);
+        
+        return true;
+       
     }
 
+    public Integer getUpdateFrequency(String facilityId) throws Exception{
+
+        HospitalSg hospital = hospSgRepo.findHospitalSgByFacilityId(facilityId).get();
+        return ethSvc.getUpdateFrequency(hospital.getContractAddress()).intValue();
+    }
+
+    public Integer getPenalty(String facilityId) throws Exception{
+
+        HospitalSg hospital = hospSgRepo.findHospitalSgByFacilityId(facilityId).get();
+        return ethSvc.getPenalty(hospital.getContractAddress()).intValue();
+    }
+
+    // by moh
     public boolean verifyStatistic(String facilityId) {
         
         return false;

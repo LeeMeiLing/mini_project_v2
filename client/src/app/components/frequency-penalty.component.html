@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Set Statistic Update Frequency and Late Update Penalty:</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    Update Frequency in Days <input type="text" matInput [(ngModel)]="data.updateFrequency">
+  </mat-form-field>
+  <mat-form-field>
+    Late Update Penalty Amount in Gwei <input type="text" matInput [(ngModel)]="data.penalty">
+  </mat-form-field>
+  <mat-form-field>
+    Password <input type="password" matInput [(ngModel)]="data.accountPassword">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Submit</button>
+</div>

@@ -200,6 +200,8 @@ public class SqlQueryConstant {
 
     public static final String UPDATE_SG_HOSPITAL_REGISTERED = "update sg_hospitals set registered = ? where facility_id = ?";
 
+    public static final String UPDATE_SG_HOSPITAL_JCI = "update sg_hospitals set jci_accredited = ? where facility_id = ?";
+
 
 
 }

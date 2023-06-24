@@ -14,7 +14,6 @@ export class PasswordComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 
   onNoClick(): void {
-    this.data.accountPassword = null;
     this.dialogRef.close();
   }
   

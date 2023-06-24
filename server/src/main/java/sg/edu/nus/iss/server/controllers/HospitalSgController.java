@@ -30,6 +30,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
+import sg.edu.nus.iss.server.exceptions.UpdateContractFailedException;
 import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
 import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
 import sg.edu.nus.iss.server.models.EthHospitalReview;
@@ -243,19 +244,83 @@ public class HospitalSgController {
     }
 
     // POST /api/hospitals/sg/hospital/{facilityId}/verify-credentials
-     @PostMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> verifyCredentials(@PathVariable String facilityId, @RequestBody String payload) throws Exception {
 
         System.out.println("payload: " + payload);
         JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
         String accountPassword = jo.getString("accountPassword");
-        
-        boolean verified = hospSgSvc.verifyLicense(facilityId, accountPassword);
+        String toVerify = jo.getString("toVerify");
 
-        if(verified){
+        if(toVerify.equalsIgnoreCase("license")){
+            boolean verified = hospSgSvc.verifyLicense(facilityId, accountPassword);
+
+            if(verified){
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }else{
+                throw new VerificationFailedException("Failed to verify hospital credentials");
+            }
+        }else if(toVerify.equalsIgnoreCase("jci")){
+
+            boolean verified = hospSgSvc.verifyJci(facilityId, accountPassword);
+
+            if(verified){
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }else{
+                throw new VerificationFailedException("Failed to verify JCI accreditation");
+            }
+        }
+
+        throw new VerificationFailedException("Verification failed");
+
+    }
+
+    // POST /api/hospitals/sg/hospital/{facilityId}/update-frequency-penalty
+    //   'accountPassword': accountPassword,
+    //   'updateFrequency': updateFrequency,
+    //   'penalty': penalty,
+    @PostMapping(path ={"/hospital/{facilityId}/update-frequency-penalty"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> setUpdateFrequencyPenalty(@PathVariable String facilityId, @RequestBody String payload) throws Exception {
+
+        System.out.println("payload: " + payload);
+        JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
+        String accountPassword = jo.getString("accountPassword");
+        String updateFrequency = jo.getString("updateFrequency");
+        String penalty = jo.getString("penalty");
+
+        boolean updated = hospSgSvc.setUpdateFrequencyandPenalty(facilityId, updateFrequency, penalty, accountPassword);
+
+        if(updated){
             return ResponseEntity.status(HttpStatus.OK).build();
         }else{
-            throw new VerificationFailedException("Failed to verify hospital credentials");
+            throw new UpdateContractFailedException("Failed to verify JCI accreditation");
         }
+        
     }
+  
+
+    // GET /api/hospitals/sg/hospital/{facilityId}/update-frequency-penalty
+        // this.currentUpdateFrequency = r['currentUpdateFrequency'];
+        // this.currentPenalty = r['currentPenalty'];
+    @GetMapping(path ={"/hospital/{facilityId}/update-frequency-penalty"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getUpdateFrequencyPenalty(@PathVariable String facilityId){
+
+        try {
+            Integer updateFrequency = hospSgSvc.getUpdateFrequency(facilityId);
+            Integer penalty = hospSgSvc.getPenalty(facilityId);
+
+            JsonObject payload = Json.createObjectBuilder()
+                .add("currentUpdateFrequency", String.valueOf(updateFrequency))
+                .add("currentPenalty", String.valueOf(penalty/1000000000))  // return penalty amount in Gwei
+                .build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+        } catch (Exception e) {
+            throw new ResultNotFoundException("Failed to get update frequency and penalty from contract");
+        }
+
+    }
+
+
 }
