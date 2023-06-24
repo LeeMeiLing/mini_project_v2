@@ -34,7 +34,7 @@ const routes: Routes = [
   },
   { path:'reviewHospital/:hospitalCountry/:facilityId',component:HospitalReviewComponent},
   { path:'statistic',component:StatisticComponent},
-  { path:'statistic/:statIndex',component:ShowStatisticComponent},
+  { path:'statistic/:facilityId/:statIndex',component:ShowStatisticComponent},
   { path:'**', redirectTo:'/', pathMatch:'full'}
 ];
 

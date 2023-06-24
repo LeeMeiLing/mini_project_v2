@@ -1,1 +1,26 @@
-<p>statistic-list works!</p>
+<div *ngIf="statistics">
+    <table *ngIf="statistics.length > 0; else noStatistic">
+        <tr *ngFor="let s of statistics.reverse(); let i = index">
+            <a [routerLink]="['/statistic',facilityId,statistics.length-i-1]">
+                <td>
+                    Statistic ({{statistics.length-i}}) 
+                </td>
+                <td>
+                    {{timestampToDate(s.timestamp) | date: 'long'}}
+                </td>
+                <td>
+                    <span *ngIf="s.verified">Verified</span>
+                    <span *ngIf="!s.verified">Pending Verification</span>
+                </td>
+            </a>
+            
+            <!-- <td *ngIf="userRole == 'moh' && countryCode == 'sg'">
+                <button type="button" (click)="verifyStatistic(statistics.length-i-1)">Verify</button>
+            </td> -->
+        </tr>
+    </table>
+</div>
+
+<ng-template #noStatistic> 
+    <span>This hospital has not posted any statistic</span>
+</ng-template>

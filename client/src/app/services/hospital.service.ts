@@ -253,6 +253,25 @@ export class HospitalService {
 
   }
 
+  // GET /api/hospitals/sg/statistic-list/{facilityId}
+  getStatisticListByHospital(facilityId: string | null) {
+    const headers = new HttpHeaders().set('Accept','application/json');
+
+    return this.http.get(`${this.HOSPITAL_SG_URL}/statistic-list/${facilityId}`, { headers });
+
+  }
+
+  // POST /api/hospitals/sg/hospital/{facilityId}/statistic/{statIndex}
+  verifyStatistic(facilityId:string | null, statIndex:number, accountPassword:string){
+
+    const headers = new HttpHeaders().set('Accept','application/json')
+      .set('Content-Type', 'application/json');
+    const payload = { 'accountPassword': accountPassword }
+
+    return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/statistic/${statIndex}`, payload ,{ headers, observe: 'response' });
+
+  }
+
   // GET /api/hospitals/sg/pending-verified
   getHospitalSgByPendingVerify(){
     const headers = new HttpHeaders().set('Accept','application/json');

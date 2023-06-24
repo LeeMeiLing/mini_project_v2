@@ -54,10 +54,10 @@ export class HospitalComponent implements OnInit, OnDestroy{
             this.countryCode =decodedToken.countryCode.toLowerCase();
           }
           //  if hospital can access hospital component !
-          // if(this.userRole == 'hospital'){
-          //   const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
-          //   this.userFacilityId = decodedToken.facilityId;
-          // }
+          if(this.userRole == 'hospital'){
+            const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
+            this.userFacilityId = decodedToken.facilityId;
+          }
           this.getHospital();
       },
       
@@ -92,7 +92,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
           this.hospitalSg = r['hospital'];
           this.totalReview = r['totalReview'];
           this.statIndex = r['latestStatIndex']
-          console.log(this.hospitalSg)
+          console.log('statIndex ', this.statIndex)
           
         },
         error: (err) => console.error(err),
@@ -101,9 +101,9 @@ export class HospitalComponent implements OnInit, OnDestroy{
             this.getCurrentUpdateFrequencyAndPenalty();
             this.showStatisticList();
           }
-          // if(this.userRole == 'hospital' && this.userFacilityId == this.facilityId){
-          //   this.getCurrentUpdateFrequencyAndPenalty();
-          // }
+          if(this.userRole == 'hospital' && this.userFacilityId == this.facilityId){
+            this.getCurrentUpdateFrequencyAndPenalty();
+          }
           console.log('completed getHospitalSg()');
         }
       });
@@ -214,7 +214,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
   
 
   goToStatistic(){
-    this.router.navigate(['/statistic', this.statIndex])
+    this.router.navigate(['/statistic', this.facilityId, this.statIndex])
   }
 
   showReview(){

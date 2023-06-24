@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { JwtCookieService } from '../services/jwt-cookie.service';
 import { HospitalService } from '../services/hospital.service';
-import { HospitalSg, Moh } from '../models';
+import { Moh } from '../models';
 import { Web3Service } from '../services/web3.service';
 
 @Component({

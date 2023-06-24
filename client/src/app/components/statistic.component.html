@@ -15,7 +15,5 @@
     <br>
     Efficient use of medical imaging: <input type="number" formControlName="medicalImagingEfficiency">
     <br>
-    Password: <input type="password" [formControl]="accountPassword">
-    <br>
-    <button type="submit" [disabled]="form.invalid || accountPassword.invalid">Submit</button>
+    <button type="submit" [disabled]="form.invalid">Submit</button>
 </form>

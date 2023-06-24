@@ -1,6 +1,7 @@
 <div>
     <a [routerLink]="['/searchHospital']" *ngIf="userRole == 'user'">Back to Search</a>
     <a [routerLink]="['/home/moh',countryCode]" *ngIf="userRole == 'moh'">Back to Home</a>
+    <a [routerLink]="['/home/hospital']" *ngIf="userRole == 'hospital'">Back to Home</a>
 
     <mat-card *ngIf="hospital; else showHospitalSg">
         <mat-card-title>
@@ -29,21 +30,30 @@
         </span>
         <span *ngIf="totalReview == 0">No Review Yet</span>
         <span><button type="button" (click)="goToReview()">Add A Review</button></span>
-        <span *ngIf="statIndex"><button type="button" (click)="goToStatistic()">Statistic</button></span>
+        <span *ngIf="statIndex>=0"><button type="button" (click)="goToStatistic()">Statistic</button></span>
     </div>
 
     <div *ngIf="userRole == 'hospital'">
+        <p  *ngIf="currentUpdateFrequency">
+            <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
+                Statistic update frequency: {{currentUpdateFrequency}} (days)
+                <br>
+                Penalty for late update: {{currentPenalty}} (Gwei)
+            </span>
+            <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
+                Update frequency and penalty has not been set
+            </span>
+        </p>
+        <br>
         <span *ngIf="totalReview > 0">
-            <button type="button" (click)="showReview()">
                 Reviews ({{totalReview}})
-            </button>
         </span>
         <span *ngIf="totalReview == 0">No Review Yet</span>
     </div>
 
     <div *ngIf="userRole == 'moh' && countryCode=='sg'">
 
-        <p>
+        <p  *ngIf="currentUpdateFrequency">
             <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
                 Statistic update frequency: {{currentUpdateFrequency}} (days)
                 <br>
@@ -70,7 +80,6 @@
     <br>
     <hr>
 
-    <router-outlet></router-outlet>
     <router-outlet></router-outlet>
 
     <!-- <div *ngIf="reviews.length > 0">

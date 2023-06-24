@@ -81,8 +81,6 @@ public class HospitalSgController {
 
         Integer statIndex = hospSgSvc.updateStatistic(stat,accountPassword);
 
-        System.out.println("in HospitalSg controller, done updateStatistic()");
-
         JsonObject result = Json.createObjectBuilder().add("statIndex", statIndex).build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(result.toString());
@@ -322,5 +320,45 @@ public class HospitalSgController {
 
     }
 
+    // GET /api/hospitals/sg/statistic-list/{facilityId}
+    // return statisctic[]
+    @GetMapping(path ={"/statistic-list/{facilityId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getStatisticListByHospital(@PathVariable String facilityId){
+
+        try {
+
+            List<Statistic> statistics = hospSgSvc.getStatisticListByHospital(facilityId);
+            
+            JsonArrayBuilder statArrBuilder = Json.createArrayBuilder();
+            statistics.stream().map(s-> s.toJson()).forEach(j-> statArrBuilder.add(j));
+            JsonArray payload = statArrBuilder.build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(payload.toString()); // return empty [] if no stat
+
+        } catch (Exception e) {
+            throw new ResultNotFoundException("Statistic ");
+        }
+
+    }
+
+
+    // POST /api/hospitals/sg/hospital/{facilityId}/statistic/{statIndex}
+    // payload {accountPassword}
+    @PostMapping(path ={"/hospital/{facilityId}/statistic/{statIndex}"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> verifyStatistic(@PathVariable String facilityId, @PathVariable Integer statIndex, @RequestBody String payload) throws Exception{
+
+        System.out.println("payload: " + payload);
+        JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
+        String accountPassword = jo.getString("accountPassword");
+
+        boolean verified = hospSgSvc.verifyStatistic(facilityId, statIndex ,accountPassword);
+
+        if(verified){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+        throw new VerificationFailedException("Failed to verify statistic");
+
+    }
 
 }

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -152,7 +153,7 @@ public class EthereumService {
 
     }
 
-    public BigInteger updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception {
+    public BigInteger updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception{
 
         Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
         System.out.println(">>>>>> in eth svc, credentials acc: " + credentials.getAddress()); // debug
@@ -181,7 +182,11 @@ public class EthereumService {
         Statistic stat = new Statistic(bigIntegerToDouble(result.component1()), bigIntegerToDouble(result.component2()), bigIntegerToDouble(result.component3()),
            bigIntegerToDouble(result.component4()), bigIntegerToDouble(result.component5()), bigIntegerToDouble(result.component6()),
            bigIntegerToDouble(result.component7()), result.component8().toString(), result.component9());
-     
+
+        // Statistic stat = new Statistic(bigIntegerToDouble(result.component1()), bigIntegerToDouble(result.component2()), bigIntegerToDouble(result.component3()),
+        //    bigIntegerToDouble(result.component4()), bigIntegerToDouble(result.component5()), bigIntegerToDouble(result.component6()),
+        //    bigIntegerToDouble(result.component7()), new Date(result.component8().longValue()), result.component9());
+
         return stat;
     }
 
@@ -249,6 +254,23 @@ public class EthereumService {
         return latestVerifiedStatIndex;
     }
 
+    public List<Statistic> getAllStatistic(String contractAddress) throws Exception{
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+        Integer statSize = contract.getStatisticsSize().send().intValue();
+
+        Statistic stat ;
+        List<Statistic> statistics = new ArrayList<>();
+
+        for(int i=0; i < statSize; i++){
+            
+            stat = getStatistic(contractAddress, i);
+            statistics.add(stat);
+        }
+
+        return statistics;
+    }
+
     public void verifyLicense(String contractAddress, byte[] keyStore, String accountPassword) throws Exception {
 
         Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
@@ -303,6 +325,24 @@ public class EthereumService {
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
         return contract.updateFrequency().send();
 
+    }
+
+
+    public void verifyStatistic(String contractAddress, byte[] keyStore, Integer statIndex,
+            String accountPassword) throws Exception{
+
+        Credentials credentials;
+        try {
+            credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
+        } catch (IOException | WrongPasswordException e) {
+            
+            throw new WrongPasswordException("Failed to create credentials due to invalid password");
+        }
+
+        HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        contract.verifyStatistic(BigInteger.valueOf(statIndex)).send();
+        
     }
 
 }

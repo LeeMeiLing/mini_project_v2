@@ -1,10 +1,17 @@
 <!-- Statistic of {{hospital}} -->
-<a [routerLink]="['/home/hospital']">Back to Home</a>
+<a [routerLink]="['/searchHospital']" *ngIf="userRole == 'user'">Back to Search</a>
+<a [routerLink]="['/home/moh',countryCode]" *ngIf="userRole == 'moh'">Back to Home</a>
+<a [routerLink]="['/home/hospital']" *ngIf="userRole == 'hospital'">Back to Home</a>
 
 <div *ngIf="statistic">
     updated on {{dateUpdated | date: 'MMM d, y'}}
 
     <table>
+        <tr *ngIf="userRole == 'moh' && countryCode == 'sg'">
+            <td >
+                <button type="button" (click)="verifyStatistic(statIndex)">Verify</button>
+            </td>
+        </tr>
         <tr>
             <td>Mortality rate</td>
             <td>{{statistic.mortality}}</td>
@@ -35,7 +42,7 @@
         </tr>
         <tr>
             <td>Timestamp</td>
-            <td>{{dateUpdated | date: 'MMM d, y'}}</td>
+            <td>{{dateUpdated | date: 'long'}}</td>
         </tr>
         <tr>
             <td>Verified</td>

@@ -84,7 +84,7 @@ public class HospitalSgService {
     }
 
     @Transactional(rollbackFor = UpdateStatisticFailedException.class)
-    public Integer updateStatistic(Statistic stat, String accountPassword) throws UpdateStatisticFailedException{
+    public Integer updateStatistic(Statistic stat, String accountPassword) throws UpdateStatisticFailedException, WrongPasswordException{
 
         // get current user eth address
         String ethAddress = customAuthenticationManagerForHospital.getCurrentUser();
@@ -126,10 +126,11 @@ public class HospitalSgService {
 
             return index.intValue();
 
-        }catch(Exception ex){
-            ex.printStackTrace();
-            throw new UpdateStatisticFailedException(ex.getMessage());
-
+        }catch(WrongPasswordException ex){
+            throw new WrongPasswordException(ex.getMessage());
+            
+        }catch(Exception ex2){
+            throw new UpdateStatisticFailedException(ex2.getMessage());
         }
 
     }
@@ -195,6 +196,20 @@ public class HospitalSgService {
 
     }
 
+    public List<Statistic> getStatisticListByHospital(String facilityId){
+
+        // get contract address by facilityId
+        String contractAddress = hospSgRepo.findHospitalSgByFacilityId(facilityId).get().getContractAddress();
+
+        try{
+            return ethSvc.getAllStatistic(contractAddress);
+
+        }catch(Exception ex){
+            throw new ResultNotFoundException("Failed to get statistic list");
+        }
+
+    }
+
     public List<HospitalSg> getHospitalsByPendingVerify(){
 
         Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByPendingVerify();
@@ -210,7 +225,7 @@ public class HospitalSgService {
 
         // ====Get Unverified stat from eth contract =========
         // get distinct stat contract address
-        List<String> contracts = hospSgRepo.getContractAddressFromStat();
+        List<String> contracts = hospSgRepo.getContractAddressFromStat(); // if remove stat table, find distinct contract from sg_hospitals
         List<String> hospitalWithStatPending = new ArrayList<>();
 
         for(String c : contracts){
@@ -489,13 +504,27 @@ public class HospitalSgService {
     }
 
     // by moh
-    public boolean verifyStatistic(String facilityId) {
+    public boolean verifyStatistic(String facilityId, Integer statIndex , String accountPassword) throws Exception {
         
-        return false;
+        HospitalSg hospital = hospSgRepo.findHospitalSgByFacilityId(facilityId).get();
+
+        Moh moh = customAuthenticationManagerForMoh.getMoh();
+
+        // update contract registered
+        try{
+            ethSvc.verifyStatistic(hospital.getContractAddress(),moh.getEncryptedKeyStore(), statIndex, accountPassword);
+            return true;
+        }catch(Exception ex){
+            if(ex instanceof WrongPasswordException){
+                throw ex;
+            }
+            throw new VerificationFailedException("Failed to verify statistic in smart contract");
+        }
+
     }
 
     // hospital owner to verify
-    public boolean verifyPatient(String facilityId) {
+    public boolean verifyPatient() {
         
         return false;
     }

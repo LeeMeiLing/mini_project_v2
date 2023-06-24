@@ -1,8 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HospitalService } from '../services/hospital.service';
-import { Statistic } from '../models';
+import { HospitalDecodedToken, MohDecodedToken, Statistic } from '../models';
+import { JwtCookieService } from '../services/jwt-cookie.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PasswordComponent } from './password.component';
 
 @Component({
   selector: 'app-show-statistic',
@@ -15,8 +18,17 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
   statIndex!: number;
   statistic!:Statistic;
   dateUpdated!:Date;
+  facilityId!:string;
 
-  constructor(private activateRoute:ActivatedRoute, private hospSvc:HospitalService){}
+  userRole!:string;
+  countryCode!:string;
+  userFacilityId!:string;
+
+  accountPassword!: string;
+
+
+  constructor(public dialog: MatDialog, private activateRoute:ActivatedRoute, private hospSvc:HospitalService, 
+    private jwtCookieSvc:JwtCookieService, private router:Router){}
 
   ngOnDestroy(): void {
     this.param$.unsubscribe();
@@ -26,6 +38,18 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
     this.param$ = this.activateRoute.params.subscribe({
       next: async (params) => {
         this.statIndex = params['statIndex'];
+        this.facilityId = params['facilityId'];
+        this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
+          console.log('>> userRole: ', this.userRole)
+          if(this.userRole == 'moh'){
+            const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as MohDecodedToken;
+            this.countryCode =decodedToken.countryCode.toLowerCase();
+          }
+          //  if hospital can access hospital component !
+          if(this.userRole == 'hospital'){
+            const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
+            this.userFacilityId = decodedToken.facilityId;
+          }
         await this.getStatistic();
       }
     })
@@ -34,7 +58,7 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
 
   async getStatistic(){
 
-    this.hospSvc.getStatistic(this.statIndex).subscribe({
+    this.hospSvc.getStatistic(this.statIndex, this.facilityId).subscribe({
       next:(r:any)=>{
         this.statistic = r as Statistic;
         this.timestampToDate();
@@ -53,6 +77,40 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
 
     // Convert Solidity timestamp to Date object
     this.dateUpdated = new Date(parseInt(this.statistic['timestamp']) * 1000); // Multiply by 1000 to convert from seconds to milliseconds
+
+  }
+
+  verifyStatistic(statIndex: number) {
+
+    console.log('Use wanna verify stat index: ', statIndex);
+  
+    const dialogRef = this.dialog.open(PasswordComponent, {
+      width: '250px',
+      data: { accountPassword: this.accountPassword }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      this.accountPassword = result;
+      console.log("account password ", this.accountPassword)
+      this.hospSvc.verifyStatistic(this.facilityId, statIndex, this.accountPassword).subscribe({
+        next: () => {
+          alert('Verification successful');
+        },
+        error: (err) => {
+          console.error(err);
+          if (err.status == 401) {
+            alert(err.error.error);
+          }
+          this.accountPassword = '';
+        },
+        complete: () => {
+          this.accountPassword = '';
+          this.router.navigate(['/hospital/sg', this.facilityId])
+        }
+  
+      });
+    });
 
   }
 
