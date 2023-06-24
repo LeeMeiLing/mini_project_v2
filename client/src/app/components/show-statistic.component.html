@@ -8,7 +8,7 @@
 
     <table>
         <tr *ngIf="userRole == 'moh' && countryCode == 'sg'">
-            <td >
+            <td *ngIf="!statistic.verified">
                 <button type="button" (click)="verifyStatistic(statIndex)">Verify</button>
             </td>
         </tr>

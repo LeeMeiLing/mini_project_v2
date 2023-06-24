@@ -29,14 +29,21 @@
 
 <!-- List of All Hospital Registered in Singapore -->
 <!-- select * from sg_hospitals; -->
-<div>
-    <h3 *ngIf="allHospitalSg">
-        <span *ngIf="allHospitalSg.length > 0">Total Hospital in Singapore: {{allHospitalSg.length}}</span>
+<div *ngIf="allHospitalSg">
+    <h3 >
+        <span *ngIf="allHospitalSg.length > 0">Total Hospital in Singapore: {{count}}</span>
         <span *ngIf="allHospitalSg.length == 0">No Hospital</span>
     </h3>
-    <table>
-        <tr *ngFor="let h of allHospitalSg">
-            <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
-        </tr>
-    </table>
+    <div *ngIf="allHospitalSg.length > 0">
+        <p>page {{offset + 1}} 
+            <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
+            <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
+        </p>
+        <table>
+            <tr *ngFor="let h of allHospitalSg">
+                <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
+            </tr>
+        </table>
+    </div>
+    
 </div>

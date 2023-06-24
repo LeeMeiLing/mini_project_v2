@@ -25,8 +25,6 @@ import { StatisticComponent } from './components/statistic.component';
 import { ShowStatisticComponent } from './components/show-statistic.component';
 import { MohSgHomeComponent } from './components/moh-sg-home.component';
 import { MohUsHomeComponent } from './components/moh-us-home.component';
-import { HospitalSgComponent } from './components/hospital-sg.component';
-import { HospitalUsComponent } from './components/hospital-us.component';
 import { StatisticListComponent } from './components/statistic-list.component';
 import { ReviewListComponent } from './components/review-list.component';
 import { PasswordComponent } from './components/password.component';
@@ -48,8 +46,6 @@ import { FrequencyPenaltyComponent } from './components/frequency-penalty.compon
     ShowStatisticComponent,
     MohSgHomeComponent,
     MohUsHomeComponent,
-    HospitalSgComponent,
-    HospitalUsComponent,
     StatisticListComponent,
     ReviewListComponent,
     PasswordComponent,

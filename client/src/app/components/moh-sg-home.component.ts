@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HospitalSg } from '../models';
 import { HospitalService } from '../services/hospital.service';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-moh-sg-home',
@@ -12,6 +13,10 @@ export class MohSgHomeComponent implements OnInit{
   hospitalsPendingVerify!:HospitalSg[];
   hospitalsPendingStatVerify!:HospitalSg[];
   allHospitalSg!:HospitalSg[];
+  offset:number = 0;
+  seeResponse!:any;
+  count: any;
+
 
   constructor(private hospSvc:HospitalService){}
 
@@ -40,18 +45,42 @@ export class MohSgHomeComponent implements OnInit{
       }
     });
 
-    // this.hospSvc.getHospitalSgList().subscribe({
-    //   next:(r:any)=>{
-    //     this.allHospitalSg = r as HospitalSg[];
-    //   },
-    //   error: (err)=>{
-    //     console.error(err)
-    //   },
-    //   complete:()=>{
-    //     console.log('completed getAllHospitalSg')
-    //   }
-    // });
+    this.searchSgHospitals()
 
+  }
+
+  searchSgHospitals(){
+
+    this.hospSvc.getHospitalSgList('', '', this.offset, false, false ).pipe(
+        tap((r:any) => {
+          this.seeResponse = r
+          this.allHospitalSg = r['results'] as HospitalSg[];
+          this.count = r['count'];
+        }),
+      ).subscribe({
+        next: ()=> {
+
+        },
+        error: err=>{
+          this.allHospitalSg = [];
+          this.count = 0;
+          console.error(err)
+        },
+        complete:() => {
+          console.log('completed search Sg Hospital') // debug
+        }
+      });
+  }
+
+
+  loadNextPage(){
+    this.offset++;
+    this.searchSgHospitals();
+  }
+
+  loadPreviousPage(){
+    this.offset--;
+    this.searchSgHospitals();
 
   }
 

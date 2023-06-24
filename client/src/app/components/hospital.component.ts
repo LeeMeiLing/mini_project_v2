@@ -219,29 +219,11 @@ export class HospitalComponent implements OnInit, OnDestroy{
 
   showReview(){
 
-    // this.hospitalSvc.getHospitalReview(this.hospitalCountry,this.facilityId)?.subscribe({
-    //   next: (r:any) => {
-    //     this.reviews = r['reviews'];
-    //     this.totalReview = r['totalReview'];
-    //     this.reviewSummary = r['reviewSummary'];
-    //   },
-    //   error: err => console.error(err),
-    //   complete: () => console.log('completed getHospitalReview()')
-    // });
-
     this.router.navigate(['/hospital',this.hospitalCountry,this.facilityId,'review-list'])
   
   }
 
   goToReview(){
-
-    // if(this.hospitalCountry == 'us'){
-    //   this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospital.facilityId])
-    // } 
-    
-    // if(this.hospitalCountry == 'sg'){
-    //   this.router.navigate(['/reviewHospital',this.hospitalCountry,this.hospitalSg.facilityId])
-    // }
 
     this.router.navigate(['/reviewHospital',this.hospitalCountry,this.facilityId]);
 

@@ -4,8 +4,6 @@ import { HospitalService } from '../services/hospital.service';
 import { ActivatedRoute } from '@angular/router';
 import { JwtCookieService } from '../services/jwt-cookie.service';
 import { HospitalDecodedToken, MohDecodedToken, Statistic } from '../models';
-import { MatDialog } from '@angular/material/dialog';
-import { PasswordComponent } from './password.component';
 
 @Component({
   selector: 'app-statistic-list',
@@ -21,10 +19,8 @@ export class StatisticListComponent implements OnInit {
   countryCode!: string; // from jwt token
   userFacilityId!: string; // from jwt token
   statistics!: Statistic[];
-  // accountPassword!: string;
 
-
-  constructor(public dialog: MatDialog, private hospitalSvc: HospitalService, private activatedRoute: ActivatedRoute, private jwtCookieSvc: JwtCookieService) { }
+  constructor(private hospitalSvc: HospitalService, private activatedRoute: ActivatedRoute, private jwtCookieSvc: JwtCookieService) { }
 
   ngOnInit(): void {
 
@@ -61,40 +57,5 @@ export class StatisticListComponent implements OnInit {
     return new Date(parseInt(timestamp) * 1000); // Multiply by 1000 to convert from seconds to milliseconds
 
   }
-
-  // verifyStatistic(statIndex: number) {
-
-  //   console.log('Use wanna verify stat index: ', statIndex);
-  
-  //   const dialogRef = this.dialog.open(PasswordComponent, {
-  //     width: '250px',
-  //     data: { accountPassword: this.accountPassword }
-  //   });
-
-  //   dialogRef.afterClosed().subscribe(result => {
-  //     console.log('The dialog was closed');
-  //     this.accountPassword = result;
-  //     console.log("account password ", this.accountPassword)
-  //     this.hospitalSvc.verifyStatistic(this.facilityId, statIndex, this.accountPassword).subscribe({
-  //       next: () => {
-  //         alert('Verification successful');
-  //       },
-  //       error: (err) => {
-  //         console.error(err);
-  //         if (err.status == 401) {
-  //           alert(err.error.error);
-  //         }
-  //         this.accountPassword = '';
-  //       },
-  //       complete: () => {
-  //         this.accountPassword = '';
-  //         this.getStatisticList();
-  //       }
-  
-  //     });
-  //   });
-
-  // }
-
 
 }
