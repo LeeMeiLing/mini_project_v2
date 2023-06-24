@@ -98,11 +98,10 @@ export class HospitalComponent implements OnInit, OnDestroy{
     return false;
   }
 
-  async verifyCredentials(){
-    // pass accountpassowrd as payload
-    await this.openDialog();
-    // console.log("account password " , this.accountPassword)
-    // this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword).subscribe();
+  verifyCredentials(){
+
+    this.openDialog();
+
   }
 
   openDialog(): void {
@@ -115,7 +114,20 @@ export class HospitalComponent implements OnInit, OnDestroy{
       console.log('The dialog was closed');
       this.accountPassword = result;
       console.log("account password " , this.accountPassword)
-      this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword).subscribe();
+      this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword).subscribe({
+        next:()=>{
+          alert('Verification successful'); // TODO: display loading message while waiting
+        },
+        error:(err)=>{
+          console.error(err);
+          if(err.status == 401){
+            alert(err.error.error);
+          }
+        },
+        complete:()=>{
+          this.getHospital()
+        }
+      });
     });
   }
 

@@ -1,5 +1,8 @@
 package sg.edu.nus.iss.server.repositories;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -645,6 +648,14 @@ public class HospitalRepository {
 
         try{
             Moh moh = jdbcTemplate.queryForObject(SqlQueryConstant.GET_MOH_BY_ETH_ADDRESS, BeanPropertyRowMapper.newInstance(Moh.class), mohEthAddress);
+
+            System.out.println("in repo moh: " + moh);
+            // System.out.println("keystore: " + moh.getEncryptedKeyStore());
+            // File file = File.createTempFile("temp","txt");
+            // FileWriter writer = new FileWriter(file);
+        
+            // writer.write(new String( moh.getEncryptedKeyStore(), StandardCharsets.UTF_8));
+            // writer.close();
 
             return Optional.of(moh);
         }catch(Exception ex){

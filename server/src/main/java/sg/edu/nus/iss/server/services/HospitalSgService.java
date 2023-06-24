@@ -17,6 +17,7 @@ import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
 import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
+import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
@@ -117,7 +118,7 @@ public class HospitalSgService {
             System.out.println(">>> In HospSgSvc, done updating Eth Stat");
 
             // update MySQL
-            boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); // TODO: supporting doc
+            boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); 
 
             if(!inserted){
                 throw new UpdateStatisticFailedException("Failed to update statistic in MySQL");
@@ -215,6 +216,10 @@ public class HospitalSgService {
         for(String c : contracts){
 
             List<Integer> unverifiedStatIndex = ethSvc.getUnverifiedStatIndex(c);
+            System.out.println("hospitals with stat pending verification: " + c); // debug
+            System.out.println("stat index pending verification: " + unverifiedStatIndex); // debug
+
+
             if(!unverifiedStatIndex.isEmpty()){
                 hospitalWithStatPending.add(c);
             }
@@ -289,7 +294,6 @@ public class HospitalSgService {
         }
     }
 
-    // TODO:
     public Integer getHospitalSgReviewCountByFacilityId(String facilityId) {
 
         return hospSgRepo.getReviewCountByFacilityId(facilityId);
@@ -406,7 +410,7 @@ public class HospitalSgService {
     }
 
     
-    public boolean verifyLicense(String facilityId, String accountPassword) throws VerificationFailedException {
+    public boolean verifyLicense(String facilityId, String accountPassword) throws Exception {
 
         HospitalSg hospital = hospSgRepo.findHospitalSgByFacilityId(facilityId).get();
 
@@ -416,6 +420,9 @@ public class HospitalSgService {
         try{
             ethSvc.verifyLicense(hospital.getContractAddress(),moh.getEncryptedKeyStore(),accountPassword);
         }catch(Exception ex){
+            if(ex instanceof WrongPasswordException){
+                throw ex;
+            }
             throw new VerificationFailedException("Failed to verify license in smart contract");
         }
 

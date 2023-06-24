@@ -31,6 +31,7 @@ import jakarta.json.JsonReader;
 import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
+import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
 import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
@@ -241,9 +242,9 @@ public class HospitalSgController {
 
     }
 
-    // PutMapping /api/hospitals/sg/hospital/{facilityId}/verify-credentials
+    // POST /api/hospitals/sg/hospital/{facilityId}/verify-credentials
      @PostMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> verifyCredentials(@PathVariable String facilityId, @RequestBody String payload) throws VerificationFailedException {
+    public ResponseEntity<String> verifyCredentials(@PathVariable String facilityId, @RequestBody String payload) throws Exception {
 
         System.out.println("payload: " + payload);
         JsonObject jo = Json.createReader(new StringReader(payload)).readObject();

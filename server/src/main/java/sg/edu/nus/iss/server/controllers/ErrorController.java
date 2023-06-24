@@ -12,6 +12,7 @@ import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateStatisticFailedException;
 import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
+import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
 
 @RestControllerAdvice
 public class ErrorController {
@@ -53,6 +54,14 @@ public class ErrorController {
 
         JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(payload.toString());
+        
+    }
+
+    @ExceptionHandler(WrongPasswordException.class)
+    public ResponseEntity<String> handleWrongPasswordExcpetion(WrongPasswordException ex){
+
+        JsonObject payload = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(payload.toString());
         
     }
 }

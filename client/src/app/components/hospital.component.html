@@ -41,16 +41,13 @@
         <span *ngIf="totalReview == 0">No Review Yet</span>
     </ng-template>
 
-    <!-- <ng-template *ngIf="userRole == 'moh' && countryCode=='sg'">
+    <ng-template *ngIf="userRole == 'moh' && countryCode=='sg'">
         <span *ngIf="showVerifyHospitalCredentialsButton()">
             <button type="button" (click)="verifyCredentials()">Verify Hospital Credentials</button>
         </span>
-    </ng-template> -->
-    <div *ngIf="userRole == 'moh' && countryCode=='sg'">
-        <span *ngIf="showVerifyHospitalCredentialsButton()">
-            <button type="button" (click)="verifyCredentials()">Verify Hospital Credentials</button>
-        </span>
-    </div>
+    </ng-template>
+   
+
     <br>
     <hr>
 

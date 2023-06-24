@@ -114,5 +114,5 @@ export interface HospitalDecodedToken{
 }
 
 export interface DialogData {
-    accountPassword:string;
+    accountPassword:string | null;
 }

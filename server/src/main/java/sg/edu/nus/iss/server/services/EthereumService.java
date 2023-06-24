@@ -20,6 +20,7 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tuples.generated.Tuple9;
 import org.web3j.tx.gas.StaticGasProvider;
 
+import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
 import sg.edu.nus.iss.server.models.EthHospitalReview;
 import sg.edu.nus.iss.server.models.HospitalCredentials;
 import sg.edu.nus.iss.server.models.Statistic;
@@ -32,23 +33,23 @@ public class EthereumService {
 
     public EthereumService(String infuraUrl, String privateKey) {
 
-        // // @INFURA SEPOLIA
-        // web3j = Web3j.build(new HttpService(infuraUrl));
-        // System.out.println(">>> InfuraURL " + infuraUrl); // debug
+        // @INFURA SEPOLIA
+        web3j = Web3j.build(new HttpService(infuraUrl));
+        System.out.println(">>> InfuraURL " + infuraUrl); // debug
 
-        // // @INFURA SEPOLIA
-        // System.out.println(">>> private Key " + privateKey); // debug
-        // credentials = Credentials.create(privateKey);
-        // System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
+        // @INFURA SEPOLIA
+        System.out.println(">>> private Key " + privateKey); // debug
+        credentials = Credentials.create(privateKey);
+        System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
 
         staticGasProvider = new StaticGasProvider(BigInteger.valueOf(3500000000L),BigInteger.valueOf(1500000));
 
-        // @GANACHE
-        web3j = Web3j.build(new HttpService("http://localhost:8545"));
+        // // @GANACHE
+        // web3j = Web3j.build(new HttpService("http://localhost:8545"));
 
-        // @GANACHE
-        credentials = Credentials.create("0x5b941717a3a871384948ce16ca331139cab05bb918b092edd1fe4c330d476077");
-        System.out.println(">>> credentials address " + credentials.getAddress());
+        // // @GANACHE
+        // credentials = Credentials.create("0x5b941717a3a871384948ce16ca331139cab05bb918b092edd1fe4c330d476077");
+        // System.out.println(">>> credentials address " + credentials.getAddress());
 
     }
 
@@ -112,8 +113,12 @@ public class EthereumService {
     public HospitalCredentials loadHospitalCredentialsContract(String contractAddress, Credentials credentials){
 
         if(credentials == null){
+            System.out.println(">>> in ethh svc done loading contract (if credentials null): " + contractAddress);
+
             return HospitalCredentials.load(contractAddress, web3j, this.credentials,  staticGasProvider);
         }
+
+        System.out.println(">>> in ethh svc done loading contract: " + contractAddress);
         return HospitalCredentials.load(contractAddress, web3j, credentials,  staticGasProvider);
     }
 
@@ -125,7 +130,7 @@ public class EthereumService {
 
     }
 
-    public Credentials createCredentialsFromKeyStore(byte[] keyStore, String accountPassword) throws IOException, CipherException{
+    public Credentials createCredentialsFromKeyStore(byte[] keyStore, String accountPassword) throws IOException, WrongPasswordException {
         // create credentials from keystore & password
         File file = File.createTempFile("temp","txt");
         FileWriter writer = new FileWriter(file);
@@ -133,7 +138,12 @@ public class EthereumService {
         writer.write(new String(keyStore, StandardCharsets.UTF_8));
         writer.close();
         
-        return WalletUtils.loadCredentials(accountPassword, file);
+        try{
+            return WalletUtils.loadCredentials(accountPassword, file);
+
+        }catch(CipherException ex){
+            throw new WrongPasswordException("Failed to create credentials with provided password.");
+        }
 
     }
 
@@ -204,7 +214,10 @@ public class EthereumService {
         // >> for each contract, get stat size
         // >> loop through stat to check for unverified stat, get the index
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+        System.out.println("done loading contract in getUnverifiedStatIndex");
         Integer statSize = contract.getStatisticsSize().send().intValue();
+
+        System.out.println("statSize = " + statSize);
         
         Statistic stat;
         List<Integer> unverifiedStatIndex = new ArrayList<>();

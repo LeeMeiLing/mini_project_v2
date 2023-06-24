@@ -310,7 +310,7 @@ public class HospitalSgRepository {
     public List<String> getContractAddressFromStat() {
             
         List<String> contracts = jdbcTemplate.queryForList(SqlQueryConstant.FIND_DISTINCT_CONTRACT_ADDRESS, String.class);
-        System.out.println(">>> " + contracts);
+        System.out.println("in repo getContractAddressFromStat >>> " + contracts);
         return contracts;
 
     }

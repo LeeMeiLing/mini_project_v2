@@ -293,6 +293,6 @@ export class HospitalService {
     const headers = new HttpHeaders().set('Accept','application/json')
       .set('Content-Type', 'application/json');
     const payload = { 'accountPassword': accountPassword}
-    return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/verify-credentials`, payload ,{ headers });
+    return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/verify-credentials`, payload ,{ headers, observe: 'response' });
   }
 }
