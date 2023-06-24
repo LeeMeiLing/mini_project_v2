@@ -74,6 +74,10 @@ contract HospitalCredentials{
         registered = true;
     }
 
+    function verifyJciAccredited() public approver{
+        jciAccredited = true;
+    }
+
     function verifyStatistic(uint _index) public approver{
         Statistic storage stat = statistics[_index];
         stat.verified = true;
@@ -163,6 +167,10 @@ contract HospitalCredentials{
         newReview.hashedMessage = _hashedMessage;
         emit reviewIndex(reviews.length - 1);
 
+    }
+
+    function getReviewsSize() public view returns(uint){
+        return reviews.length;
     }
 
     event reviewIndex(uint _index);

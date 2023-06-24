@@ -25,6 +25,11 @@ contract EthHospitalReview{
 
     }
 
+    modifier approver(){
+        require(msg.sender == MOH);
+        _;
+    }
+
     function addReview(string memory _facilityId, uint _reviewId, string memory _patientNRIC, uint8  _overallRating, uint _hashedMessage) public{
 
         PatientReview storage newReview = reviews.push();
@@ -38,10 +43,13 @@ contract EthHospitalReview{
 
     }
 
+    function getReviewsSize() public view returns(uint){
+        return reviews.length;
+    }
 
     event reviewIndex(uint _index);
 
-    function verifyPatient(uint _index) public {
+    function verifyPatient(uint _index) public approver{
         PatientReview storage toVerify = reviews[_index];
         toVerify.patientVerified = true;
     }
