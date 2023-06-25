@@ -61,7 +61,6 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("error here !!!");
             ex.printStackTrace();
             return false;
         }
@@ -83,7 +82,7 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -97,6 +96,7 @@ public class HospitalSgRepository {
 
         // catch exception if ethAddress not found or more than one entry found for the same eth Address
         }catch(Exception ex){
+            ex.printStackTrace();        
             return Optional.empty();
         }
 
@@ -111,6 +111,7 @@ public class HospitalSgRepository {
 
         // catch exception if ethAddress not found or more than one entry found for the same eth Address
         }catch(Exception ex){
+            ex.printStackTrace();
             return Optional.empty();
         }
 
@@ -125,7 +126,7 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
-
+            ex.printStackTrace();
             return false;
         }
         
@@ -140,26 +141,11 @@ public class HospitalSgRepository {
             return Optional.of(hospitals);
 
         }catch(Exception ex){
+            ex.printStackTrace();
             return Optional.empty();
         }
 
     }
-
-
-    // public Optional<List<HospitalSg>> getHospitalsByStatPendingVerify() {
-
-    //     try{
-
-    //         // return empty list if not found
-    //         List<HospitalSg> hospitals = jdbcTemplate.query(SqlQueryConstant.FIND_HOSPITAL_SG_BY_STAT_VERIFICATION_STATUS, BeanPropertyRowMapper.newInstance(HospitalSg.class), false);
-    //         return Optional.of(hospitals);
-
-    //     }catch(Exception ex){
-    //         ex.printStackTrace();
-    //         return Optional.empty();
-    //     }
-
-    // }
 
 
     public Optional<List<HospitalSg>> findHospitalsByOwnershipAndName(String hospitalOwnership, String name,
@@ -177,8 +163,6 @@ public class HospitalSgRepository {
             queryString = queryString + SqlQueryConstant.LIMIT_OFFSET;
 
         }
-
-        System.out.println("in findHospitalsByOwnershipAndName: " + queryString);// debug
 
         List<HospitalSg> hospitalSgList = jdbcTemplate.query(queryString,new PreparedStatementSetter() {
 
@@ -251,8 +235,6 @@ public class HospitalSgRepository {
 
         }
 
-        System.out.println("in findHospitalsByOwnershipAndName: " + queryString);// debug
-
         List<HospitalSg> hospitalSgList = jdbcTemplate.query(queryString,new PreparedStatementSetter() {
 
             @Override
@@ -287,8 +269,6 @@ public class HospitalSgRepository {
 
         }
 
-        System.out.println("in findHospitalsByOwnershipAndName: " + queryString);// debug
-
         List<HospitalSg> hospitalSgList = jdbcTemplate.query(queryString,new PreparedStatementSetter() {
 
             @Override
@@ -310,7 +290,6 @@ public class HospitalSgRepository {
     public List<String> getContractAddressFromStat() {
             
         List<String> contracts = jdbcTemplate.queryForList(SqlQueryConstant.FIND_DISTINCT_CONTRACT_ADDRESS, String.class);
-        System.out.println("in repo getContractAddressFromStat >>> " + contracts);
         return contracts;
 
     }
@@ -324,6 +303,7 @@ public class HospitalSgRepository {
 
         // catch exception if ethAddress not found or more than one entry found for the same eth Address
         }catch(Exception ex){
+            ex.printStackTrace();
             return Optional.empty();
         }
     }
@@ -369,7 +349,7 @@ public class HospitalSgRepository {
 
         }catch(Exception ex){
 
-            System.out.println("in HospitalSgRepo insertHospitalReview() catch exception: " + ex );
+            ex.printStackTrace();
             return -1;
 
         }
@@ -394,7 +374,7 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -422,7 +402,6 @@ public class HospitalSgRepository {
                     count = rs.getInt(1); // if facilityId not found, will return 0
                 }
 
-                System.out.println(">>> In repoSg countReview: " + count); // debug
                 return count;
             }
             
@@ -442,7 +421,6 @@ public class HospitalSgRepository {
                 
             }, BeanPropertyRowMapper.newInstance(HospitalReview.class));
 
-            System.out.println("get Reviews: " + reviews);
             if(!reviews.isEmpty()){
                 return Optional.of(reviews);
             }else{
@@ -450,6 +428,7 @@ public class HospitalSgRepository {
             }
 
         }catch(Exception ex){
+            ex.printStackTrace();
             return Optional.empty();
         }
 
@@ -485,7 +464,7 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -499,7 +478,7 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
 
@@ -513,7 +492,7 @@ public class HospitalSgRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
 

@@ -18,7 +18,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try{
             filterChain.doFilter(request, response);
         }catch(RuntimeException ex){
-            System.out.println("catch runtime exception in exception handler filter: " + ex);
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("BAD REQUEST");

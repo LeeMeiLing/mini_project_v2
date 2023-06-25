@@ -1,9 +1,91 @@
-<div>
-    <a [routerLink]="['/home']">Back to Home</a>
-    <h2>Find A Hospital</h2>
+<div class="container">
+    <mat-card-title>Find A Hospital</mat-card-title>
 
+    <mat-card-content>
+        <form [formGroup]="countryCodeForm">
+            <mat-form-field>
+                <mat-label>Country</mat-label>
+                <mat-select formControlName="countryCode" (ngModelChange)="onCountryCodeChange()">
+                    <mat-option *ngFor="let moh of mohList" value="{{moh.countryCode}}">{{moh.countryName}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </form>
+        
+        <form [formGroup]="form" (ngSubmit)="searchSgHospitals()" *ngIf="showSgForm">
+            <mat-form-field>
+                <!-- <mat-label>Hospital Ownership</mat-label> -->
+                <mat-select formControlName="hospitalOwnership">
+                    <mat-option value="">--All--</mat-option>
+                    <mat-option value="public">Public</mat-option>
+                    <mat-option value="private">Private</mat-option>
+                    <mat-option value="nonProfit">Not-For-Profit</mat-option>
+                </mat-select>
+            </mat-form-field>
+            &nbsp;
+            <mat-form-field>
+                <input matInput type="text" formControlName="hospitalName" placeholder="Enter Hospital Name">
+            </mat-form-field>
+            &nbsp;
+            <button mat-flat-button color="primary" type="submit">
+                <span>Search</span>
+                &nbsp;
+                <span><mat-icon>search</mat-icon></span>
+            </button>
+            &nbsp;
+            <button mat-flat-button color="primary" type="button" (click)="sort()" *ngIf="!disableSort">
+                Sort by Rating 
+                <span *ngIf="descending"><mat-icon>keyboard_arrow_down</mat-icon></span>
+                <span *ngIf="!descending"><mat-icon>keyboard_arrow_up</mat-icon></span>
+            </button>
+            <button mat-flat-button type="button" (click)="sort()" *ngIf="disableSort">
+                <span >Sort By Rating</span>
+            </button>
+            <!-- <button mat-flat-button color="primary" type="button" (click)="sort()" [disabled]="disableSort">
+                Sort by Rating 
+                <span *ngIf="descending"><mat-icon>arrow_drop_down</mat-icon></span>
+                <span *ngIf="!descending"><mat-icon>arrow_drop_up</mat-icon></span>
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="undoSort()">
+                <span *ngIf="disableSort" ><mat-icon>check_circle</mat-icon></span>
+                <span *ngIf="!disableSort"><mat-icon>cancel</mat-icon></span>
+            </button> -->
+        </form>
     
-    <form [formGroup]="countryCodeForm">
+        <form [formGroup]="form" (ngSubmit)="searchUsHospitals()" *ngIf="showUsForm">
+            <mat-form-field>
+                <mat-select formControlName="state" (ngModelChange)="onStateChange()" >
+                    <mat-option value="">--All States--</mat-option>
+                    <mat-option *ngFor="let state of states" value="{{state}}">{{state}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-select formControlName="city" [hidden]="!form.value['state']">
+                    <mat-option value="">--All Cities--</mat-option>
+                    <mat-option *ngFor="let city of cities" value="{{city}}">{{city}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="text" formControlName="hospitalName" placeholder="Enter Hospital Name">
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit">
+                <span>Search</span>
+                &nbsp;
+                <span><mat-icon>search</mat-icon></span>
+            </button>
+            &nbsp;
+            <button mat-flat-button color="primary" type="button" (click)="sort()" *ngIf="!disableSort">
+                Sort by Rating 
+                <span *ngIf="descending"><mat-icon>keyboard_arrow_down</mat-icon></span>
+                <span *ngIf="!descending"><mat-icon>keyboard_arrow_up</mat-icon></span>
+            </button>
+            <button mat-flat-button type="button" (click)="sort()" *ngIf="disableSort">
+                <span >Sort By Rating</span>
+            </button>
+        </form>
+    
+    </mat-card-content>
+
+    <!-- <form [formGroup]="countryCodeForm">
         Country:
         <select formControlName="countryCode" (ngModelChange)="onCountryCodeChange()">
             <option *ngFor="let moh of mohList" value="{{moh.countryCode}}">{{moh.countryName}}</option>
@@ -48,37 +130,50 @@
             Sort by Rating <span *ngIf="descending">v</span>&nbsp;
             <button type="button" (click)="undoSort()"><span *ngIf="disableSort">o</span><span *ngIf="!disableSort">x</span></button>
         </button>
-    </form>
+    </form> -->
 </div>
 <hr>
 
-<!-- List of US Hospitals based on Search Result -->
-<div *ngIf="hospitals">
-    <h3>Search Results:</h3>
-    <span>total {{count}} results</span>
-    <div *ngIf="hospitals.length > 0">
-        <p>page {{offset + 1}} 
-            <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
-            <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
-        </p>
-        <table>
-            <tr *ngFor="let h of hospitals">
-                <a [routerLink]="['/hospital/us', h.facilityId]" >
-                    <mat-card>
-                        <mat-card-title>
-                            <span>{{h.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{h.hospitalOverallRating}}/5</span>
-                        </mat-card-title>
-                        <mat-card-content>
-                            <span>{{h.address}},{{h.city}},{{h.state}},{{h.zipCode}},{{h.countyName}}</span>
-                            <br>
-                            <span>{{h.phoneNumber}}</span>
-                        </mat-card-content>
-                    </mat-card>
-                </a>
-            </tr>
-        </table>
-    </div>
-</div>
+<div class="container">
+    <!-- List of US Hospitals based on Search Result -->
+    <mat-card *ngIf="hospitals">
+        <mat-card-header>
+            <mat-card-title>Search Results</mat-card-title>
+            <mat-card-subtitle>
+                <span>Total {{count}} results</span>
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content *ngIf="hospitals.length > 0">
+            <p>page {{offset + 1}} 
+                <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
+                <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
+            </p>
+            <table>
+                <tr *ngFor="let h of hospitals">
+                    <a [routerLink]="['/hospital/us', h.facilityId]" >
+                        <mat-card>
+                            <mat-card-title>
+                                <span>{{h.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{h.hospitalOverallRating}}/5</span>
+                            </mat-card-title>
+                            <mat-card-content>
+                                <span>{{h.address}},{{h.city}},{{h.state}},{{h.zipCode}},{{h.countyName}}</span>
+                                <br>
+                                <span>{{h.phoneNumber}}</span>
+                            </mat-card-content>
+                        </mat-card>
+                    </a>
+                </tr>
+            </table>
+        </mat-card-content>
+        
+    </mat-card>
+
+        
+
+          
+            
+   
+
 
 
 <!-- List of Sg Hospitals based on Search Result -->
@@ -108,4 +203,64 @@
         </table>
     </div>
 </div>
+
+</div>
+
+
+<!-- List of US Hospitals based on Search Result -->
+<!-- <div *ngIf="hospitals">
+    <h3>Search Results:</h3>
+    <span>total {{count}} results</span>
+    <div *ngIf="hospitals.length > 0">
+        <p>page {{offset + 1}} 
+            <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
+            <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
+        </p>
+        <table>
+            <tr *ngFor="let h of hospitals">
+                <a [routerLink]="['/hospital/us', h.facilityId]" >
+                    <mat-card>
+                        <mat-card-title>
+                            <span>{{h.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{h.hospitalOverallRating}}/5</span>
+                        </mat-card-title>
+                        <mat-card-content>
+                            <span>{{h.address}},{{h.city}},{{h.state}},{{h.zipCode}},{{h.countyName}}</span>
+                            <br>
+                            <span>{{h.phoneNumber}}</span>
+                        </mat-card-content>
+                    </mat-card>
+                </a>
+            </tr>
+        </table>
+    </div>
+</div> -->
+
+
+<!-- List of Sg Hospitals based on Search Result -->
+<!-- <div *ngIf="hospitalSgList">
+<h3>Search Results:</h3>
+<span>total {{count}} results</span>
+<div *ngIf="hospitalSgList.length > 0">
+    <p>page {{offset + 1}} 
+        <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
+        <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
+    </p>
+    <table>
+        <tr *ngFor="let h of hospitalSgList">
+            <a [routerLink]="['/hospital/sg', h.facilityId]" >
+                <mat-card>
+                    <mat-card-title>
+                        <span>{{h.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{h.hospitalOverallRating}}/5</span>
+                    </mat-card-title>
+                    <mat-card-content>
+                        <span>{{h.address}},{{h.streetName}},{{h.zipCode}}</span>
+                        <br>
+                        <span>{{h.phoneNumber}}</span>
+                    </mat-card-content>
+                </mat-card>
+            </a>
+        </tr>
+    </table>
+</div>
+</div> -->
 

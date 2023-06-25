@@ -42,13 +42,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-
-        System.out.println(">>> in attemptauthentication(), secret key is: " + this.getSecretKey()); // debug
-        
+       
         try{
 
             User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
-            System.out.println(">>> In Authentication Filter attemptAuthentication(), " + user.getUserEmail()); // debug
             Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUserEmail(), user.getUserPassword());
             return this.getAuthenticationManager().authenticate(authentication);
             
@@ -62,7 +59,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed) throws IOException, ServletException {
         
-        System.out.println(">>> Boohoo authentication didnt work"); // debug
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(failed.getMessage());
         response.getWriter().flush();
@@ -72,7 +68,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        System.out.println(">>> Woohoo authentication worked"); // debug
         // send back a JWT 
         String token = JWT.create()
                           .withClaim("userRole", "user")

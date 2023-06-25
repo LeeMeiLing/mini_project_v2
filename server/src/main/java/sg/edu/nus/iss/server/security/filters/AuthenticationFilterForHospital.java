@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForHospital;
-import sg.edu.nus.iss.server.security.managers.CustomAuthenticationManagerForMoh;
 
 public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticationFilter{
 
@@ -36,19 +35,16 @@ public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticat
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
-        System.out.println(">>> in attemptauthentication() of AuthenticationFilterForHospital "); // debug
         
         try{
 
             HospitalSg hospitalSg = new ObjectMapper().readValue(request.getInputStream(), HospitalSg.class);
-            System.out.println(">>> In Authentication Filter attemptAuthentication(), " + hospitalSg.getEthAddress()); // debug
             Authentication authentication = new UsernamePasswordAuthenticationToken(hospitalSg.getEthAddress(), hospitalSg.getAccountPassword());
-            System.out.println(">>> current authentication manager is: " + this.getAuthenticationManager().getClass());
             return this.getAuthenticationManager().authenticate(authentication);
         
         }catch(IOException ex){
 
-            System.out.println("catch AuthenticationFilterForHospital IOexception: " + ex);
+            ex.printStackTrace();
             throw new RuntimeException(); // to send back a 400 response instead of 403
 
         }
@@ -60,7 +56,6 @@ public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticat
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed) throws IOException, ServletException {
         
-        System.out.println(">>> Boohoo authentication didnt work"); // debug
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(failed.getMessage());
         response.getWriter().flush();
@@ -70,7 +65,6 @@ public class AuthenticationFilterForHospital extends UsernamePasswordAuthenticat
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        System.out.println(">>> Woohoo authentication worked"); // debug
         // send back a JWT 
         String token = JWT.create()
                           .withClaim("userRole", "hospital")

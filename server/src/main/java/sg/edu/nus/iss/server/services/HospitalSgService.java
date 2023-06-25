@@ -69,7 +69,6 @@ public class HospitalSgService {
             mohEthAddress, hospital.getLicense());
 
         } catch (Exception ex) {
-            System.out.println(">>> failed to deploy contract!!");
             ex.printStackTrace();
             throw new RegisterHospitalFailedException("failed to deploy Hospital Credentials contract");
         }
@@ -115,7 +114,6 @@ public class HospitalSgService {
         try{
             // update contract
             BigInteger index = ethSvc.updateStatistic(stat, accountPassword, keyStore, contractAddress);
-            System.out.println(">>> In HospSgSvc, done updating Eth Stat");
 
             // update MySQL
             boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); 
@@ -134,33 +132,6 @@ public class HospitalSgService {
         }
 
     }
-
-    // public Statistic getStatistic(Integer statIndex){
-
-    //     // get contract address by statIndex
-    //     Optional<String> opt = hospSgRepo.getContractAddressByStatisticIndex(statIndex);
-
-    //     String contractAddress = null;
-
-    //     if(opt.isPresent()){
-    //         contractAddress = opt.get();
-    //     }
-
-    //     if(contractAddress == null){
-    //         throw new ResultNotFoundException("contractAddress");
-    //     }
-
-    //     try{
-    //         // get statistic from contract
-    //         Statistic stat = ethSvc.getStatistic(contractAddress, statIndex);
-    //         return stat;
-
-    //     }catch(Exception ex){
-    //         throw new ResultNotFoundException("statistic " + statIndex );
-
-    //     }
-
-    // }
 
      public Statistic getStatisticByFacilityIdAndStatIndex(String facilityId,Integer statIndex){
 
@@ -231,9 +202,6 @@ public class HospitalSgService {
         for(String c : contracts){
 
             List<Integer> unverifiedStatIndex = ethSvc.getUnverifiedStatIndex(c);
-            System.out.println("hospitals with stat pending verification: " + c); // debug
-            System.out.println("stat index pending verification: " + unverifiedStatIndex); // debug
-
 
             if(!unverifiedStatIndex.isEmpty()){
                 hospitalWithStatPending.add(c);
@@ -253,20 +221,12 @@ public class HospitalSgService {
         // return the list of HospitalSg
         return hospitals;
 
-        //  Optional<List<HospitalSg>> opt = hospSgRepo.getHospitalsByStatPendingVerify();
-        // if(opt.isPresent()){
-        //     System.out.println("in svc stat pending ver: " + opt.get());
-        //     return opt.get(); // return empty list if not found
-        // }
-        // return null;
-
     }
 
    
 
     public List<HospitalSg> getHospitalsSgList(String hospitalOwnership, String name, Integer offset,
             Boolean sortByRating, Boolean descending) {
-
 
         Optional<List<HospitalSg>> opt;
 
@@ -358,8 +318,6 @@ public class HospitalSgService {
             // Convert byte array into signum representation
             BigInteger no = new BigInteger(1, digest);
 
-            System.out.println("digest no: " + no); // debug
-
             try {
                 // add review to Eth Smart Contract
                 TransactionReceipt ethReviewIndex = contract
@@ -375,19 +333,17 @@ public class HospitalSgService {
                     throw new PostReviewFailedException("Error in hospitalRepo.saveEthReviewIndex()");
                 }
 
-                // debug
-                System.out.println("TransactionReceipt of addReview(): " + ethReviewIndex);
-                System.out.println("review Index: " + reviewIndex);
 
             } catch (Exception ex) {
+                ex.printStackTrace();
                 throw new PostReviewFailedException("Error interacting with smart contract: " + ex);
 
             }
 
-            // TODO: check if comments has been amended , FOR USE DURING READ REVIEW
-            if (no.equals(contract.reviews(new BigInteger(String.valueOf(0))).send().component5())) {
-                System.out.println("hashMessage is match: !!!");
-            }
+            // // TODO: check if comments has been amended , FOR USE DURING READ REVIEW
+            // if (no.equals(contract.reviews(new BigInteger(String.valueOf(review_index))).send().component5())) {
+            //     System.out.println("hashMessage is match: !!!");
+            // }
 
         } else {
             throw new PostReviewFailedException("Error in hospitalRepo.insertHospitalReview()");
@@ -523,7 +479,7 @@ public class HospitalSgService {
 
     }
 
-    // hospital owner to verify
+    // TODO: hospital owner to verify
     public boolean verifyPatient() {
         
         return false;

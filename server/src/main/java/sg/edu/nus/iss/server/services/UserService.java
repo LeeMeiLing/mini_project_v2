@@ -37,7 +37,6 @@ public class UserService {
         }
 
         user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
-        System.out.println(">>> in service, encoded password: " + user.getUserPassword()); // debug
         
         return userRepo.saveUser(user);
     }

@@ -27,17 +27,10 @@ public class CustomAuthenticationManagerForHospital implements AuthenticationMan
         // get the user info from database for comparison with user login details
         HospitalSg hospitalSg = userSvc.findHospitalSgByEthAddress((String) authentication.getPrincipal()); // same as authentication.getName()
 
-        System.out.println(">>> in CustomAuthenticationManagerForHospital: " );// debug
-
         if(!bCryptPasswordEncoder.matches(authentication.getCredentials().toString(), hospitalSg.getAccountPassword())){
-            System.out.println(">>> password dont match!!!");
-            System.out.println("1: " + authentication.getCredentials().toString());
-            System.out.println("2: " + hospitalSg.getAccountPassword());
-
             throw new BadCredentialsException("Wrong Password");
         }
 
-        System.out.println(">>> password match!!!");
         return new UsernamePasswordAuthenticationToken(authentication.getName(), hospitalSg.getAccountPassword());
         
     }

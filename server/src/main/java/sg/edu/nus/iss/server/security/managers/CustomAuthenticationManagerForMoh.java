@@ -27,17 +27,11 @@ public class CustomAuthenticationManagerForMoh implements AuthenticationManager 
         // get the user info from database for comparison with user login details
         Moh moh = userSvc.getMohByEthAddress((String) authentication.getPrincipal()); // same as authentication.getName()
 
-        System.out.println(">>> in CustomAuthenticationManagerForHospital: " );// debug
-
         if(!bCryptPasswordEncoder.matches(authentication.getCredentials().toString(), moh.getAccountPassword())){
-            System.out.println(">>> password dont match!!!");
-            System.out.println("1: " + authentication.getCredentials().toString());
-            System.out.println("2: " + moh.getAccountPassword());
 
             throw new BadCredentialsException("Wrong Password");
         }
 
-        System.out.println(">>> password match!!!");
         return new UsernamePasswordAuthenticationToken(authentication.getName(), moh.getAccountPassword());
         
     }

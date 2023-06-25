@@ -29,7 +29,6 @@ export class LoginComponent implements OnInit{
     private hospSvc:HospitalService, private jwtCookieSvc: JwtCookieService, private web3Svc:Web3Service){}
 
   ngOnInit(): void {
-    console.log('>> in OnInit');
     this.jwtCookieSvc.deleteJwt();
     this.form = this.createForm();
     this.userForm = this.createUserForm();
@@ -99,11 +98,9 @@ export class LoginComponent implements OnInit{
     try{
 
       const result = await this.userSvc.authenticate(this.userForm.value);
-      console.log('result: ', result) // debug
       const status = result.status
-      console.log('status ', status) // debug
       
-      this.router.navigate(['/home']);
+      this.router.navigate(['/searchHospital']);
 
     }catch(err:any){
 

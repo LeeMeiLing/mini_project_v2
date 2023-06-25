@@ -1,7 +1,5 @@
 package sg.edu.nus.iss.server.models;
 
-import java.util.Date;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
@@ -15,7 +13,6 @@ public class Statistic {
     private Double  timeliness;
     private Double  medicalImagingEfficiency;
     private String timestamp; // created on chain
-    // private Date timestamp;
     private boolean verified;
     
     public Statistic() {
@@ -111,7 +108,5 @@ public class Statistic {
                 .add("verified", verified)
                 .build();
     }
-
-   
     
 }

@@ -28,6 +28,7 @@ export class SearchHospitalComponent implements OnInit{
   countryCodeForm = this.fb.group({countryCode: this.fb.control('')})
   showSgForm!:boolean;
   showUsForm!:boolean;
+  buttonClick = 1; // 1: disable, 2: sort desc, 3: sort asc
 
   constructor(private fb:FormBuilder, private hospitalSvc:HospitalService) {}
   
@@ -217,9 +218,40 @@ export class SearchHospitalComponent implements OnInit{
   }
 
   sort(){
-    this.sortByRating = true;
-    this.descending = !this.descending;
-    console.log('sort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
+    // this.sortByRating = true;
+    // this.descending = !this.descending;
+    // console.log('sort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
+
+    // if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
+    //   this.searchSgHospitals();
+    // }
+    // else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
+    //   this.searchUsHospitals();
+    // }
+    this.buttonClick++;
+    if(this.buttonClick == 4){
+      this.buttonClick = 1;
+    }
+
+    if(this.buttonClick == 1){
+      this.disableSort = true;
+      this.sortByRating = false;
+      this.descending = false;
+    }
+
+    if(this.buttonClick == 2){
+      this.disableSort = false;
+      this.sortByRating = true;
+      this.descending = true;
+    }
+
+    if(this.buttonClick == 3){
+      this.disableSort = false;
+      this.sortByRating = true;
+      this.descending = false;;
+    }
+    
+    console.log('disableSort: ', this.disableSort ,'sortByRating: ',this.sortByRating,'descending: ', this.descending);
 
     if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
       this.searchSgHospitals();
@@ -231,16 +263,26 @@ export class SearchHospitalComponent implements OnInit{
   }
 
   undoSort(){
-    this.sortByRating = false;
     this.disableSort = !this.disableSort;
-    console.log('undoSort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
+    if(!this.disableSort){
+      // if enable sort
+      this.sort();
 
-    if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
-      this.searchSgHospitals();
+    }else{
+      // if disable sort
+      this.sortByRating = false;
+      this.descending = false;
+
+      console.log('undoSort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
+
+      if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
+        this.searchSgHospitals();
+      }
+      else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
+        this.searchUsHospitals();
+      }
     }
-    else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
-      this.searchUsHospitals();
-    }
+    
   }
 
   loadNextPage(){

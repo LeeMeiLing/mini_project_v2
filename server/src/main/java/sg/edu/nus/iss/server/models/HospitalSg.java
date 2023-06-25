@@ -1,6 +1,5 @@
 package sg.edu.nus.iss.server.models;
 
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -21,10 +20,9 @@ public class HospitalSg {
     private String zipCode;
     private String countryCode; // drop down option
     private String phoneNumber;
-    // private String hospitalType;
     private String hospitalOwnership; 
     private String emergencyServices; // yes or no
-    private String hospitalOverallRating; // get from review or set by MOH??
+    private String hospitalOverallRating; // get from review
     private String ethAddress; // get from metamask
     private String contractAddress; // to be assign
     private String accountPassword; // to be encrypted
@@ -133,18 +131,6 @@ public class HospitalSg {
         this.encryptedKeyStore = encryptedKeyStore;
     }
     
-    // @Override
-    // public String toString() {
-    //     return "HospitalSg [facilityId=" + facilityId + ", facilityName=" + facilityName + ", license=" + license
-    //             + ", registered=" + registered + ", jciAccredited=" + jciAccredited + ", address=" + address
-    //             + ", streetName=" + streetName + ", zipCode=" + zipCode + ", countryCode=" + countryCode
-    //             + ", phoneNumber=" + phoneNumber + ", hospitalOwnership=" + hospitalOwnership + ", emergencyServices="
-    //             + emergencyServices + ", ethAddress=" + ethAddress + ", contractAddress=" + contractAddress
-    //             + ", accountPassword=" + accountPassword + ", encryptedKeyStore=" + Arrays.toString(encryptedKeyStore)
-    //             + "]";
-    // }
-        
-
     public static HospitalSg createHospitalSg(JsonObject jo){
         
         HospitalSg hosp = new HospitalSg();
@@ -203,26 +189,5 @@ public class HospitalSg {
             .add("contractAddress",contractAddress)
             .build();
     }
-
-    // public JsonObject toJsonWithRating(){
-
-    //     return Json.createObjectBuilder()
-    //         .add("facilityId",facilityId)
-    //         .add("facilityName",facilityName)
-    //         .add("license",license)
-    //         .add("registered",registered)
-    //         .add("jciAccredited",jciAccredited)
-    //         .add("address",address)
-    //         .add("streetName",streetName)
-    //         .add("zipCode",zipCode)
-    //         .add("countryCode",countryCode)
-    //         .add("phoneNumber",phoneNumber)
-    //         .add("hospitalOwnership",hospitalOwnership)
-    //         .add("hospitalOverallRating", hospitalOverallRating==null?"Not Available":hospitalOverallRating)
-    //         .add("emergencyServices",emergencyServices)
-    //         .add("ethAddress",ethAddress)
-    //         .add("contractAddress",contractAddress)
-    //         .build();
-    // }
     
 }

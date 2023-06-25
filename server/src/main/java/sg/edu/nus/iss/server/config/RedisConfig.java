@@ -32,7 +32,7 @@ public class RedisConfig {
     @Value("${spring.redis.database}")
     private Optional<Integer> redisDatabase;
 
-    @Bean // can put bean name here then use @Qualifier to access
+    @Bean
     @Scope("singleton")
     public RedisTemplate<String, Object> redisTemplate(){
 

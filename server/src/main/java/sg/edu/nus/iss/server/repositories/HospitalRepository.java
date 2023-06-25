@@ -1,8 +1,5 @@
 package sg.edu.nus.iss.server.repositories;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,12 +62,11 @@ public class HospitalRepository {
             return true;
 
         }catch(DuplicateKeyException ex){
-            // System.out.println("in duplicate key exception catch: ");
             update(h);
             return true;
     
         }catch(Exception ex){
-            System.out.println("in catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -104,7 +100,7 @@ public class HospitalRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -135,9 +131,7 @@ public class HospitalRepository {
         else if(!sortByRating){
             queryString =  SqlQueryConstant.QUERY_HOSPITALS_ALL;
         }
-
-        System.out.println("queryString: " + queryString);
-        
+    
         return queryHospitals(queryString, ps, false, false);
 
     }
@@ -179,9 +173,6 @@ public class HospitalRepository {
     }
 
     public Optional<List<Hospital>> findHospitalsByStateAndName(String state, String name, Integer offset, Boolean sortByRating, Boolean descending){
-
-        System.out.println(">> in findHospitalsByStateAndName");
-
 
         PreparedStatementSetter ps = new PreparedStatementSetter() {
 
@@ -261,15 +252,13 @@ public class HospitalRepository {
 
             List<Hospital> hospitals = jdbcTemplate.query(finalQueryString, ps, BeanPropertyRowMapper.newInstance(Hospital.class));
             if(!hospitals.isEmpty()){
-                System.out.println(" in queryHospitals: " + hospitals);
                 return Optional.of(hospitals);
             }else{
-                System.out.println(" in queryHospitals, hospitals is empty list: " + hospitals);
                 return Optional.empty();
             }
             
         }catch(Exception ex){
-            System.out.println(" in queryHospitals,catch exception: " + ex);
+            ex.printStackTrace();
             return Optional.empty();
         }
     }
@@ -344,8 +333,6 @@ public class HospitalRepository {
 
                     queryString = SqlQueryConstant.COUNT + SqlQueryConstant.QUERY_HOSPITALS_BY_STATE;
 
-                    System.out.println("in search with state: " + queryString);
-
                 }
             }
         }else{
@@ -399,7 +386,6 @@ public class HospitalRepository {
                 while(rs.next()){
                     count = rs.getInt(1);
                 }
-                System.out.println(">>> In repo countResult, count: " + count); // debug
                 return count;
             }
             
@@ -408,21 +394,17 @@ public class HospitalRepository {
 
     public Optional<List<String>> getStates(){
 
-        System.out.println(">>> in hosp Repo get State");
-
         try{
             List<String> states = jdbcTemplate.queryForList(SqlQueryConstant.QUERY_ALL_STATES,String.class);
 
             if(states != null){
-                System.out.println(">>> in repo, states: " + states); // debug
                 return Optional.of(states);
             }else{
-                System.out.println(">>> in repo, states: query return null"); // debug
                 return Optional.empty();
             }
 
         }catch(Exception ex){
-            System.out.println(">>> in repo, catch: " + ex); // debug
+            ex.printStackTrace();
             return Optional.empty();
         }
 
@@ -430,21 +412,17 @@ public class HospitalRepository {
 
     public Optional<List<String>> getCities(String state){
 
-        System.out.println(">>> in hosp Repo get cities");
-
         try{
             List<String> cities = jdbcTemplate.queryForList(SqlQueryConstant.QUERY_CITIES,String.class, state);
 
             if(cities != null){
-                System.out.println(">>> in repo, cities: " + cities); // debug
                 return Optional.of(cities);
             }else{
-                System.out.println(">>> in repo, cities: query return null"); // debug
                 return Optional.empty();
             }
 
         }catch(Exception ex){
-            System.out.println(">>> in repo, catch: " + ex); // debug
+            ex.printStackTrace();
             return Optional.empty();
         }
 
@@ -459,7 +437,7 @@ public class HospitalRepository {
             
         }catch(Exception ex){
             
-            System.out.println(" in queryHospital,catch exception: " + ex);
+            ex.printStackTrace();
 
             if(ex instanceof EmptyResultDataAccessException){
                 return Optional.empty(); // if cailityId not found
@@ -509,10 +487,8 @@ public class HospitalRepository {
             return generatedKeyHolder.getKey().intValue();
 
         }catch(Exception ex){
-
-            System.out.println("in HospitalRepo insertHospitalReview() catch exception: " + ex );
+            ex.printStackTrace();
             return -1;
-
         }
             
     }
@@ -534,7 +510,7 @@ public class HospitalRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -557,7 +533,7 @@ public class HospitalRepository {
             return true;
     
         }catch(Exception ex){
-            System.out.println("in update catch: " + ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -584,7 +560,6 @@ public class HospitalRepository {
                     count = rs.getInt(1); // if facilityId not found, will return 0
                 }
 
-                System.out.println(">>> In repo countReview: " + count); // debug
                 return count;
             }
             
@@ -604,7 +579,6 @@ public class HospitalRepository {
                 
             }, BeanPropertyRowMapper.newInstance(HospitalReview.class));
 
-            System.out.println("get Reviews: " + reviews);
             if(!reviews.isEmpty()){
                 return Optional.of(reviews);
             }else{
@@ -612,6 +586,7 @@ public class HospitalRepository {
             }
 
         }catch(Exception ex){
+            ex.printStackTrace();
             return Optional.empty();
         }
 
@@ -648,17 +623,9 @@ public class HospitalRepository {
 
         try{
             Moh moh = jdbcTemplate.queryForObject(SqlQueryConstant.GET_MOH_BY_ETH_ADDRESS, BeanPropertyRowMapper.newInstance(Moh.class), mohEthAddress);
-
-            System.out.println("in repo moh: " + moh);
-            // System.out.println("keystore: " + moh.getEncryptedKeyStore());
-            // File file = File.createTempFile("temp","txt");
-            // FileWriter writer = new FileWriter(file);
-        
-            // writer.write(new String( moh.getEncryptedKeyStore(), StandardCharsets.UTF_8));
-            // writer.close();
-
             return Optional.of(moh);
         }catch(Exception ex){
+            ex.printStackTrace();
             return Optional.empty();
         }
           

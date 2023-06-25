@@ -1,9 +1,5 @@
 package sg.edu.nus.iss.server.controllers;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -48,9 +41,7 @@ public class HospitalController {
     @GetMapping(path="/states", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getStates(){
 
-        // hospSvc.checkUpdated();
-
-        System.out.println(">>> in controller getStates()");
+        // TODO: hospSvc.checkUpdated();
 
         List<String> states = hospSvc.getStates();
         
@@ -68,8 +59,6 @@ public class HospitalController {
     @GetMapping(path="/{state}/cities", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getCities(@PathVariable String state){
         
-        System.out.println(">>> in controller getCities()");
-
         List<String> cities = hospSvc.getCities(state);
         
         JsonArrayBuilder arrB = Json.createArrayBuilder();
@@ -94,9 +83,7 @@ public class HospitalController {
         @RequestParam(required = false) String name ,@RequestParam Integer offset,
         @RequestParam Boolean sortByRating ,@RequestParam Boolean descending)
     {
-        // hospSvc.checkUpdated();
-
-        System.out.println(">>> in controller search Hospitals"); // dbeug
+        // TODO: hospSvc.checkUpdated();
 
         List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset,sortByRating,descending);
 
@@ -134,8 +121,6 @@ public class HospitalController {
         joB.add("totalReview", hospSvc.getReviewCountByFacilityId(facilityId));
         JsonObject payload = joB.build();
 
-        System.out.println("in controller getHospital: " + payload.toString()); // debug
-
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
     }
 
@@ -146,13 +131,9 @@ public class HospitalController {
     public ResponseEntity<String> postHospitalReview(@PathVariable String facilityId, @RequestBody HospitalReview hospitalReview)
     throws Exception{
 
-        System.out.println(">> in controller, postHospitalreview(), hospitalReview: " + hospitalReview);
-
         boolean posted = hospSvc.postHospitalReview(facilityId, hospitalReview);
 
         JsonObject payload =  Json.createObjectBuilder().add("posted", posted).build();
-
-        System.out.println("in controller getHospital: " + payload.toString()); // debug
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
     }
@@ -191,8 +172,6 @@ public class HospitalController {
 
         JsonObject payload = joB.build();
         
-        System.out.println("in controller getHospital: " + payload.toString()); // debug
-
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
     }
@@ -207,65 +186,5 @@ public class HospitalController {
 
         return ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
     }
-
-
-    // @PostMapping(path ={"/hospital/testaccount"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<String> testAccount(@RequestBody String payload) throws IOException, CipherException{
-
-    //     JsonObject kdfparams = Json.createObjectBuilder()
-    //         .add("dklen",32)
-    //         .add("salt", "3975eaa9bb1e1f23811d203985962db8a14ab3e18a640ad640001aadeec97f3e")
-    //         .add("n",8192)
-    //         .add("r",8)
-    //         .add("p",1)
-    //         .build();
-        
-    //     JsonObject cipherparams = Json.createObjectBuilder().add("iv","56675a823b5ff04683887b9bc9d83bbc").build();
-        
-    //     JsonObject crypto = Json.createObjectBuilder()
-    //         .add("ciphertext","599691cd7bb642362ddf5d3510266678349fa39cd8cc5092432166af1c69bdd4")
-    //         .add("cipherparams",cipherparams)
-    //         .add("cipher","aes-128-ctr")
-    //         .add("kdf","scrypt")
-    //         .add("kdfparams",kdfparams)
-    //         .add("mac","90d766b262d97f622dbf2ddea28b9ef3ee202100d0b66f57808ee9029b3ace32")
-    //         .build();
-
-    //     JsonObject jo = Json.createObjectBuilder()
-    //         .add("version",3)
-    //         .add("id","297f0e83-3a5b-4172-9d35-d918113f37b7")
-    //         .add("address","343cad04808b83b20010f942f440f5e4fd4d28d2")
-    //         .add("crypto",crypto)
-    //         .build();
-        
-    //     File file = File.createTempFile("temp","txt");
-    //     FileWriter writer = new FileWriter(file);
-        
-    //     writer.write(jo.toString());
-    //     writer.close();
-        
-    //     Credentials credentials = WalletUtils.loadCredentials("abc123", file);
-    //     System.out.println(">>>>>> in controller, payload acc: " + credentials.getAddress());
-    //     return null;
-    // }
-
-    // @PostMapping(path = "/register/healthcareprovider/sg", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<String> registerHospitalSg(@RequestBody String payload) throws Exception{
-
-    //     JsonReader rd = Json.createReader(new StringReader(payload));
-    //     JsonObject jo = rd.readObject();
-
-    //     System.out.println(">>> in controller, registerHealthcareProvider: " + payload);// debug
-
-    //     HospitalSg hospital = HospitalSg.createHospitalSg(jo);
-
-    //     System.out.println("hospital: " + hospital); // debug
-
-    //     hospSvc.registerHospitalSg(hospital,jo.getString("accountPassword"));
-
-    //     return null;
-
-    // }
-
 
 }

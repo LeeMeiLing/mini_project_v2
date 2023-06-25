@@ -1,26 +1,20 @@
 package sg.edu.nus.iss.server.controllers;
 
 import java.io.StringReader;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -28,13 +22,9 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
-import sg.edu.nus.iss.server.exceptions.PostReviewFailedException;
 import sg.edu.nus.iss.server.exceptions.ResultNotFoundException;
 import sg.edu.nus.iss.server.exceptions.UpdateContractFailedException;
 import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
-import sg.edu.nus.iss.server.exceptions.WrongPasswordException;
-import sg.edu.nus.iss.server.models.EthHospitalReview;
-import sg.edu.nus.iss.server.models.Hospital;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
@@ -119,11 +109,8 @@ public class HospitalSgController {
     @GetMapping(path = "/statistic/pending-verify", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getHospitalsByStatPendingVerify() throws Exception{
         
-
         List<HospitalSg> hospitals = hospSgSvc.getHospitalsByStatPendingVerify();
-
-        System.out.println("stat pending ver: " + hospitals);
-        
+      
         JsonArrayBuilder arrB = Json.createArrayBuilder();
         
         if(hospitals == null){
@@ -132,7 +119,7 @@ public class HospitalSgController {
         
         hospitals.stream().map(h -> h.toJson()).forEach(j -> arrB.add(j));
 
-        return  ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
+        return ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
 
     }
     
@@ -141,7 +128,6 @@ public class HospitalSgController {
     public ResponseEntity<String> getHospitalsSgList(@RequestParam(required = false) String hospitalOwnership ,@RequestParam(required = false) String name ,@RequestParam Integer offset,
         @RequestParam Boolean sortByRating ,@RequestParam Boolean descending){
         
-
         List<HospitalSg> hospitals = hospSgSvc.getHospitalsSgList(hospitalOwnership,name,offset,sortByRating,descending);
 
          if(hospitals.isEmpty()){
@@ -180,8 +166,6 @@ public class HospitalSgController {
         }
 
         JsonObject payload = joB.build();
-
-        System.out.println("in controller getHospitalSgByFacilityId: " + payload.toString()); // debug
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
     }
@@ -235,8 +219,6 @@ public class HospitalSgController {
 
         JsonObject payload = joB.build();
         
-        System.out.println("in controller getHospital: " + payload.toString()); // debug
-
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
     }
@@ -245,7 +227,6 @@ public class HospitalSgController {
     @PostMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> verifyCredentials(@PathVariable String facilityId, @RequestBody String payload) throws Exception {
 
-        System.out.println("payload: " + payload);
         JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
         String accountPassword = jo.getString("accountPassword");
         String toVerify = jo.getString("toVerify");
@@ -280,7 +261,6 @@ public class HospitalSgController {
     @PostMapping(path ={"/hospital/{facilityId}/update-frequency-penalty"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> setUpdateFrequencyPenalty(@PathVariable String facilityId, @RequestBody String payload) throws Exception {
 
-        System.out.println("payload: " + payload);
         JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
         String accountPassword = jo.getString("accountPassword");
         String updateFrequency = jo.getString("updateFrequency");
@@ -347,7 +327,6 @@ public class HospitalSgController {
     @PostMapping(path ={"/hospital/{facilityId}/statistic/{statIndex}"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> verifyStatistic(@PathVariable String facilityId, @PathVariable Integer statIndex, @RequestBody String payload) throws Exception{
 
-        System.out.println("payload: " + payload);
         JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
         String accountPassword = jo.getString("accountPassword");
 

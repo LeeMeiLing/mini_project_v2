@@ -72,7 +72,6 @@ public class SecurityConfig {
         authenticationFilter.setFilterProcessesUrl("/api/user/authenticate"); // default is /login
         authenticationFilter.setUsernameParameter("userEmail"); // default is username
         authenticationFilter.setPasswordParameter("userPassword"); // default is password
-        // authenticationFilter.setAuthenticationManager(customAuthenticationManager);
         authenticationFilter.setSecretKey(secretKey);
 
         AuthenticationFilterForHospital authenticationFilterForHospital = new AuthenticationFilterForHospital();
@@ -97,7 +96,6 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.POST, "/api/user/register/public").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/hospitals/*/register/hospital").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/hospitals/moh").permitAll()
-                    // .requestMatchers(HttpMethod.POST, "/api/hospitals/hospital/testaccount").permitAll()
                     .anyRequest().authenticated())
             .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
             .addFilter(authenticationFilter)
@@ -112,8 +110,6 @@ public class SecurityConfig {
 
         return http.build();
         
-    }
-
-    
+    } 
 
 }

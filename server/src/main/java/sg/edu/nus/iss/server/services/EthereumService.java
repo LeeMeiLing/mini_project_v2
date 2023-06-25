@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -62,7 +61,6 @@ public class EthereumService {
         result = web3j.ethGetBalance(credentials.getAddress(), DefaultBlockParameter.valueOf("latest"))
                 .sendAsync()
                 .get();
-        System.out.println(">>> balance " + result.getBalance());
 
         return result.getBalance();
 
@@ -75,7 +73,6 @@ public class EthereumService {
 
         EthHospitalReview contract = EthHospitalReview.deploy(web3j, credentials, staticGasProvider).send();
 
-        System.out.println(">>> in eth svc, contract address: " + contract.getContractAddress()); //debug
         return contract;
 
     }
@@ -95,8 +92,6 @@ public class EthereumService {
 
     public HospitalCredentials deployHospitalCredentialsContract(byte[] keyStore, String accountPassword, String mohEthAddress, String license) throws Exception{
 
-        System.out.println("staticGasProvider: " + staticGasProvider);
-
         File file = File.createTempFile("temp","txt");
         FileWriter writer = new FileWriter(file);
         
@@ -104,14 +99,11 @@ public class EthereumService {
         writer.close();
         
         Credentials credentials = WalletUtils.loadCredentials(accountPassword, file);
-        System.out.println(">>>>>> in eth svc, credentials acc: " + credentials.getAddress());
 
         // deploy
         HospitalCredentials contract = HospitalCredentials.deploy(web3j, credentials, 
             staticGasProvider, mohEthAddress, license).send();
-
-        System.out.println(">>> in eth svc, deployed Hosp Credentials contract address: " + contract.getContractAddress()); //debug
-        
+       
         return contract;
 
     }
@@ -119,12 +111,10 @@ public class EthereumService {
     public HospitalCredentials loadHospitalCredentialsContract(String contractAddress, Credentials credentials){
 
         if(credentials == null){
-            System.out.println(">>> in ethh svc done loading contract (if credentials null): " + contractAddress);
 
             return HospitalCredentials.load(contractAddress, web3j, this.credentials,  staticGasProvider);
         }
 
-        System.out.println(">>> in ethh svc done loading contract: " + contractAddress);
         return HospitalCredentials.load(contractAddress, web3j, credentials,  staticGasProvider);
     }
 
@@ -148,6 +138,7 @@ public class EthereumService {
             return WalletUtils.loadCredentials(accountPassword, file);
 
         }catch(CipherException ex){
+            ex.printStackTrace();
             throw new WrongPasswordException("Failed to create credentials with provided password.");
         }
 
@@ -156,7 +147,6 @@ public class EthereumService {
     public BigInteger updateStatistic(Statistic stat, String accountPassword, byte[] keyStore, String contractAddress) throws Exception{
 
         Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
-        System.out.println(">>>>>> in eth svc, credentials acc: " + credentials.getAddress()); // debug
 
         // load contract from contractAddress
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
@@ -182,10 +172,6 @@ public class EthereumService {
         Statistic stat = new Statistic(bigIntegerToDouble(result.component1()), bigIntegerToDouble(result.component2()), bigIntegerToDouble(result.component3()),
            bigIntegerToDouble(result.component4()), bigIntegerToDouble(result.component5()), bigIntegerToDouble(result.component6()),
            bigIntegerToDouble(result.component7()), result.component8().toString(), result.component9());
-
-        // Statistic stat = new Statistic(bigIntegerToDouble(result.component1()), bigIntegerToDouble(result.component2()), bigIntegerToDouble(result.component3()),
-        //    bigIntegerToDouble(result.component4()), bigIntegerToDouble(result.component5()), bigIntegerToDouble(result.component6()),
-        //    bigIntegerToDouble(result.component7()), new Date(result.component8().longValue()), result.component9());
 
         return stat;
     }
@@ -217,10 +203,7 @@ public class EthereumService {
         // >> for each contract, get stat size
         // >> loop through stat to check for unverified stat, get the index
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
-        System.out.println("done loading contract in getUnverifiedStatIndex");
         Integer statSize = contract.getStatisticsSize().send().intValue();
-
-        System.out.println("statSize = " + statSize);
         
         Statistic stat;
         List<Integer> unverifiedStatIndex = new ArrayList<>();
@@ -275,8 +258,6 @@ public class EthereumService {
 
         Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
 
-        System.out.println("In eth svc managed to create credentials: " + credentials.getAddress());
-
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
 
         contract.verifyLicense().send();
@@ -300,6 +281,7 @@ public class EthereumService {
         try {
             credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
         } catch (IOException | WrongPasswordException e) {
+            e.printStackTrace();
             throw new WrongPasswordException("Failed to create credentials due to invalid password");
         }
 
@@ -308,12 +290,14 @@ public class EthereumService {
         try {
             contract.setUpdateFrequency(BigInteger.valueOf(Long.parseLong(updateFrequency))).send();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new UpdateContractFailedException("Failed to set update frequency in contract");
         }
 
         try {
             contract.setPenalty(BigInteger.valueOf(Long.parseLong(penalty)*1000000000)).send();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new UpdateContractFailedException("Failed to set penalty in contract");
 
         }
@@ -335,7 +319,7 @@ public class EthereumService {
         try {
             credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
         } catch (IOException | WrongPasswordException e) {
-            
+            e.printStackTrace();
             throw new WrongPasswordException("Failed to create credentials due to invalid password");
         }
 

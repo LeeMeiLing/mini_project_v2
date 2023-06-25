@@ -1,1 +1,17 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span>
+            <button mat-icon-button aria-label="home" (click)="goToHomePage()">
+                <mat-icon>home</mat-icon>
+            </button>
+        </span>
+        <span>HealthTrust</span>
+        <span class="example-fill-remaining-space"></span>
+        <span>
+            <button mat-icon-button aria-label="logout" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+            </button>
+        </span>
+      </mat-toolbar-row>    
+</mat-toolbar>
 <router-outlet></router-outlet>
