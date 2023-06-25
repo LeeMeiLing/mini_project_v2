@@ -32,13 +32,13 @@ public class EthereumService {
     private Credentials credentials;
     private StaticGasProvider staticGasProvider;
 
-    public EthereumService(String infuraUrl, String privateKey) {
+    public EthereumService(String alchemyUrl, String privateKey) {
 
-        // @INFURA SEPOLIA
-        web3j = Web3j.build(new HttpService(infuraUrl));
-        System.out.println(">>> InfuraURL " + infuraUrl); // debug
+        // @ALCHEMY SEPOLIA
+        web3j = Web3j.build(new HttpService(alchemyUrl));
+        System.out.println(">>> InfuraURL " + alchemyUrl); // debug
 
-        // @INFURA SEPOLIA
+        // @ALCHEMY SEPOLIA
         System.out.println(">>> private Key " + privateKey); // debug
         credentials = Credentials.create(privateKey);
         System.out.println(">>> credentials address: " + credentials.getAddress()); // debug

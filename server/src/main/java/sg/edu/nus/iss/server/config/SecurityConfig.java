@@ -31,15 +31,18 @@ public class SecurityConfig {
     @Value("${spring.security.secret.key}")
     private String secretKey;
     
-    @Value("${INFURA_URL}")
-    private String infuraUrl;
+    // @Value("${INFURA_URL}")
+    // private String infuraUrl;
+
+    @Value("${ALCHEMY_URL}")
+    private String alchemyUrl;
 
     @Value("${ETH_PRIVATE_KEY}")
     private String privateKey;
 
     @Bean
     public EthereumService ethereumService() {
-        return new EthereumService(infuraUrl, privateKey);
+        return new EthereumService(alchemyUrl, privateKey);
     }
 
     @Autowired
@@ -95,6 +98,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.POST, "/api/user/register/public").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/hospitals/*/register/hospital").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/hospitals/*/register/moh").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/hospitals/moh").permitAll()
                     .anyRequest().authenticated())
             .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)

@@ -47,6 +47,10 @@ public class HospitalSgService {
 
     @Autowired
     private CustomAuthenticationManagerForMoh customAuthenticationManagerForMoh;
+
+    public void registerMoh(Moh moh){
+        hospSgRepo.insertMoh(moh);
+    }
    
     @Transactional(rollbackFor = RegisterHospitalFailedException.class)
     public void registerHospitalSg(HospitalSg hospital, String accountPassword) throws Exception {

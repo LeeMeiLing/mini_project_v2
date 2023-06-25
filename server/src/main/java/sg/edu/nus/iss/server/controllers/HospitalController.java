@@ -41,7 +41,7 @@ public class HospitalController {
     @GetMapping(path="/states", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getStates(){
 
-        // TODO: hospSvc.checkUpdated();
+        hospSvc.checkUpdated();
 
         List<String> states = hospSvc.getStates();
         

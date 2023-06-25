@@ -150,11 +150,11 @@ export class LoginComponent implements OnInit{
     try{
 
       const currentAccount =  await this.web3Svc.web3.eth.requestAccounts(); // all lower case
-      const currentAccountAddress= this.web3Svc.web3.utils.toChecksumAddress(currentAccount[0]); // convert to checksum form for comparison
-      
+      // const currentAccountAddress= this.web3Svc.web3.utils.toChecksumAddress(currentAccount[0]); // convert to checksum form for comparison
+      const currentAccountAddress = currentAccount[0];
       const selectedMoh = this.mohList.find(moh => moh.countryCode == this.mohForm.value['countryCode']);
 
-      if(currentAccountAddress === selectedMoh!['mohEthAddress']){
+      if(currentAccountAddress === selectedMoh!['mohEthAddress'].toLowerCase()){
         
         console.log('address matched! '); // debug
 

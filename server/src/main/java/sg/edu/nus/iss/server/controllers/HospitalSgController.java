@@ -28,6 +28,7 @@ import sg.edu.nus.iss.server.exceptions.VerificationFailedException;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 import sg.edu.nus.iss.server.models.Statistic;
 import sg.edu.nus.iss.server.services.HospitalSgService;
 
@@ -47,6 +48,19 @@ public class HospitalSgController {
 
         HospitalSg hospital = HospitalSg.createHospitalSg(jo);
         hospSgSvc.registerHospitalSg(hospital, jo.getString("accountPassword"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+    }
+
+    @PostMapping(path = "/register/moh", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> registerMoh(@RequestBody String payload) throws Exception{
+
+        JsonReader rd = Json.createReader(new StringReader(payload));
+        JsonObject jo = rd.readObject();
+
+        Moh moh = Moh.createMoh(jo);
+        hospSgSvc.registerMoh(moh);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
 

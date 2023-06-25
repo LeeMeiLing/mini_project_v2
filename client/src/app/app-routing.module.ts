@@ -13,11 +13,13 @@ import { MohSgHomeComponent } from './components/moh-sg-home.component';
 import { MohUsHomeComponent } from './components/moh-us-home.component';
 import { StatisticListComponent } from './components/statistic-list.component';
 import { ReviewListComponent } from './components/review-list.component';
+import { SignUpMohComponent } from './components/sign-up-moh.component';
 
 const routes: Routes = [
   { path:'', component:LoginComponent},
   { path:'signup', component:SignUpComponent},
   { path:'signupHospital', component:SignUpHospitalComponent},
+  { path:'signupMoh', component:SignUpMohComponent},
   { path:'home/hospital', component:HospitalHomeComponent},
   { path:'home/moh/sg', component:MohSgHomeComponent},
   { path:'home/moh/us', component:MohUsHomeComponent},

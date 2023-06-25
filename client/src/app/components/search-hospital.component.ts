@@ -61,12 +61,12 @@ export class SearchHospitalComponent implements OnInit{
     this.showSgForm = false;
     this.showUsForm = false;
 
-    if(this.countryCodeForm.value['countryCode'] == 'SG'){
+    if(this.countryCodeForm.value['countryCode']?.toLowerCase() == 'SG'.toLowerCase()){
       this.showSgForm = true;
       this.form = this.createSgForm();
     }
     
-    if(this.countryCodeForm.value['countryCode'] == 'US'){
+    if(this.countryCodeForm.value['countryCode']?.toLowerCase() == 'US'.toLowerCase()){
 
       this.showUsForm = true;
       this.form = this.createUsForm();
@@ -262,28 +262,28 @@ export class SearchHospitalComponent implements OnInit{
     
   }
 
-  undoSort(){
-    this.disableSort = !this.disableSort;
-    if(!this.disableSort){
-      // if enable sort
-      this.sort();
+  // undoSort(){
+  //   this.disableSort = !this.disableSort;
+  //   if(!this.disableSort){
+  //     // if enable sort
+  //     this.sort();
 
-    }else{
-      // if disable sort
-      this.sortByRating = false;
-      this.descending = false;
+  //   }else{
+  //     // if disable sort
+  //     this.sortByRating = false;
+  //     this.descending = false;
 
-      console.log('undoSort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
+  //     console.log('undoSort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
 
-      if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
-        this.searchSgHospitals();
-      }
-      else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
-        this.searchUsHospitals();
-      }
-    }
+  //     if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
+  //       this.searchSgHospitals();
+  //     }
+  //     else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
+  //       this.searchUsHospitals();
+  //     }
+  //   }
     
-  }
+  // }
 
   loadNextPage(){
     this.offset++;

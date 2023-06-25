@@ -1,0 +1,32 @@
+<div>
+    <h2>SIGN UP AS MOH</h2>
+    <h3>Please connect to metamask with the account to be registered</h3>
+    <form [formGroup]="form" (ngSubmit)="register()">
+        <table>
+            <tr>
+                Ethereum Account Private Key: <input type="password" formControlName="privateKey">
+                <span *ngIf="form.get('privateKey')?.invalid && form.get('privateKey')?.dirty">Please enter a valid private key associated with the connected account</span>
+            </tr>
+            <tr>
+                Set Password: <input type="password" formControlName="accountPassword">
+                <span *ngIf="form.get('accountPassword')?.invalid && form.get('accountPassword')?.dirty">Password must be at least 8 characters, contains at least 1 digit, 1 uppercase letter and 1 lowercase letter</span>
+            </tr>
+            <tr>
+                Country Code: <input type="text" formControlName="countryCode">
+                <span *ngIf="form.get('countryCode')?.invalid && form.get('countryCode')?.dirty">Country code is mandatory</span>
+            </tr>
+            
+            <tr>
+                Country Name: <input type="text" formControlName="countryName">
+                <span *ngIf="form.get('countryName')?.invalid && form.get('countryName')?.dirty">Country name is mandatory</span>
+            </tr>
+
+            <tr>
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Register</button>
+            </tr>
+        </table>
+        <a [routerLink]="['/']">Back to Sign-In Page</a>
+    </form>
+</div>
+
+

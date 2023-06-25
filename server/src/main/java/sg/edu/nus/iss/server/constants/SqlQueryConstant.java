@@ -200,4 +200,6 @@ public class SqlQueryConstant {
 
     public static final String UPDATE_SG_HOSPITAL_JCI = "update sg_hospitals set jci_accredited = ? where facility_id = ?";
 
+    public static final String INSERT_MOH = "insert into moh (country_code, country_name, moh_eth_address, account_password, encrypted_key_store) values (?,?,?,?,?)";
+
 }

@@ -2,6 +2,8 @@ package sg.edu.nus.iss.server.models;
 
 import java.util.Arrays;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
@@ -58,5 +60,23 @@ public class Moh {
 			.add("mohEthAddress", mohEthAddress)
 			.build();
 	}
+
+	public static Moh createMoh(JsonObject jo){
+        
+        Moh moh = new Moh();
+  
+        moh.setCountryCode(jo.getString("countryCode"));
+		moh.setCountryName(jo.getString("countryName"));
+
+        JsonObject encryptedKeyStore = jo.getJsonObject("encryptedKeyStore");
+        moh.setEncryptedKeyStore(encryptedKeyStore.toString().getBytes());
+        moh.setMohEthAddress("0x" + encryptedKeyStore.getString("address"));
+        
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        moh.setAccountPassword(bCryptPasswordEncoder.encode(jo.getString("accountPassword")));
+
+        return moh;
+
+    }
     
 }

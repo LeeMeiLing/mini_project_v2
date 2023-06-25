@@ -13,6 +13,8 @@ export class HospitalService {
 
   HOSPITAL_URL = environment.apiHospitalUrl;
   HOSPITAL_SG_URL = environment.apiHospitalSgUrl;
+  // HOSPITAL_URL = 'https://dispensable-ladybug-production.up.railway.app/api/hospitals'
+  // HOSPITAL_SG_URL = 'https://dispensable-ladybug-production.up.railway.app/api/hospitals/sg';
   token!: string | null;
 
   // getHospitalList(name:string){
@@ -145,6 +147,14 @@ export class HospitalService {
                                      .set('Accept','application/json');
 
     return this.http.post(`${this.HOSPITAL_URL}/${form.countryCode}/register/hospital`, form, { headers });
+  }
+
+  registerMoh(form:any){
+
+    const headers = new HttpHeaders().set('Content-Type','application/json')
+                                     .set('Accept','application/json');
+
+    return this.http.post(`${this.HOSPITAL_SG_URL}/register/moh`, form, { headers });
   }
 
   /*

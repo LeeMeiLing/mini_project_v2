@@ -23,6 +23,7 @@ import sg.edu.nus.iss.server.constants.SqlQueryConstant;
 import sg.edu.nus.iss.server.models.HospitalReview;
 import sg.edu.nus.iss.server.models.HospitalReviewSummary;
 import sg.edu.nus.iss.server.models.HospitalSg;
+import sg.edu.nus.iss.server.models.Moh;
 
 
 @Repository
@@ -53,6 +54,33 @@ public class HospitalSgRepository {
                     ps.setString(13,h.getEthAddress());
                     ps.setString(14,h.getAccountPassword());
                     ps.setBytes(15,h.getEncryptedKeyStore());
+                    
+                }
+                
+            });
+
+            return true;
+    
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
+
+    }
+
+     public boolean insertMoh(Moh moh){
+
+        try{
+            jdbcTemplate.update(SqlQueryConstant.INSERT_MOH, new PreparedStatementSetter() {
+
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+               
+                    ps.setString(1,moh.getCountryCode());
+                    ps.setString(2,moh.getCountryName());             
+                    ps.setString(3,moh.getMohEthAddress());
+                    ps.setString(4,moh.getAccountPassword());
+                    ps.setBytes(5,moh.getEncryptedKeyStore());
                     
                 }
                 
@@ -459,8 +487,7 @@ public class HospitalSgRepository {
     public boolean updateHospitalSgOverallRating(Float newAvgRating, String facilityId) {
 
         try{
-            
-            jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_RATING, String.valueOf(newAvgRating), facilityId);
+            jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_RATING, String.valueOf(newAvgRating).substring(0, 5), facilityId);
             return true;
     
         }catch(Exception ex){

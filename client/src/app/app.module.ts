@@ -28,6 +28,7 @@ import { StatisticListComponent } from './components/statistic-list.component';
 import { ReviewListComponent } from './components/review-list.component';
 import { PasswordComponent } from './components/password.component';
 import { FrequencyPenaltyComponent } from './components/frequency-penalty.component';
+import { SignUpMohComponent } from './components/sign-up-moh.component';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { FrequencyPenaltyComponent } from './components/frequency-penalty.compon
     StatisticListComponent,
     ReviewListComponent,
     PasswordComponent,
-    FrequencyPenaltyComponent
+    FrequencyPenaltyComponent,
+    SignUpMohComponent
   ],
   imports: [
     BrowserModule,

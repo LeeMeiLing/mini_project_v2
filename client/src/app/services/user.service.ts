@@ -13,6 +13,7 @@ export class UserService {
   constructor(private http:HttpClient, private jwtCookieSvc: JwtCookieService) { }
 
   USER_URL = environment.apiUserUrl;
+  // USER_URL = 'https://dispensable-ladybug-production.up.railway.app/api/user';
   token!: string | null;
 
   /*

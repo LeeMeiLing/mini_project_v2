@@ -5,12 +5,11 @@ import { HospitalService } from '../services/hospital.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-sign-up-hospital',
-  templateUrl: './sign-up-hospital.component.html',
-  styleUrls: ['./sign-up-hospital.component.css']
+  selector: 'app-sign-up-moh',
+  templateUrl: './sign-up-moh.component.html',
+  styleUrls: ['./sign-up-moh.component.css']
 })
-export class SignUpHospitalComponent implements OnInit{
-
+export class SignUpMohComponent {
   form!: FormGroup;
   result$: any;
 
@@ -30,19 +29,10 @@ export class SignUpHospitalComponent implements OnInit{
   createForm():FormGroup{
     return this.fb.group({
 
-      // ethAddress:this.fb.control<string>('',[Validators.required, Validators.minLength(42), Validators.maxLength(42)]),
       privateKey:this.fb.control<string>('',[Validators.required, Validators.minLength(66), Validators.maxLength(66)]),
       accountPassword:this.fb.control<string>('',[Validators.required, Validators.pattern(new RegExp('(?=\\S*$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'))]),
-      facilityName:this.fb.control<string>('',[Validators.required]),
-      license:this.fb.control<string>('',[Validators.required]),
-      address:this.fb.control<string>('',[Validators.required]),
-      streetName:this.fb.control<string>('',[Validators.required]),
-      zipCode:this.fb.control<string >('',[Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
       countryCode:this.fb.control<string>('',[Validators.required]),
-      phoneNumber:this.fb.control<string>('',[Validators.required]),
-      // hospitalType:this.fb.control<string>('',[Validators.required]),
-      hospitalOwnership:this.fb.control<string>('',[Validators.required]),
-      emergencyServices:this.fb.control<string>('',[Validators.required])
+      countryName:this.fb.control<string>('',[Validators.required]),
 
     });
   }
@@ -53,9 +43,7 @@ export class SignUpHospitalComponent implements OnInit{
 
       const currentAccount =  await this.web3Svc.web3.eth.requestAccounts(); // all lower case
       const currentAccountAddress= this.web3Svc.web3.utils.toChecksumAddress(currentAccount[0]); // convert to checksum form for comparison
-      // console.log(currentAccountAddress);
       const fromKey = this.web3Svc.web3.eth.accounts.privateKeyToAccount(this.form.value['privateKey']);
-      // console.log(fromKey);
       if(currentAccountAddress === fromKey.address){
         return false;
       }
@@ -84,7 +72,7 @@ export class SignUpHospitalComponent implements OnInit{
 
     this.form.addControl('encryptedKeyStore', this.fb.control(encryptedKeyStore))
     console.log('form: ', this.form)
-    this.hospSvc.registerHospital(this.form.value).subscribe({
+    this.hospSvc.registerMoh(this.form.value).subscribe({
       next:()=>{},
       error:(err)=>{
         console.error(err)
