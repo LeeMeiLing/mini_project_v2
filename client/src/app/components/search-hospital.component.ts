@@ -23,6 +23,7 @@ export class SearchHospitalComponent implements OnInit{
   disableSort:boolean = true;
   count!:number;
   seeResponse!:any;
+  totalPage!:number;
 
   mohList!:Moh[];
   countryCodeForm = this.fb.group({countryCode: this.fb.control('')})
@@ -33,8 +34,6 @@ export class SearchHospitalComponent implements OnInit{
   constructor(private fb:FormBuilder, private hospitalSvc:HospitalService) {}
   
   ngOnInit(): void {
-
-    // this.form = this.createForm();
 
     this.hospitalSvc.getMohList().subscribe({
       next: (r:any)=>{
@@ -146,6 +145,7 @@ export class SearchHospitalComponent implements OnInit{
           this.seeResponse = r
           this.hospitalSgList = r['results'] as HospitalSg[];
           this.count = r['count'];
+          
         }),
       ).subscribe({
         next: ()=> {
@@ -153,6 +153,7 @@ export class SearchHospitalComponent implements OnInit{
           console.log(this.hospitals);
           console.log(this.count);
           console.log('count/20 ', this.count/20)
+          this.totalPage = Math.ceil(this.count/20);
         },
         error: err=>{
           this.hospitals = [];
@@ -204,6 +205,8 @@ export class SearchHospitalComponent implements OnInit{
           console.log(this.hospitals);
           console.log(this.count);
           console.log('count/20 ', this.count/20)
+          this.totalPage = Math.ceil(this.count/20);
+
         },
         error: err=>{
           this.hospitals = [];
@@ -218,16 +221,7 @@ export class SearchHospitalComponent implements OnInit{
   }
 
   sort(){
-    // this.sortByRating = true;
-    // this.descending = !this.descending;
-    // console.log('sort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
 
-    // if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
-    //   this.searchSgHospitals();
-    // }
-    // else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
-    //   this.searchUsHospitals();
-    // }
     this.buttonClick++;
     if(this.buttonClick == 4){
       this.buttonClick = 1;
@@ -262,28 +256,6 @@ export class SearchHospitalComponent implements OnInit{
     
   }
 
-  // undoSort(){
-  //   this.disableSort = !this.disableSort;
-  //   if(!this.disableSort){
-  //     // if enable sort
-  //     this.sort();
-
-  //   }else{
-  //     // if disable sort
-  //     this.sortByRating = false;
-  //     this.descending = false;
-
-  //     console.log('undoSort()', 'sortByRating: ',this.sortByRating,'descending: ', this.descending);
-
-  //     if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
-  //       this.searchSgHospitals();
-  //     }
-  //     else if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'us'.toLowerCase()){
-  //       this.searchUsHospitals();
-  //     }
-  //   }
-    
-  // }
 
   loadNextPage(){
     this.offset++;

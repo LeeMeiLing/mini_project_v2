@@ -1,0 +1,41 @@
+
+ .hospital-card{
+    display: flex;
+    width: 100%; /* if without link*/
+    max-width: 800px;
+    margin-top: 1%;
+ }
+
+ .hospital-card:hover{
+    background-color: lightgray;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ }
+ 
+
+ /* .hospital-card-link{
+    width: 100%;
+    max-width: 800px;
+    margin-top: 1%;
+    height: max-content;
+ } */
+
+
+  .child {
+    box-sizing: inherit;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 1%;
+    padding-right: 1%;
+
+  }
+
+  .left-element {
+    order: 1;
+  }
+  
+  .right-element {
+    order: 2;
+  }
+
+ 

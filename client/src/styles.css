@@ -8,18 +8,18 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     padding-right: 1%;
 }
 
-/* .button-with-icon {
-    display: flex;
-    align-items: center;
-  }
-   */
-  /* .button-icon {
-   vertical-align:bottom;
-  } */
+.example-fill-remaining-space {
+    /* This fills the remaining space, by using flexbox. 
+       Every toolbar row uses a flexbox row layout. */
+    flex: 1 1 auto;
+}
+
 .mat-icon {
     vertical-align: middle;
 }
 
-/* .button-text{
-text-align: center;
-} */
+.mat-icon-button{
+    vertical-align: middle;
+}
+
+
