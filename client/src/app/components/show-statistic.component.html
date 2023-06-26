@@ -1,16 +1,14 @@
-<!-- Statistic of {{hospital}} -->
-<a [routerLink]="['/searchHospital']" *ngIf="userRole == 'user'">Back to Search</a>
-<a [routerLink]="['/home/moh',countryCode]" *ngIf="userRole == 'moh'">Back to Home</a>
-<a [routerLink]="['/home/hospital']" *ngIf="userRole == 'hospital'">Back to Home</a>
+<div class="parent">
+    <a [routerLink]="['/hospital','sg',facilityId]" *ngIf="userRole == 'user'">Back</a>
+    <a [routerLink]="['/hospital','sg',facilityId,'statistic-list']" *ngIf="userRole == 'moh'">Back</a>
+</div>
 
-<div *ngIf="statistic">
-    updated on {{dateUpdated | date: 'MMM d, y'}}
-
-    <table>
-        <tr *ngIf="userRole == 'moh' && countryCode == 'sg'">
-            <td *ngIf="!statistic.verified">
-                <button type="button" (click)="verifyStatistic(statIndex)">Verify</button>
-            </td>
+<div class="parent" *ngIf="statistic">
+    <p class="title">Statistic</p>
+    <table class="table stat-table subtitle-two">
+        <tr>
+            <th class="subtitle">Quality Measures</th>
+            <th class="subtitle">Data (%)</th>
         </tr>
         <tr>
             <td>Mortality rate</td>
@@ -41,14 +39,17 @@
             <td>{{statistic.medicalImagingEfficiency}}</td>
         </tr>
         <tr>
-            <td>Timestamp</td>
+            <td>Date updated</td>
             <td>{{dateUpdated | date: 'long'}}</td>
         </tr>
         <tr>
             <td>Verified</td>
             <td>
-                <span *ngIf="statistic.verified">yes</span>
-                <span *ngIf="!statistic.verified">no</span>
+                <span class="left" *ngIf="statistic.verified">Yes</span>
+                <span class="left" *ngIf="!statistic.verified">No</span>
+                <span class="right" *ngIf="userRole == 'moh' && countryCode == 'sg'">
+                    <button mat-raised-button color="accent" type="button" [disabled]="statistic.verified" (click)="verifyStatistic(statIndex)">Verify</button>
+                </span>
             </td>
         </tr>
     </table>

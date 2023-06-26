@@ -69,6 +69,7 @@ public class HospitalSgService {
 
         try {
             // deploy contract
+            System.out.println(">>>trying to deploy");
             contract =  ethSvc.deployHospitalCredentialsContract(hospital.getEncryptedKeyStore(), accountPassword, 
             mohEthAddress, hospital.getLicense());
 
@@ -118,6 +119,7 @@ public class HospitalSgService {
         try{
             // update contract
             BigInteger index = ethSvc.updateStatistic(stat, accountPassword, keyStore, contractAddress);
+            System.out.println(">> ?? updated contract");
 
             // update MySQL
             boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); 

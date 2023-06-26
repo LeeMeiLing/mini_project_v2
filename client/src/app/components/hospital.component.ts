@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PasswordComponent } from './password.component';
 import { FrequencyPenaltyComponent } from './frequency-penalty.component';
 
+
 @Component({
   selector: 'app-hospital',
   templateUrl: './hospital.component.html',
@@ -119,6 +120,8 @@ export class HospitalComponent implements OnInit, OnDestroy{
       },
       error: (err) => console.error(err),
       complete: () => {
+        console.log('>>>>',this.currentUpdateFrequency)
+        console.log('>>>>',this.currentPenalty)
         console.log('complete getCurrentUpdateFrequencyAndPenalty()')
       }
     });

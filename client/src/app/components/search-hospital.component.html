@@ -1,4 +1,4 @@
-<div class="container">
+<div>
     <mat-card-header>
         <mat-card-title>Find A Hospital</mat-card-title>
     </mat-card-header>
@@ -52,8 +52,8 @@
                 </mat-select>
             </mat-form-field>
             &nbsp;
-            <mat-form-field>
-                <mat-select formControlName="city" [hidden]="!form.value['state']">
+            <mat-form-field [hidden]="!form.value['state']">
+                <mat-select formControlName="city">
                     <mat-option value="">--All Cities--</mat-option>
                     <mat-option *ngFor="let city of cities" value="{{city}}">{{city}}</mat-option>
                 </mat-select>
@@ -81,7 +81,7 @@
     </mat-card-content>
 </div>
 <hr>
-<div class="container">
+<div>
     <!-- List of US Hospitals based on Search Result -->
     <div *ngIf="hospitals">
         <mat-card-header>
@@ -117,7 +117,7 @@
     </div>
 </div>
 
-<div class="container">
+<div>
     <!-- List of Sg Hospitals based on Search Result -->
   
     <div *ngIf="hospitalSgList">

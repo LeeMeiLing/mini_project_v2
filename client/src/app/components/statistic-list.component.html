@@ -1,22 +1,25 @@
-<div *ngIf="statistics">
-    <table *ngIf="statistics.length > 0; else noStatistic">
-        <tr *ngFor="let s of statistics.reverse(); let i = index">
-            <a [routerLink]="['/statistic',facilityId,statistics.length-i-1]">
-                <td>
-                    Statistic ({{statistics.length-i}}) 
-                </td>
-                <td>
-                    {{timestampToDate(s.timestamp) | date: 'long'}}
-                </td>
-                <td>
-                    <span *ngIf="s.verified">Verified</span>
-                    <span *ngIf="!s.verified">Pending Verification</span>
-                </td>
-            </a>
-        </tr>
-    </table>
-</div>
-
 <ng-template #noStatistic> 
-    <span>This hospital has not posted any statistic</span>
+    <div class="parent">
+        <span class="content">This hospital has not posted any statistic</span>
+    </div>
+
 </ng-template>
+
+<div *ngIf="statistics">
+    <div *ngIf="statistics.length > 0; else noStatistic">
+        <div *ngFor="let s of statistics.reverse(); let i = index">
+
+            <mat-card class="parent" [routerLink]="['/statistic',facilityId,statistics.length-i-1]">
+                <span class="content">
+                    Statistic ({{statistics.length-i}})
+                    &nbsp;&nbsp;
+                    {{timestampToDate(s.timestamp) | date: 'long'}} 
+                    &nbsp;&nbsp;
+                    <span class="content-green" *ngIf="s.verified">Verified</span>
+                    <span class="content-red" *ngIf="!s.verified">Pending Verification</span>
+                </span>               
+            </mat-card>
+        </div>
+        
+    </div>
+</div>

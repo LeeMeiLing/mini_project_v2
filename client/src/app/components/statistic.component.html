@@ -1,19 +1,50 @@
-<h2>Update Hospital Statistic</h2>
-<br>
-<form [formGroup]="form" (ngSubmit)="updateStatistic()">
-    Mortality rate: <input type="number" formControlName="mortality">
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Update Hospital Statistic</mat-card-title>
+    </mat-card-header>
     <br>
-    Patient safety: <input type="number" formControlName="patientSafety">
-    <br>
-    Patient readmission rate: <input type="number" formControlName="readmission">
-    <br>
-    Patient experience: <input type="number" formControlName="patientExperience">
-    <br>
-    Effectiveness of care: <input type="number" formControlName="effectiveness">
-    <br>
-    Timeliness of care: <input type="number" formControlName="timeliness">
-    <br>
-    Efficient use of medical imaging: <input type="number" formControlName="medicalImagingEfficiency">
-    <br>
-    <button type="submit" [disabled]="form.invalid">Submit</button>
-</form>
+    <mat-card-content>
+        <p *ngIf="waiting">
+            <span>Update in progress. This may take some time due to high Ethereum network traffic.</span>
+            <mat-progress-bar mode="indeterminate" *ngIf="waiting"></mat-progress-bar>
+        </p>
+        <form [formGroup]="form" (ngSubmit)="updateStatistic()">
+            <mat-form-field class="custom-width">
+                <mat-label>Mortality rate</mat-label>
+                <input matInput type="number" formControlName="mortality">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="custom-width">
+                <mat-label>Patient safety</mat-label>
+                <input matInput type="number" formControlName="patientSafety">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="custom-width">
+                <mat-label>Patient readmission rate</mat-label>
+                <input matInput type="number" formControlName="readmission">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="custom-width">
+                <mat-label>Patient experience</mat-label>
+                <input matInput type="number" formControlName="patientExperience">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="custom-width">
+                <mat-label>Effectiveness of care</mat-label>
+                <input matInput type="number" formControlName="effectiveness">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="custom-width">
+                <mat-label>Timeliness of care</mat-label>
+                <input matInput type="number" formControlName="timeliness">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="custom-width">
+                <mat-label>Efficient use of medical imaging</mat-label>
+                <input matInput type="number" formControlName="medicalImagingEfficiency">
+            </mat-form-field>
+            <br>
+            <button type="submit" mat-raised-button color="accent" [disabled]="form.invalid">Submit</button>
+        </form>
+    </mat-card-content>
+</mat-card>

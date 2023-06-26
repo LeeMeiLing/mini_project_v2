@@ -1,7 +1,7 @@
 
  .hospital-card{
     display: flex;
-    width: 100%; /* if without link*/
+    width: 100%;
     max-width: 800px;
     margin-top: 1%;
  }

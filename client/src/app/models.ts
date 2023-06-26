@@ -128,3 +128,4 @@ export interface FrequencyPenaltyDialogData {
     updateFrequency:string | null;
     penalty:string | null;
 }
+

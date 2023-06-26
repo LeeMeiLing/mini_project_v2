@@ -43,7 +43,7 @@ public class EthereumService {
         credentials = Credentials.create(privateKey);
         System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
 
-        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(3500000000L),BigInteger.valueOf(1500000));
+        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(4500000000L),BigInteger.valueOf(3000000));
 
         // // @GANACHE
         // web3j = Web3j.build(new HttpService("http://localhost:8545"));

@@ -1,122 +1,300 @@
-<div>
-    <mat-card *ngIf="hospital; else showHospitalSg">
+<div *ngIf="hospital; else showHospitalSg">
+    <div class="parent">
+        <div class="child left">
+            <span class="title">{{hospital.facilityName}}</span>
+            <br>
+            <span class="content">{{hospital.address}}, {{hospital.city}}, {{hospital.state}}, {{hospital.zipCode}},
+                {{hospital.countyName}}</span>
+            <br>
+            <span class="content">{{hospital.phoneNumber}}</span>
+            <br>
+            <br>
+            <span class="content">Emergency service available: {{hospital.emergencyServices}}</span>
+            <br>
+            <span class="content">Hospital Ownership: {{hospital.hospitalOwnership}}</span>
+            <br>
+            <span class="content">Hospital Type: {{hospital.hospitalType}}</span>
+            <br>
+        </div>
+        <div class="child right-center ">
+            <span class="rating" *ngIf="hospital.hospitalOverallRating != 'Not Available'">
+                Rating: {{hospital.hospitalOverallRating | number:'1.1-1'}}/5
+            </span>
+            <span class="rating" *ngIf="hospital.hospitalOverallRating == 'Not Available'">
+                Rating {{hospital.hospitalOverallRating }}
+            </span>
+            <br>
+            <span>(based on data.cms.gov)</span>
+        </div>
+      </div>
+</div>
+
+<div class="parent" *ngIf="userRole == 'user'" >
+    <div class="child left">
+    <span *ngIf="totalReview > 0">
+        <button mat-flat-button type="button" color="accent" (click)="showReview()">
+            Reviews ({{totalReview}})
+        </button>
+    </span>
+    &nbsp;
+    <span *ngIf="totalReview == 0">No Review Yet</span>
+    &nbsp;
+    <span *ngIf="hospital || hospitalSg"><button mat-flat-button type="button" color="accent"
+            (click)="goToReview()">Add A Review</button></span>
+    &nbsp;
+    &nbsp;
+    <span *ngIf="statIndex>=0"><button mat-flat-button type="button" color="accent"
+            (click)="goToStatistic()">Statistic</button></span>
+    </div>
+    <div class="child right"></div>
+</div>
+
+  <div class="parent" *ngIf="userRole == 'hospital'">
+    <div class="child left">
+        <p *ngIf="currentUpdateFrequency" class="content">
+
+            <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
+                Statistic update frequency: {{currentUpdateFrequency}} (days)
+                <br>
+                Penalty for late update: {{currentPenalty}} (Gwei)
+            </span>
+
+            <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
+                Update frequency and penalty has not been set
+            </span>
+        </p>
+        <br>
+        <span *ngIf="totalReview > 0" class="content">
+            Reviews ({{totalReview}})
+        </span>
+        <span *ngIf="totalReview == 0" class="content">No Review Yet</span>
+    </div>
+    <div class="child right"></div>
+  </div>
+
+  <div class="parent" *ngIf="userRole == 'moh' && countryCode=='sg'">
+    <div class="child left">
+        <p *ngIf="currentUpdateFrequency" class="content">
+            <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
+                Statistic update frequency: {{currentUpdateFrequency}} (days)
+                <br>
+                Penalty for late update: {{currentPenalty}} (Gwei)
+            </span>
+            <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
+                Update frequency and penalty has not been set
+            </span>
+        </p>
+
+        <div *ngIf="currentUpdateFrequency">
+            <button mat-flat-button color="accent" type="button" (click)="verifyCredentials()"
+                [disabled]="hospitalSg.registered">Verify Hospital Credentials</button>
+            <br><br>
+            <button mat-flat-button color="accent" type="button" (click)="verifyJci()"
+                [disabled]="hospitalSg.jciAccredited">Verify JCI Accreditation</button>
+            <br><br>
+            <button mat-flat-button color="accent" type="button" (click)="setFrequencyAndPenalty()">Set statistic update
+                frequency and penalty</button>
+            <br>
+        </div>
+    </div>
+    <div class="child right"></div>
+</div>
+
+<hr>
+
+<router-outlet></router-outlet>
+
+<ng-template #showHospitalSg>
+    <div class="parent" *ngIf="hospitalSg">
+        <div class="child left">
+            <span class="title">{{hospitalSg.facilityName}}</span>
+            <br>
+            <span class="content">{{hospitalSg.address}}, {{hospitalSg.streetName}}, {{hospitalSg.zipCode}}</span>
+            <br>
+            <span class="content">{{hospitalSg.phoneNumber}}</span>
+            <br>
+            <br>
+            <span class="content">License: {{hospitalSg.license}}</span>
+            <br>
+            <span class="content">Registered:
+                <span *ngIf="hospitalSg.registered">yes</span>
+                <span *ngIf="!hospitalSg.registered">no</span></span>
+            <br>
+            <span class="content">JCI Accredited:
+                <span *ngIf="hospitalSg.jciAccredited">yes</span>
+                <span *ngIf="!hospitalSg.jciAccredited">no</span></span>
+            <br>
+            <span class="content">Emergency service available: {{hospitalSg.emergencyServices}}</span>
+            <br>
+            <span class="content">Hospital Ownership: {{hospitalSg.hospitalOwnership}}</span>
+        </div>
+        <div class="child right-center ">
+            <span class="rating" *ngIf="hospitalSg.hospitalOverallRating != 'Not Available'">
+                Rating: {{hospitalSg.hospitalOverallRating | number:'1.1-1'}}/5
+            </span>
+            <span class="rating" *ngIf="hospitalSg.hospitalOverallRating == 'Not Available'">
+                Rating {{hospitalSg.hospitalOverallRating }}
+            </span>
+        </div>
+      </div>
+</ng-template>
+
+
+
+<!-- ======================================= -->
+
+    <!-- <mat-card *ngIf="hospital; else showHospitalSg" class="hospital-card">
         <mat-card-header>
             <mat-card-title>
                 <span>{{hospital.facilityName}}</span>
-                &nbsp;
-                &nbsp;
-                &nbsp;
-                &nbsp;
-                <span>Rating: {{hospital.hospitalOverallRating}}/5</span>
+                &nbsp; &nbsp;
+                &nbsp; &nbsp;
+                &nbsp; &nbsp;
+                &nbsp; &nbsp;
+                &nbsp; &nbsp;
+                <span>
+                    Rating: {{hospital.hospitalOverallRating | number:'1.1-1'}}/5
+                </span>
             </mat-card-title>
-        </mat-card-header>
-        
-        <mat-card-content>
-            <span>{{hospital.address}},{{hospital.city}},{{hospital.state}},{{hospital.zipCode}},{{hospital.countyName}}</span>
-            <br>
-            <span>{{hospital.phoneNumber}}</span>
-            <br>
-            <span>Emergency service available: {{hospital.emergencyServices}}</span>
-            <br>
-            <span>Hospital Ownership: {{hospital.hospitalOwnership}}</span>
-            <br>
-            <span>Hospital Type: {{hospital.hospitalType}}</span>
-            <br>
-        </mat-card-content>
-    </mat-card>
 
-    <br>
-    <div *ngIf="userRole == 'user'">
+            <mat-card-subtitle>
+                <span>{{hospital.address}}, {{hospital.city}}, {{hospital.state}}, {{hospital.zipCode}},
+                    {{hospital.countyName}}</span>
+                <br>
+                <span>{{hospital.phoneNumber}}</span>
+                <br>
+                <br>
+                <span>Emergency service available: {{hospital.emergencyServices}}</span>
+                <br>
+                <span>Hospital Ownership: {{hospital.hospitalOwnership}}</span>
+                <br>
+                <span>Hospital Type: {{hospital.hospitalType}}</span>
+                <br>
+            </mat-card-subtitle>
+        </mat-card-header>
+    </mat-card> -->
+
+    <!-- <div *ngIf="userRole == 'user'">
+        &nbsp;
         <span *ngIf="totalReview > 0">
-            <button type="button" (click)="showReview()">
+            <button mat-flat-button type="button" color="accent" (click)="showReview()">
                 Reviews ({{totalReview}})
             </button>
         </span>
+        &nbsp;
         <span *ngIf="totalReview == 0">No Review Yet</span>
-        <span><button type="button" (click)="goToReview()">Add A Review</button></span>
-        <span *ngIf="statIndex>=0"><button type="button" (click)="goToStatistic()">Statistic</button></span>
-    </div>
-
+        &nbsp;
+        <span *ngIf="hospital || hospitalSg"><button mat-flat-button type="button" color="accent"
+                (click)="goToReview()">Add A Review</button></span>
+        &nbsp;
+        &nbsp;
+        <span *ngIf="statIndex>=0"><button mat-flat-button type="button" color="accent"
+                (click)="goToStatistic()">Statistic</button></span>
+    </div> -->
+<!-- 
     <div *ngIf="userRole == 'hospital'">
-        <p  *ngIf="currentUpdateFrequency">
-            <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
-                Statistic update frequency: {{currentUpdateFrequency}} (days)
-                <br>
-                Penalty for late update: {{currentPenalty}} (Gwei)
-            </span>
-            <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
-                Update frequency and penalty has not been set
-            </span>
-        </p>
-        <br>
-        <span *ngIf="totalReview > 0">
+        <mat-card-subtitle>
+            <p *ngIf="currentUpdateFrequency">
+                &nbsp;
+                <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
+                    Statistic update frequency: {{currentUpdateFrequency}} (days)
+                    <br>
+                    Penalty for late update: {{currentPenalty}} (Gwei)
+                </span>
+                &nbsp;
+                <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
+                    Update frequency and penalty has not been set
+                </span>
+            </p>
+            <br>
+            &nbsp;
+            <span *ngIf="totalReview > 0">
                 Reviews ({{totalReview}})
-        </span>
-        <span *ngIf="totalReview == 0">No Review Yet</span>
-    </div>
-
-    <div *ngIf="userRole == 'moh' && countryCode=='sg'">
-
-        <p  *ngIf="currentUpdateFrequency">
-            <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
-                Statistic update frequency: {{currentUpdateFrequency}} (days)
-                <br>
-                Penalty for late update: {{currentPenalty}} (Gwei)
             </span>
-            <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
-                Update frequency and penalty has not been set
-            </span>
-        </p>
+            <span *ngIf="totalReview == 0">No Review Yet</span>
+        </mat-card-subtitle>
 
-        <span *ngIf="!hospitalSg.registered">
-            <button type="button" (click)="verifyCredentials()">Verify Hospital Credentials</button>
-        </span>
-        <br>
-        <span *ngIf="!hospitalSg.jciAccredited">
-            <button type="button" (click)="verifyJci()">Verify JCI Accreditation</button>
-        </span>
-        <span>
-            <button type="button" (click)="setFrequencyAndPenalty()">Set statistic update frequency and penalty</button>
-        </span>
-        <br>
-    </div>
+    </div> -->
 
-    <br>
-    <hr>
+    <!-- <div *ngIf="userRole == 'moh' && countryCode=='sg'">
 
-    <router-outlet></router-outlet>
+        <mat-card-subtitle>
+            <p *ngIf="currentUpdateFrequency">
+                &nbsp;
+                <span *ngIf="currentUpdateFrequency!='0' && currentPenalty!='0'">
+                    Statistic update frequency: {{currentUpdateFrequency}} (days)
+                    <br>
+                    &nbsp;
+                    Penalty for late update: {{currentPenalty}} (Gwei)
+                </span>
+                &nbsp;
+                <span *ngIf="currentUpdateFrequency=='0' && currentPenalty=='0'">
+                    Update frequency and penalty has not been set
+                </span>
+            </p>
+        </mat-card-subtitle>
+        &nbsp;
+        <div *ngIf="currentUpdateFrequency">
+            &nbsp;
+            <button mat-flat-button color="accent" type="button" (click)="verifyCredentials()"
+                [disabled]="hospitalSg.registered">Verify Hospital Credentials</button>
+            <br><br>
+            &nbsp;
+            <button mat-flat-button color="accent" type="button" (click)="verifyJci()"
+                [disabled]="hospitalSg.jciAccredited">Verify JCI Accreditation</button>
+            <br><br>
+            &nbsp;
+            <button mat-flat-button color="accent" type="button" (click)="setFrequencyAndPenalty()">Set statistic update
+                frequency and penalty</button>
+            <br>
+        </div>
+    </div> -->
 
+   
+
+
+<!-- 
     <ng-template #showHospitalSg>
-        <mat-card *ngIf="hospitalSg">
-            <mat-card-title>
-                <span>{{hospitalSg.facilityName}}</span> &nbsp; &nbsp; <span>Rating: {{hospitalSg.hospitalOverallRating | number:'1.1-1'}}/5</span>
-            </mat-card-title>
-            <mat-card-content>
-                <span>{{hospitalSg.address}}, {{hospitalSg.streetName}}, {{hospitalSg.zipCode}}</span>
-                <br>
-                <span>{{hospitalSg.phoneNumber}}</span>
-                <br>
-                <span>License: {{hospitalSg.license}}</span>
-                <br>
-                <span>Registered: 
-                    <span *ngIf="hospitalSg.registered">Yes</span>
-                    <span *ngIf="!hospitalSg.registered">No</span>
-                </span>
-                <br>
-                <span>JCI Accredited: 
-                    <span *ngIf="hospitalSg.jciAccredited">Yes</span>
-                    <span *ngIf="!hospitalSg.jciAccredited">No</span>
-                </span>
-                <br>
-                <span>Emergency service available: {{hospitalSg.emergencyServices}}</span>
-                <br>
-                <span>Hospital Ownership: {{hospitalSg.hospitalOwnership}}</span>
-                <br>
-            </mat-card-content>
-        </mat-card>
+        <div>
+            <mat-card *ngIf="hospitalSg">
+                <mat-card-header>
+                    <mat-card-title>
+                        <span>{{hospitalSg.facilityName}}</span>
+                        &nbsp; &nbsp;
+                        &nbsp; &nbsp;
+                        &nbsp; &nbsp;
+                        &nbsp; &nbsp;
+                        &nbsp; &nbsp;
+                        <span>Rating: {{hospitalSg.hospitalOverallRating | number:'1.1-1'}}/5</span>
+                    </mat-card-title>
+                    <mat-card-subtitle>
+                        <span>{{hospitalSg.address}}, {{hospitalSg.streetName}}, {{hospitalSg.zipCode}}</span>
+                        <br>
+                        <span>{{hospitalSg.phoneNumber}}</span>
+                        <br>
+                        <span>License: {{hospitalSg.license}}</span>
+                        <br>
+                        <span>Registered:
+                            <span *ngIf="hospitalSg.registered">Yes</span>
+                            <span *ngIf="!hospitalSg.registered">No</span>
+                        </span>
+                        <br>
+                        <span>JCI Accredited:
+                            <span *ngIf="hospitalSg.jciAccredited">Yes</span>
+                            <span *ngIf="!hospitalSg.jciAccredited">No</span>
+                        </span>
+                        <br>
+                        <span>Emergency service available: {{hospitalSg.emergencyServices}}</span>
+                        <br>
+                        <span>Hospital Ownership: {{hospitalSg.hospitalOwnership}}</span>
+                        <br>
+                    </mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+        </div>
     </ng-template>
-    
-</div>
+
+</div> -->
 
 
 

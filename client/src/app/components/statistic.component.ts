@@ -17,6 +17,7 @@ export class StatisticComponent implements OnInit{
   form!:FormGroup
   accountPassword!:string;
   statIndex!:number;
+  waiting=false;
 
   userRole!:string;
   userFacilityId!:string;
@@ -65,6 +66,7 @@ export class StatisticComponent implements OnInit{
       console.log('The dialog was closed');
       this.accountPassword = result;
       console.log("account password " , this.accountPassword)
+      this.waiting = true;
       this.hospSvc.updateStatistic(this.form.value, this.accountPassword).subscribe({
         next: (r:any) => {
           this.statIndex = r['statIndex']; // TODO: loading message while waiting
@@ -77,6 +79,7 @@ export class StatisticComponent implements OnInit{
           this.accountPassword = '';
         },
         complete:() => {
+          this.waiting = false;
           console.log('completed updateStatistic')
           this.accountPassword = '';
           this.router.navigate(['/statistic', this.userFacilityId, this.statIndex]);

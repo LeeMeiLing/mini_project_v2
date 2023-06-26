@@ -66,7 +66,6 @@ public class HospitalService {
     public void checkUpdated() {
 
         previousReleased = latestReleased;
-        System.out.println("Previous Released: " + previousReleased); // debug
 
         RequestEntity<Void> req = RequestEntity.get(Constant.US_DATA_GOV_HOSPITAL_GENERAL_INFORMATION_METASTORE_URL)
                 .build();

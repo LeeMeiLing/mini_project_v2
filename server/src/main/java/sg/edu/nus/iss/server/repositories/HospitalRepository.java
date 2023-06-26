@@ -248,8 +248,6 @@ public class HospitalRepository {
 
         try{
 
-            System.out.println("final queryString: " + finalQueryString);
-
             List<Hospital> hospitals = jdbcTemplate.query(finalQueryString, ps, BeanPropertyRowMapper.newInstance(Hospital.class));
             if(!hospitals.isEmpty()){
                 return Optional.of(hospitals);
