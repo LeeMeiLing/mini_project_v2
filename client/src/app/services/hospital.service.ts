@@ -11,20 +11,12 @@ export class HospitalService {
   
   constructor(private http:HttpClient, private jwtCookieSvc: JwtCookieService) { }
 
-  HOSPITAL_URL = environment.apiHospitalUrl;
-  HOSPITAL_SG_URL = environment.apiHospitalSgUrl;
-  // HOSPITAL_URL = 'https://dispensable-ladybug-production.up.railway.app/api/hospitals'
-  // HOSPITAL_SG_URL = 'https://dispensable-ladybug-production.up.railway.app/api/hospitals/sg';
+  // HOSPITAL_URL = environment.apiHospitalUrl;
+  // HOSPITAL_SG_URL = environment.apiHospitalSgUrl;
+  HOSPITAL_URL = 'https://health-trust-project-production.up.railway.app/api/hospitals'
+  HOSPITAL_SG_URL = 'https://health-trust-project-production.up.railway.app/api/hospitals/sg';
+
   token!: string | null;
-
-  // getHospitalList(name:string){
-    
-  //   // GET /api/hospitals?name=name&limit=20
-  //   const headers = new HttpHeaders().set('Accept','application/json');
-  //   const params = new HttpParams().set('name',name).set('limit', 20);
-
-  //   return this.http.get(this.HOSPITAL_URL,{ headers, params });
-  // }
 
   getStates(){
     // GET /api/hospitals/states
@@ -210,6 +202,9 @@ export class HospitalService {
     }
 
     getMohList(){
+
+      console.log('in get MOHList') ///////////////
+
       const headers = new HttpHeaders().set('Accept','application/json');
   
       return this.http.get(`${this.HOSPITAL_URL}/moh`, { headers });
@@ -316,7 +311,8 @@ export class HospitalService {
     return this.http.get(`${this.HOSPITAL_SG_URL}`, { headers, params });
   }
 
-  // POST /api/hospitals/sg/hospital/{facilityId}/verify-credentials
+  // REFACTOR TO PUTMAPPING
+  // PUT /api/hospitals/sg/hospital/{facilityId}/verify-credentials
   verifyCredentials(facilityId:string, accountPassword:string, toVerify:string){
 
     const headers = new HttpHeaders().set('Accept','application/json')
@@ -325,7 +321,7 @@ export class HospitalService {
                       'accountPassword': accountPassword,
                       "toVerify": toVerify
                     }
-    return this.http.post(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/verify-credentials`, payload ,{ headers, observe: 'response' });
+    return this.http.put(`${this.HOSPITAL_SG_URL}/hospital/${facilityId}/verify-credentials`, payload ,{ headers, observe: 'response' });
   }
 
   // POST /api/hospitals/sg/hospital/{facilityId}/update-frequency-penalty

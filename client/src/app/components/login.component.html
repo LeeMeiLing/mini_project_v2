@@ -10,7 +10,7 @@
                     <mat-label>Sign In As</mat-label>
                     <mat-select formControlName="signInMethod" (ngModelChange)="onChange()">
                         <mat-option value="user">User</mat-option>
-                        <mat-option value="hospital">Healthcare Provider</mat-option>
+                        <mat-option value="hospital">Healthcare Service Provider</mat-option>
                         <mat-option value="moh">Ministry of Health</mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -24,7 +24,10 @@
                 <br>
                 <mat-form-field class="form-width">
                     <mat-label>Password</mat-label>
-                    <input matInput type="password" formControlName="userPassword">
+                    <input matInput [type]="hide ? 'password' : 'text'" formControlName="userPassword">
+                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                      </button>
                 </mat-form-field>
                 <br>
                 <p class="button-position">
@@ -40,7 +43,10 @@
                 <br>
                 <mat-form-field class="form-width">
                     <mat-label>Password</mat-label>
-                    <input matInput type="password" formControlName="accountPassword">
+                    <input matInput [type]="hide ? 'password' : 'text'" formControlName="accountPassword">
+                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                      </button>
                 </mat-form-field>
                 <br>
                 <p class="button-position">
@@ -61,7 +67,10 @@
                 <br>
                 <mat-form-field class="form-width">
                     <mat-label>Password</mat-label>
-                    <input matInput type="password" formControlName="accountPassword">
+                    <input matInput [type]="hide ? 'password' : 'text'" formControlName="accountPassword">
+                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                      </button>
                 </mat-form-field>
                 <br>
                 <p class="button-position">
@@ -76,7 +85,7 @@
     <br>
     <div class="button-container">
         <p><a class="button-size" mat-flat-button color="accent" [routerLink]="['/signup']">Sign Up As User</a></p>
-        <p><a class="button-size" mat-flat-button color="accent" [routerLink]="['/signupHospital']">Sign Up As Healthcare Provider</a></p>
+        <p><a class="button-size" mat-flat-button color="accent" [routerLink]="['/signupHospital']">Sign Up As Healthcare Service Provider</a></p>
         <p><a class="button-size" mat-flat-button color="accent" [routerLink]="['/signupMoh']">Sign Up As MOH</a></p>
     </div>
     

@@ -178,10 +178,15 @@ public class HospitalController {
     @GetMapping(path="/moh", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getMohList(){
 
+        System.out.println("in get MOH list"); //////////////////
+
         List<Moh> mohList = hospSvc.getMohList();
 
         JsonArrayBuilder arrB = Json.createArrayBuilder();
-        mohList.stream().map(m -> m.toJson()).forEach(j -> arrB.add(j));
+        mohList.stream().map(m -> m.toJson()).forEach(j -> arrB.add(j)); 
+
+
+        System.out.println("before return"); ///////////////////
 
         return ResponseEntity.status(HttpStatus.OK).body(arrB.build().toString());
     }

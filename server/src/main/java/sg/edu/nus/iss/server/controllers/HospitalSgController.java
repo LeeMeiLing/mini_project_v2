@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -239,11 +240,45 @@ public class HospitalSgController {
 
     }
 
-    // POST /api/hospitals/sg/hospital/{facilityId}/verify-credentials
-    @PostMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    // // POST /api/hospitals/sg/hospital/{facilityId}/verify-credentials
+    // @PostMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<String> verifyCredentials(@PathVariable String facilityId, @RequestBody String payload) throws Exception {
+
+    //     JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
+    //     String accountPassword = jo.getString("accountPassword");
+    //     String toVerify = jo.getString("toVerify");
+
+    //     if(toVerify.equalsIgnoreCase("license")){
+    //         boolean verified = hospSgSvc.verifyLicense(facilityId, accountPassword);
+
+    //         if(verified){
+    //             return ResponseEntity.status(HttpStatus.OK).build();
+    //         }else{
+    //             throw new VerificationFailedException("Failed to verify hospital credentials");
+    //         }
+    //     }else if(toVerify.equalsIgnoreCase("jci")){
+
+    //         boolean verified = hospSgSvc.verifyJci(facilityId, accountPassword);
+
+    //         if(verified){
+    //             return ResponseEntity.status(HttpStatus.OK).build();
+    //         }else{
+    //             throw new VerificationFailedException("Failed to verify JCI accreditation");
+    //         }
+    //     }
+
+    //     throw new VerificationFailedException("Verification failed");
+
+    // }
+
+
+    // Refactor to PUTMapping !!!!
+    // PUT /api/hospitals/sg/hospital/{facilityId}/verify-credentials
+    @PutMapping(path ={"/hospital/{facilityId}/verify-credentials"}, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> verifyCredentials(@PathVariable String facilityId, @RequestBody String payload) throws Exception {
 
         JsonObject jo = Json.createReader(new StringReader(payload)).readObject();
+
         String accountPassword = jo.getString("accountPassword");
         String toVerify = jo.getString("toVerify");
 
@@ -270,6 +305,8 @@ public class HospitalSgController {
 
     }
 
+
+
     // POST /api/hospitals/sg/hospital/{facilityId}/update-frequency-penalty
     //   'accountPassword': accountPassword,
     //   'updateFrequency': updateFrequency,
@@ -287,7 +324,7 @@ public class HospitalSgController {
         if(updated){
             return ResponseEntity.status(HttpStatus.OK).build();
         }else{
-            throw new UpdateContractFailedException("Failed to verify JCI accreditation");
+            throw new UpdateContractFailedException("Failed to set update frequency and penalty. Please try again another time");
         }
         
     }

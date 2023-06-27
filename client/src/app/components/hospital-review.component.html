@@ -113,3 +113,175 @@
     </form>
 
 </mat-card-content>
+
+
+
+
+
+
+
+
+
+<!-- <mat-card-header>
+    <mat-card-title>Share Your Experience With Others</mat-card-title>
+</mat-card-header>
+<br>
+<mat-card-content>
+    <p *ngIf="waiting">
+        <span>Your review is being posted. This may take some time due to busy Ethereum network traffic.</span>
+        <mat-progress-bar mode="indeterminate" *ngIf="waiting"></mat-progress-bar>
+    </p>
+    <form [formGroup]="form" (ngSubmit)="postReview()">
+        <mat-form-field class="custom-width">
+            <mat-label>Patient ID</mat-label>
+            <input matInput type="text" formControlName="patientId">
+        </mat-form-field>
+        <br>
+        <table style="width:100%">
+            <tr>
+                <td>
+                    Nurse Communication
+                </td>
+                <td>
+                    <mat-radio-group formControlName="nurseCommunication" aria-label="Nurse Communication">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Doctor Communication
+                </td>
+                <td>
+                    <mat-radio-group formControlName="doctorCommunication" aria-label="Doctor Communication">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Responsiveness of hospital staff
+                </td>
+                <td>
+                    <mat-radio-group formControlName="staffResponsiveness"
+                        aria-label="Responsiveness of hospital staff">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Communication about medicines
+                </td>
+                <td>
+                    <mat-radio-group formControlName="communicationAboutMedicines"
+                        aria-label="Communication about medicines">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Discharge information
+                </td>
+                <td>
+                    <mat-radio-group formControlName="dischargeInformation" aria-label="Discharge information">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Care transition
+                </td>
+                <td>
+                    <mat-radio-group formControlName="careTransition" aria-label="Care transition">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Cleanliness of hospital environment
+                </td>
+                <td>
+                    <mat-radio-group formControlName="cleanliness" aria-label="Cleanliness of hospital environment">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Quietness of hospital environment
+                </td>
+                <td>
+                    <mat-radio-group formControlName="quietness" aria-label="Quietness of hospital environment">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Overall Rating
+                </td>
+                <td>
+                    <mat-radio-group formControlName="overallRating" aria-label="Overall Rating">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+            <tr>
+                <td>
+                    Willingness to recommend tdis hospital to otder patients
+                </td>
+                <td>
+                    <mat-radio-group formControlName="willingnessToRecommend"
+                        aria-label="Willingness to recommend tdis hospital to otder patients">
+                        <mat-radio-button value=1>1</mat-radio-button>
+                        <mat-radio-button value=2>2</mat-radio-button>
+                        <mat-radio-button value=3>3</mat-radio-button>
+                        <mat-radio-button value=4>4</mat-radio-button>
+                        <mat-radio-button value=5>5</mat-radio-button>
+                    </mat-radio-group>
+                    <br>
+                    <mat-form-field class="custom-widtd">
+                        <mat-label>Comment</mat-label>
+                        <textarea matInput name="comments" formControlName="comments" cols="30" rows="10"></textarea>
+                    </mat-form-field>
+        </table>
+        
+        <br>
+        <button mat-raised-button color="accent" type="submit" [disabled]="form.invalid">Submit Review</button>
+
+    </form>
+
+</mat-card-content> -->

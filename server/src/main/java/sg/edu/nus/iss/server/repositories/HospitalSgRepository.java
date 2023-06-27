@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -205,19 +206,19 @@ public class HospitalSgRepository {
     }
 
 
-    public boolean updateStatistic(Integer ethStatIndex, String contractAddress){
+    // public boolean updateStatistic(Integer ethStatIndex, String contractAddress){
 
-         try{
+    //      try{
             
-            jdbcTemplate.update(SqlQueryConstant.INSERT_STATISTIC, ethStatIndex, contractAddress);
-            return true;
+    //         jdbcTemplate.update(SqlQueryConstant.INSERT_STATISTIC, ethStatIndex, contractAddress);
+    //         return true;
     
-        }catch(Exception ex){
-            ex.printStackTrace();
-            return false;
-        }
+    //     }catch(Exception ex){
+    //         ex.printStackTrace();
+    //         return false;
+    //     }
         
-    }
+    // }
 
     public Optional<List<HospitalSg>> getHospitalsByPendingVerify(){
 
@@ -374,10 +375,18 @@ public class HospitalSgRepository {
     }
 
 
-    public List<String> getContractAddressFromStat() {
+    // public List<String> getContractAddressFromStat() {
             
-        List<String> contracts = jdbcTemplate.queryForList(SqlQueryConstant.FIND_DISTINCT_CONTRACT_ADDRESS, String.class);
-        return contracts;
+    //     List<String> contracts = jdbcTemplate.queryForList(SqlQueryConstant.FIND_DISTINCT_CONTRACT_ADDRESS, String.class);
+    //     return contracts;
+
+    // }
+
+    public List<String> getAllHospSgContractAddress(){
+
+        List<String> contractsAddressList = jdbcTemplate.queryForList(SqlQueryConstant.FIND_DISTINCT_CONTRACT_ADDRESS, String.class);
+        
+        return contractsAddressList;
 
     }
 

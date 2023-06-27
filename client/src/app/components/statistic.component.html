@@ -5,7 +5,11 @@
     <br>
     <mat-card-content>
         <p *ngIf="waiting">
-            <span>Update in progress. This may take some time due to busy Ethereum network traffic.</span>
+            <span>
+                Update in progress. This may take some time due to busy Ethereum network traffic.
+                <br>
+                Please try again another time if update failed after waiting for 10 minutes.
+            </span>
             <mat-progress-bar mode="indeterminate" *ngIf="waiting"></mat-progress-bar>
         </p>
         <form [formGroup]="form" (ngSubmit)="updateStatistic()">

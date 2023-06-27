@@ -190,7 +190,8 @@ public class SqlQueryConstant {
 
     public static final String QUERY_ALL_HOSPITAL_SG = "select * from sg_hospitals ";
 
-    public static final String FIND_DISTINCT_CONTRACT_ADDRESS = "select distinct(hosp_contract_address) from statistics";
+    // public static final String FIND_DISTINCT_CONTRACT_ADDRESS = "select distinct(hosp_contract_address) from statistics";
+    public static final String FIND_DISTINCT_CONTRACT_ADDRESS = "select distinct(contract_address) from sg_hospitals";
 
     public static final String FIND_HOSPITAL_SG_BY_CONTRACT = "select * from sg_hospitals where contract_address = ?";
 

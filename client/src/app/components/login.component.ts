@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit{
   showHospitalForm!: boolean;
   showMohForm!: boolean;
   mohList!: Moh[];
+  hide=true;
 
   constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService, 
     private hospSvc:HospitalService, private jwtCookieSvc: JwtCookieService, private web3Svc:Web3Service){}

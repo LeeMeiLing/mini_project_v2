@@ -32,7 +32,7 @@ public class EthereumService {
     private Credentials credentials;
     private StaticGasProvider staticGasProvider;
 
-    public EthereumService(String alchemyUrl, String privateKey) {
+    public EthereumService(String alchemyUrl, String privateKey, String price) {
 
         // @ALCHEMY SEPOLIA
         web3j = Web3j.build(new HttpService(alchemyUrl));
@@ -40,7 +40,9 @@ public class EthereumService {
         // @ALCHEMY SEPOLIA
         credentials = Credentials.create(privateKey);
 
-        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(5500000000L),BigInteger.valueOf(3000000));
+        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(Long.parseLong(price)),BigInteger.valueOf(2000000));
+
+        // staticGasProvider = new StaticGasProvider(BigInteger.valueOf(12500000000L),BigInteger.valueOf(2000000));
 
         // // @GANACHE
         // web3j = Web3j.build(new HttpService("http://localhost:8545"));
@@ -96,6 +98,8 @@ public class EthereumService {
         writer.close();
         
         Credentials credentials = WalletUtils.loadCredentials(accountPassword, file);
+
+        System.out.println(">> in ethSvc, attempting to deploy contract");
 
         // deploy
         HospitalCredentials contract = HospitalCredentials.deploy(web3j, credentials, 
@@ -257,6 +261,10 @@ public class EthereumService {
 
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
 
+        if(contract.registered().send()){
+            return;
+        }
+
         contract.verifyLicense().send();
 
     }
@@ -266,6 +274,10 @@ public class EthereumService {
         Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
 
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        if(contract.jciAccredited().send()){
+            return;
+        }
 
         contract.verifyJciAccredited().send();
 

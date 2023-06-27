@@ -100,6 +100,7 @@ public class HospitalSgService {
 
     }
 
+    ///////////111111111111
     @Transactional(rollbackFor = UpdateStatisticFailedException.class)
     public Integer updateStatistic(Statistic stat, String accountPassword) throws UpdateStatisticFailedException, WrongPasswordException{
 
@@ -136,12 +137,12 @@ public class HospitalSgService {
             BigInteger index = ethSvc.updateStatistic(stat, accountPassword, keyStore, contractAddress);
             System.out.println(">>> updated statistic in contract");
 
-            // update MySQL
-            boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); 
+            // update MySQL (REMOVE TABLE statistics, only update to contract)
+            // boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); 
 
-            if(!inserted){
-                throw new UpdateStatisticFailedException("Failed to update statistic in MySQL");
-            }
+            // if(!inserted){
+            //     throw new UpdateStatisticFailedException("Failed to update statistic in MySQL");
+            // }
 
             return index.intValue();
 
@@ -154,7 +155,8 @@ public class HospitalSgService {
 
     }
 
-     public Statistic getStatisticByFacilityIdAndStatIndex(String facilityId,Integer statIndex){
+    
+    public Statistic getStatisticByFacilityIdAndStatIndex(String facilityId,Integer statIndex){
 
         // if facilityId == null, get facilityId from current user
         if(facilityId == null){
@@ -213,11 +215,15 @@ public class HospitalSgService {
         return null;
     }
 
+    // 22222222222222222
     public List<HospitalSg> getHospitalsByStatPendingVerify() throws Exception {
 
         // ====Get Unverified stat from eth contract =========
         // get distinct stat contract address
-        List<String> contracts = hospSgRepo.getContractAddressFromStat(); // if remove stat table, find distinct contract from sg_hospitals
+
+        // List<String> contracts = hospSgRepo.getContractAddressFromStat(); // if remove stat table, find distinct contract from sg_hospitals
+        List<String> contracts = hospSgRepo.getAllHospSgContractAddress();
+        
         List<String> hospitalWithStatPending = new ArrayList<>();
 
         for(String c : contracts){
@@ -487,7 +493,7 @@ public class HospitalSgService {
 
         Moh moh = customAuthenticationManagerForMoh.getMoh();
 
-        // update contract registered
+        // update contract
         try{
             ethSvc.verifyStatistic(hospital.getContractAddress(),moh.getEncryptedKeyStore(), statIndex, accountPassword);
             return true;
@@ -500,11 +506,11 @@ public class HospitalSgService {
 
     }
 
-    // TODO: hospital owner to verify
-    public boolean verifyPatient() {
+    // // TODO: hospital owner to verify
+    // public boolean verifyPatient() {
         
-        return false;
-    }
+    //     return false;
+    // }
 
     
 

@@ -40,9 +40,12 @@ public class SecurityConfig {
     @Value("${ETH_PRIVATE_KEY}")
     private String privateKey;
 
+    @Value("${GAS_PRICE}")
+    private String price;
+
     @Bean
     public EthereumService ethereumService() {
-        return new EthereumService(alchemyUrl, privateKey);
+        return new EthereumService(alchemyUrl, privateKey, price);
     }
 
     @Autowired
