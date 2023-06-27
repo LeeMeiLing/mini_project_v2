@@ -85,6 +85,7 @@ public class EthereumService {
         }
 
         EthHospitalReview contract = EthHospitalReview.load(contractAddress, web3j, credentials, staticGasProvider);
+
         return contract;
 
     }
@@ -129,16 +130,20 @@ public class EthereumService {
 
     public Credentials createCredentialsFromKeyStore(byte[] keyStore, String accountPassword) throws IOException, WrongPasswordException {
         // create credentials from keystore & password
+
         File file = File.createTempFile("temp","txt");
         FileWriter writer = new FileWriter(file);
         
         writer.write(new String(keyStore, StandardCharsets.UTF_8));
         writer.close();
         
+        System.out.println("file write complete");
+
         try{
             return WalletUtils.loadCredentials(accountPassword, file);
 
         }catch(CipherException ex){
+
             ex.printStackTrace();
             throw new WrongPasswordException("Failed to create credentials with provided password.");
         }
@@ -149,8 +154,13 @@ public class EthereumService {
 
         Credentials credentials = createCredentialsFromKeyStore(keyStore, accountPassword);
 
+        System.out.println("credentials get!!");
+
         // load contract from contractAddress
         HospitalCredentials contract = loadHospitalCredentialsContract(contractAddress, credentials);
+
+        System.out.println("contract loaded !!");
+
 
         // update stat into contract
          contract.updateStatistic(doubleToBigInteger(stat.getMortality()), doubleToBigInteger(stat.getPatientSafety()), 

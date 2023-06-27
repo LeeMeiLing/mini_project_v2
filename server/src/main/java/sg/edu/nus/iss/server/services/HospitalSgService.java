@@ -116,6 +116,7 @@ public class HospitalSgService {
             HospitalSg hosp = opt.get();
             keyStore = hosp.getEncryptedKeyStore();
             contractAddress = hosp.getContractAddress();
+
         }else{
             throw new UpdateStatisticFailedException("hospitalSg not found for eth Address: " + ethAddress);
         }

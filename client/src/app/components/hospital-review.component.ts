@@ -54,7 +54,7 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
   }
 
   postReview(){
-    console.log(this.form.value)
+    // console.log(this.form.value)
     this.waiting=true;
     this.hospitalSvc.postHospitalReview(this.hospitalCountry, this.facilityId, this.form.value)?.subscribe({
       next:() => {},

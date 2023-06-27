@@ -47,6 +47,7 @@ export class StatisticListComponent implements OnInit {
     this.hospitalSvc.getStatisticListByHospital(this.facilityId).subscribe({
       next: (r: any) => {
         this.statistics = r as Statistic[]
+        this.statistics.reverse();
       }
     })
   }

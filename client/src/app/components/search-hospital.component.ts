@@ -85,16 +85,10 @@ export class SearchHospitalComponent implements OnInit{
   }
 
   onStateChange(){
-    // console.log("onChange()")
-    // console.log('state', this.form.value['state']);
-    // console.log('city', this.form.value['city']);
-    // console.log('name', this.form.value['hospitalName']);
+
 
     this.form.patchValue({city:''}); // reset city to ''
 
-    console.log('state', this.form.value['state']);
-    console.log('city', this.form.value['city']);
-    console.log('name', this.form.value['hospitalName']);
     
     if(this.form.value['state']){
 
@@ -126,7 +120,6 @@ export class SearchHospitalComponent implements OnInit{
 
     this.form.valueChanges.subscribe(
       (value) => { 
-        console.log('Form value changed:', value);
         this.offset = 0;
         this.hospitals = null;
         this.hospitalSgList = null;
