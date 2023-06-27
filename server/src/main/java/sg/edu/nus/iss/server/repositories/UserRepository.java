@@ -1,13 +1,16 @@
 package sg.edu.nus.iss.server.repositories;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.iss.server.constants.SqlQueryConstant;
@@ -62,6 +65,35 @@ public class UserRepository {
             return Optional.empty();
         }
 
+    }
+
+
+    public Integer checkUserExist(String email){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+        @Override
+        public void setValues(PreparedStatement ps) throws SQLException {
+            ps.setString(1, email);
+        }
+        
+       };
+
+        return jdbcTemplate.query(SqlQueryConstant.CHECK_USER_EXIST, ps, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+                Integer count = -1;
+
+                while(rs.next()){
+                    count = rs.getInt(1); // if facilityId not found, will return 0
+                }
+
+                return count;
+            }
+            
+        });
     }
 
     

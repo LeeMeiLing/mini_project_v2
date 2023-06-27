@@ -83,7 +83,6 @@ public class HospitalController {
         @RequestParam(required = false) String name ,@RequestParam Integer offset,
         @RequestParam Boolean sortByRating ,@RequestParam Boolean descending)
     {
-        // TODO: hospSvc.checkUpdated();
 
         List<Hospital> hospitals = hospSvc.getHospitalList(state,city,name,offset,sortByRating,descending);
 

@@ -43,6 +43,8 @@ public class HospitalSgController {
     @PostMapping(path = "/register/hospital", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> registerHospitalSg(@RequestBody String payload) throws Exception{
 
+        System.out.println(">>>> in controller register hospital");
+
         JsonReader rd = Json.createReader(new StringReader(payload));
         JsonObject jo = rd.readObject();
 

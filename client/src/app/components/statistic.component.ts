@@ -29,7 +29,6 @@ export class StatisticComponent implements OnInit{
 
     this.form = this.createForm();
     this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
-          console.log('>> userRole: ', this.userRole)
 
     if(this.userRole == 'hospital'){
       const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
@@ -63,9 +62,7 @@ export class StatisticComponent implements OnInit{
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
       this.accountPassword = result;
-      console.log("account password " , this.accountPassword)
       this.waiting = true;
       this.hospSvc.updateStatistic(this.form.value, this.accountPassword).subscribe({
         next: (r:any) => {
@@ -82,6 +79,7 @@ export class StatisticComponent implements OnInit{
         complete:() => {
           this.waiting = false;
           console.log('completed updateStatistic')
+          alert('Statistic updated')
           this.accountPassword = '';
           this.router.navigate(['/statistic', this.userFacilityId, this.statIndex]);
         }

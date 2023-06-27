@@ -52,12 +52,10 @@ export class HospitalComponent implements OnInit, OnDestroy{
           this.facilityId = params['facilityId'];
           this.hospitalCountry = params['hospitalCountry'];
           this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
-          console.log('>> userRole: ', this.userRole)
           if(this.userRole == 'moh'){
             const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as MohDecodedToken;
             this.countryCode =decodedToken.countryCode.toLowerCase();
           }
-          //  if hospital can access hospital component !
           if(this.userRole == 'hospital'){
             const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
             this.userFacilityId = decodedToken.facilityId;
@@ -82,7 +80,6 @@ export class HospitalComponent implements OnInit, OnDestroy{
         next: (r:any) => {
           this.hospital = r['hospital'];
           this.totalReview = r['totalReview'];
-          console.log(this.hospital)
           
         },
         error: err => {
@@ -92,7 +89,6 @@ export class HospitalComponent implements OnInit, OnDestroy{
         },
         complete: () => {
           this.loadingHospital=false;
-
           console.log('completed getHospitalUs()')
         }
       });
@@ -104,7 +100,6 @@ export class HospitalComponent implements OnInit, OnDestroy{
           this.hospitalSg = r['hospital'];
           this.totalReview = r['totalReview'];
           this.statIndex = r['latestStatIndex']
-          console.log('statIndex ', this.statIndex)
           
         },
         error: (err) => {
@@ -113,7 +108,7 @@ export class HospitalComponent implements OnInit, OnDestroy{
           alert(err.error.error)
         },
         complete: () => {
-          if(this.userRole == 'moh' && this.countryCode == 'sg'){
+          if(this.userRole == 'moh' && this.countryCode.toLowerCase() == 'sg'){
             this.getCurrentUpdateFrequencyAndPenalty();
             this.showStatisticList();
           }
@@ -139,8 +134,6 @@ export class HospitalComponent implements OnInit, OnDestroy{
         alert(err.error.error)
       },
       complete: () => {
-        console.log('>>>>',this.currentUpdateFrequency)
-        console.log('>>>>',this.currentPenalty)
         console.log('complete getCurrentUpdateFrequencyAndPenalty()')
       }
     });
@@ -171,8 +164,6 @@ export class HospitalComponent implements OnInit, OnDestroy{
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      console.log('result: ', result);
       this.updateFrequency = result.updateFrequency;
       this.penalty = result.penalty;
       this.accountPassword = result.accountPassword;
@@ -210,13 +201,11 @@ export class HospitalComponent implements OnInit, OnDestroy{
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
       this.accountPassword = result;
-      console.log("account password " , this.accountPassword)
       this.waiting=true;
       this.hospitalSvc.verifyCredentials(this.facilityId, this.accountPassword, this.toVerify).subscribe({
         next:()=>{
-          alert('Verification successful'); // TODO: display loading message while waiting
+          alert('Verification successful'); 
         },
         error:(err)=>{
           this.waiting=false;

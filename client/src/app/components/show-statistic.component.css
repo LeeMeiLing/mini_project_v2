@@ -1,12 +1,10 @@
 .parent {
-    /* background-color: lightgray; */
     padding: 10px;
   }
   
   .child {
     flex: 1 1 auto;
     padding: 5px;
-    /* border: 1px solid gray; */
   }
   
   .left {

@@ -1,5 +1,6 @@
 package sg.edu.nus.iss.server.constants;
 
+
 public class SqlQueryConstant {
     
     public static final Integer LIMIT = 20;
@@ -160,7 +161,6 @@ public class SqlQueryConstant {
 
     public static final String FIND_HOSPITAL_SG_BY_FACILITYID = "select * from sg_hospitals where facility_id = ?";
 
-    // insert into statistics (eth_stat_index, hosp_contract_address, supporting_documents) values (?,?,?);
     public static final String INSERT_STATISTIC = "insert into statistics (eth_stat_index, hosp_contract_address) values (?,?)";
 
     public static final String GET_STATISTIC_CONTRACT_ADDRESS = "select hosp_contract_address from statistics where eth_stat_index = ? ";
@@ -201,5 +201,11 @@ public class SqlQueryConstant {
     public static final String UPDATE_SG_HOSPITAL_JCI = "update sg_hospitals set jci_accredited = ? where facility_id = ?";
 
     public static final String INSERT_MOH = "insert into moh (country_code, country_name, moh_eth_address, account_password, encrypted_key_store) values (?,?,?,?,?)";
+
+    public static final String CHECK_HOSP_ETH_ADD_EXIST = "select count(*) from sg_hospitals where eth_address = ?";
+
+    public static final String CHECK_MOH_ETH_ADD_EXIST = "select count(*) from moh where moh_eth_address = ?";
+
+    public static final String CHECK_USER_EXIST = "select count(*) from users where user_email = ?";
 
 }

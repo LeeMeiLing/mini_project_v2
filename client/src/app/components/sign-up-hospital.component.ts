@@ -13,6 +13,9 @@ export class SignUpHospitalComponent implements OnInit{
 
   form!: FormGroup;
   result$: any;
+  waiting=false;
+  hide=true;
+  hidepassword=true;
 
   constructor(private fb:FormBuilder, private hospSvc:HospitalService, private web3Svc:Web3Service, private router:Router){}
 
@@ -30,7 +33,6 @@ export class SignUpHospitalComponent implements OnInit{
   createForm():FormGroup{
     return this.fb.group({
 
-      // ethAddress:this.fb.control<string>('',[Validators.required, Validators.minLength(42), Validators.maxLength(42)]),
       privateKey:this.fb.control<string>('',[Validators.required, Validators.minLength(66), Validators.maxLength(66)]),
       accountPassword:this.fb.control<string>('',[Validators.required, Validators.pattern(new RegExp('(?=\\S*$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'))]),
       facilityName:this.fb.control<string>('',[Validators.required]),
@@ -40,7 +42,6 @@ export class SignUpHospitalComponent implements OnInit{
       zipCode:this.fb.control<string >('',[Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
       countryCode:this.fb.control<string>('',[Validators.required]),
       phoneNumber:this.fb.control<string>('',[Validators.required]),
-      // hospitalType:this.fb.control<string>('',[Validators.required]),
       hospitalOwnership:this.fb.control<string>('',[Validators.required]),
       emergencyServices:this.fb.control<string>('',[Validators.required])
 
@@ -53,9 +54,7 @@ export class SignUpHospitalComponent implements OnInit{
 
       const currentAccount =  await this.web3Svc.web3.eth.requestAccounts(); // all lower case
       const currentAccountAddress= this.web3Svc.web3.utils.toChecksumAddress(currentAccount[0]); // convert to checksum form for comparison
-      // console.log(currentAccountAddress);
       const fromKey = this.web3Svc.web3.eth.accounts.privateKeyToAccount(this.form.value['privateKey']);
-      // console.log(fromKey);
       if(currentAccountAddress === fromKey.address){
         return false;
       }
@@ -77,19 +76,23 @@ export class SignUpHospitalComponent implements OnInit{
       alert("Private key invalid. Please connect to the correct account and enter a valid private key.");
       return;
     }
-
+    
     const encryptedKeyStore = await this.web3Svc.web3.eth.accounts.encrypt(this.form.value['privateKey'], this.form.value['accountPassword']);
-    console.log('keyStore: ', encryptedKeyStore);
+    // console.log('keyStore: ', encryptedKeyStore);
+    this.waiting=true;
     this.form.patchValue({privateKey:null}) // remove privateKey before sending to server
 
     this.form.addControl('encryptedKeyStore', this.fb.control(encryptedKeyStore))
-    console.log('form: ', this.form)
     this.hospSvc.registerHospital(this.form.value).subscribe({
       next:()=>{},
       error:(err)=>{
+        this.waiting=false;
         console.error(err)
+        alert(err.error.error)
       },
       complete:()=>{
+        this.waiting=false;
+        alert('Registration Successful')
         console.log('registered success')
         this.router.navigate(['/'])
       }

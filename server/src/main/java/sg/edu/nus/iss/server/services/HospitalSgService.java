@@ -48,18 +48,31 @@ public class HospitalSgService {
     @Autowired
     private CustomAuthenticationManagerForMoh customAuthenticationManagerForMoh;
 
-    public void registerMoh(Moh moh){
+    public void registerMoh(Moh moh) throws RegisterHospitalFailedException{
+
+        // check if eth address already used
+        Integer exist = hospSgRepo.checkMohEthAddressExist(moh.getMohEthAddress());
+        if(exist > 0){
+            throw new RegisterHospitalFailedException("This ethereum account is already registered. Please use another account.");
+        }
+
         hospSgRepo.insertMoh(moh);
     }
    
     @Transactional(rollbackFor = RegisterHospitalFailedException.class)
     public void registerHospitalSg(HospitalSg hospital, String accountPassword) throws Exception {
 
+        // check if eth address already used
+        Integer exist = hospSgRepo.checkHospEthAddressExist(hospital.getEthAddress());
+        if(exist > 0){
+            throw new RegisterHospitalFailedException("This ethereum account is already registered. Please use another account.");
+        }
+
         // save to MySQL
         boolean saved = hospSgRepo.insertHospitalSg(hospital);
 
         if(!saved){
-            throw new RegisterHospitalFailedException("failed to insert HospitalSg into sg_hospitals");
+            throw new RegisterHospitalFailedException("Failed to insert HospitalSg into sg_hospitals");
         }
 
         // get MOH address from MySQL
@@ -69,13 +82,13 @@ public class HospitalSgService {
 
         try {
             // deploy contract
-            System.out.println(">>>trying to deploy");
+            System.out.println(">>> trying to deploy contract");
             contract =  ethSvc.deployHospitalCredentialsContract(hospital.getEncryptedKeyStore(), accountPassword, 
             mohEthAddress, hospital.getLicense());
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new RegisterHospitalFailedException("failed to deploy Hospital Credentials contract");
+            throw new RegisterHospitalFailedException("Failed to deploy Hospital Credentials contract");
         }
 
         // update contractAdress to MySQL
@@ -118,8 +131,10 @@ public class HospitalSgService {
 
         try{
             // update contract
+            System.out.println(">>> attempting to update statistic in contract");
+
             BigInteger index = ethSvc.updateStatistic(stat, accountPassword, keyStore, contractAddress);
-            System.out.println(">> ?? updated contract");
+            System.out.println(">>> updated statistic in contract");
 
             // update MySQL
             boolean inserted = hospSgRepo.updateStatistic(index.intValue(), contractAddress); 

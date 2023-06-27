@@ -2,7 +2,6 @@
     <mat-card-title>Ministry of Health Singapore</mat-card-title>
 </mat-card-header>
 
-<!-- 1111111111111111 -->
 <div *ngIf="hospitalsPendingVerify">
     <mat-card-header>
         <mat-card-subtitle>
@@ -19,7 +18,6 @@
 
 </div>
 
-<!-- 2222222222222222 -->
 <div *ngIf="!hospitalsPendingStatVerify">
     <p *ngIf="loadingHospitalsPendingStatVerify">
         <span class="parent">Loading Hospital with Statistic Pending Verification</span>
@@ -42,7 +40,6 @@
 
 </div>
 
-<!-- 3333333333333333 -->
 <div *ngIf="allHospitalSg">
     <mat-card-header>
         <mat-card-subtitle>
@@ -68,54 +65,3 @@
 </div>
 
 
-
-<!-- Hospitals registered, pending verification & set update freq, penalty -->
-<!-- select * from sg_hospitals where verified = false; -->
-<!-- 11111111111111111 -->
-<!-- <div>
-    <h3 *ngIf="hospitalsPendingVerify">
-        <span *ngIf="hospitalsPendingVerify.length > 0">New registered hospitals pending verification ({{hospitalsPendingVerify.length}})</span>
-        <span *ngIf="hospitalsPendingVerify.length == 0">No new registered hospitals pending verification</span>
-    </h3>
-    <table>
-        <tr *ngFor="let h of hospitalsPendingVerify">
-            <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
-        </tr>
-    </table>
-</div> -->
-
-<!-- Hospitals submitted updated statistic, pending verification -->
-<!-- 22222222222222222222 -->
-<!-- <div>
-    <h3 *ngIf="hospitalsPendingStatVerify">
-        <span *ngIf="hospitalsPendingStatVerify.length > 0">Hospitals with statistic pending verification ({{hospitalsPendingStatVerify.length}})</span>
-        <span *ngIf="hospitalsPendingStatVerify.length == 0">No hospitals with pending statistic verification</span>
-    </h3>
-    <table>
-        <tr *ngFor="let h of hospitalsPendingStatVerify">
-            <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
-        </tr>
-    </table>
-</div> -->
-
-<!-- List of All Hospital Registered in Singapore -->
-<!-- select * from sg_hospitals; -->
-<!-- 333333333333333333333 -->
-<!-- <div *ngIf="allHospitalSg">
-    <h3 >
-        <span *ngIf="allHospitalSg.length > 0">Total Hospital in Singapore: {{count}}</span>
-        <span *ngIf="allHospitalSg.length == 0">No Hospital</span>
-    </h3>
-    <div *ngIf="allHospitalSg.length > 0">
-        <p>page {{offset + 1}} 
-            <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
-            <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
-        </p>
-        <table>
-            <tr *ngFor="let h of allHospitalSg">
-                <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
-            </tr>
-        </table>
-    </div>
-    
-</div> -->

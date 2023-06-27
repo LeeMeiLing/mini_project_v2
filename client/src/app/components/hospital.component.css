@@ -1,39 +1,12 @@
-/* .child {
-    box-sizing: inherit;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding-left: 1%;
-    padding-right: 1%;
 
-  }
-
-  .left-element {
-    order: 1;
-    text-align: left;
-  }
-  
-  .right-element {
-    order: 2;
-    text-align: center;
-  }
-
-  .hospital-card{
-    display: flex;
-    width: 100%;
-    margin-top: 1%;
- } */
- 
  .parent {
     display: flex;
-    /* background-color: lightgray; */
     padding: 10px;
   }
   
   .child {
     flex: 1 1 auto;
     padding: 5px;
-    /* border: 1px solid gray; */
   }
   
   .left {
@@ -46,9 +19,7 @@
 
   .right-center {
     text-align: center;
-    /* display: flex; 
-    align-items: center; 
-    justify-content: center; */
+
   }
 
   .title{

@@ -25,7 +25,7 @@ export class AppComponent{
       const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as MohDecodedToken;
       this.countryCode =decodedToken.countryCode.toLowerCase();
     }
-    //  if hospital can access hospital component !
+
     if(this.userRole == 'hospital'){
       const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
       this.userFacilityId = decodedToken.facilityId;
@@ -40,8 +40,11 @@ export class AppComponent{
     }
 
     if(this.userRole == 'moh'){
-      if(this.countryCode == 'sg'){
+      if(this.countryCode.toLowerCase() == 'sg'){
         this.router.navigate(['/home/moh/sg'])
+      }
+      if(this.countryCode.toLowerCase() == 'us'){
+        this.router.navigate(['/home/moh/us'])
       }
     }
 

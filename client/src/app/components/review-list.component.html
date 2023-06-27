@@ -1,20 +1,4 @@
 
-<!-- 
-<div class="parent">
-    <div class="child left">Left Content</div>
-    <div class="child right">Right Content</div>
-</div>
-
-<div class="parent">
-    <div class="child left">Left Content</div>
-    <div class="child right">Right Content</div>
-</div>
-
-<div class="parent">
-    <div class="child left">Left Content</div>
-    <div class="child right">Right Content</div>
-</div> -->
-
 <div *ngIf="reviews.length > 0">
 
     <div class="parent">
@@ -92,104 +76,25 @@
     <mat-card class="parent" *ngFor="let r of reviews">                                                               
         <mat-card class="child">
             <span class="subtitle-two">
-                Overall Rating: {{r.overallRating}} / 5 <span><mat-icon>star_border</mat-icon></span>
+                Overall Rating: {{r.overallRating}} / 5
                 <br>
-                Willingness to Recommend: {{r.willingnessToRecommend}} / 5 <span><mat-icon>star</mat-icon></span>
+                <span *ngFor="let i of range(r.overallRating)"><mat-icon color="warn">star</mat-icon></span>
+                <span *ngFor="let i of range(5-r.overallRating)"><mat-icon color="warn">star_border</mat-icon></span>
+                <br>
+            </span>
+            <span>
                 <mat-card-subtitle>
                     Review ID: {{r.id}}
                 </mat-card-subtitle>
-            </span> 
-            
-            <span *ngIf="r.comments">
-                <mat-card-subtitle>
+            </span>
+            <br>
+            <span class="content-comment" *ngIf="r.comments">
                     "{{r.comments}}"
-                </mat-card-subtitle>
             </span>
 
+            <mat-card-actions align="end"><mat-card-subtitle>Review date: {{r.reviewDate}}</mat-card-subtitle></mat-card-actions>
         </mat-card>
     </mat-card >
 
-
-
-
-    <!-- <mat-card>
-
-        <div>
-           
-
-            <mat-card-header>
-
-                    <table class="table-format">
-                        <thead>
-                            <th>Aspect</th>
-                            <th class="rating-data">Average Rating</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Nurse Communication</td>
-                                <td class="rating-data">{{reviewSummary.avgNurseComm | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Doctor Communication</td>
-                                <td class="rating-data">{{reviewSummary.avgDoctorComm | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Staff Responsiveness</td>
-                                <td class="rating-data">{{reviewSummary.avgStaffResponsiveness | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Communication About Medicines</td>
-                                <td class="rating-data">{{reviewSummary.avgCommAbtMed | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Discharge Information</td>
-                                <td class="rating-data">{{reviewSummary.avgDischargeInfo | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Care Transition</td>
-                                <td class="rating-data">{{reviewSummary.avgCareTransition | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Cleanliness of Hospital Environment</td>
-                                <td class="rating-data">{{reviewSummary.avgCleanliness | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Quietness of Hospital Environment</td>
-                                <td class="rating-data">{{reviewSummary.avgQuietness | number:'1.1-1'}} / 5</td>
-                            </tr>
-                            <tr>
-                                <td>Willingness To Recommend</td>
-                                <td class="rating-data">{{reviewSummary.avgRecommendation | number:'1.1-1'}} / 5</td>
-                            </tr>
-                        </tbody>
-                      </table>
-
-            </mat-card-header>
-        </div>
-        
-
-        <mat-card-content>
-            <div *ngFor="let r of reviews">                                                               
-                <mat-card class="review-card">
-                    <mat-card-title class="child">
-                        <span class="left-element">
-                            Overall Rating: {{r.overallRating}} / 5 <span><mat-icon>star_border</mat-icon></span>
-                            <br>
-                            Willingness to Recommend: {{r.willingnessToRecommend}} / 5 <span><mat-icon>star</mat-icon></span>
-                            <mat-card-subtitle>
-                                Review ID: {{r.id}}
-                            </mat-card-subtitle>
-                        </span> 
-                        
-                        <span class="right-element" *ngIf="r.comments">
-                            <mat-card-subtitle>
-                                "{{r.comments}}"
-                            </mat-card-subtitle>
-                        </span>
-                    </mat-card-title>
-                </mat-card>
-            </div>
-        </mat-card-content>
-    </mat-card> -->
 </div>
 

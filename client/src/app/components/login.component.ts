@@ -23,7 +23,6 @@ export class LoginComponent implements OnInit{
   showHospitalForm!: boolean;
   showMohForm!: boolean;
   mohList!: Moh[];
-  // facilityId!:string;
 
   constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService, 
     private hospSvc:HospitalService, private jwtCookieSvc: JwtCookieService, private web3Svc:Web3Service){}
@@ -59,7 +58,6 @@ export class LoginComponent implements OnInit{
       this.hospSvc.getMohList().subscribe({
         next: (r:any)=>{
           this.mohList = r as Moh[];
-          console.log('mohList ', this.mohList)
         },
         error: (err)=>{
           console.error(err)
@@ -105,7 +103,7 @@ export class LoginComponent implements OnInit{
     }catch(err:any){
 
       console.error(err); // err is a HttpErrorResponse
-      // display login error
+
 
       if(err.status == 400){ // wrong username
         alert(err.error)
@@ -123,16 +121,13 @@ export class LoginComponent implements OnInit{
     try{
 
       const result = await this.hospSvc.authenticateHospital(this.hospitalForm.value);
-      console.log('result: ', result) // debug
       const status = result.status
-      console.log('sign in as hospital, status ', status) // debug
 
       this.router.navigate(['/home/hospital']);
 
     }catch(err:any){
 
       console.error(err); // err is a HttpErrorResponse
-      // display login error
 
       if(err.status == 400){ // wrong eth Address
         alert(err.error)

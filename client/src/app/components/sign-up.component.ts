@@ -12,6 +12,7 @@ export class SignUpComponent implements OnInit{
 
   form!: FormGroup;
   result$: any;
+  hide = true;
 
   constructor(private fb:FormBuilder, private router:Router, private userSvc:UserService){}
 
@@ -38,10 +39,20 @@ export class SignUpComponent implements OnInit{
 
   async register(){
 
-    console.log(this.form.value); // debug
-    this.result$ = await this.userSvc.registerNewUser(this.form.value) // return the user email if registered successfully
-    console.log(this.result$.email); // debug
-    this.router.navigate(['/']);
+    this.userSvc.registerNewUser(this.form.value).subscribe({
+      next:()=>{
+
+      },
+      error:(err)=>{
+        alert(err.error.error)
+        console.error(err)
+      },
+      complete:()=>{
+        alert("Registration successful")
+        console.log('user registration successful')
+        this.router.navigate(['/']);
+      }
+    }) 
     
   }
 }

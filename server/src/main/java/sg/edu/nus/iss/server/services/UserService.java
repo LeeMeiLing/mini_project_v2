@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.models.HospitalSg;
 import sg.edu.nus.iss.server.models.Moh;
 import sg.edu.nus.iss.server.models.User;
@@ -27,13 +28,13 @@ public class UserService {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     
-    public boolean saveUser(User user){
+    public boolean saveUser(User user) throws RegisterHospitalFailedException{
 
         // check if userEmail already exist
-        Optional<User> opt = userRepo.findUser(user.getUserEmail());
+        Integer exist = userRepo.checkUserExist(user.getUserEmail());
         
-        if (opt.isPresent()){
-            return false;
+        if (exist > 0){
+            throw new RegisterHospitalFailedException("This is email has been registered. Please use another email.");
         }
 
         user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
@@ -61,7 +62,7 @@ public class UserService {
         if(opt.isPresent()){
             return opt.get();
         }
-        throw new RuntimeException("Cannot find hospital with eth_address" + ethAddress);
+        throw new RuntimeException("Cannot find hospital with eth_address " + ethAddress);
     }
 
     public Moh getMohByEthAddress(String mohEthAddress){
@@ -71,7 +72,7 @@ public class UserService {
         if(opt.isPresent()){
             return opt.get();
         }
-        throw new RuntimeException("Cannot find hospital with eth_address" + mohEthAddress);
+        throw new RuntimeException("Cannot find moh with eth_address " + mohEthAddress);
     }
    
 }

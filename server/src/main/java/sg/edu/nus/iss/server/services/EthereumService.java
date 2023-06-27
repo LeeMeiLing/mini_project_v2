@@ -36,14 +36,11 @@ public class EthereumService {
 
         // @ALCHEMY SEPOLIA
         web3j = Web3j.build(new HttpService(alchemyUrl));
-        System.out.println(">>> InfuraURL " + alchemyUrl); // debug
 
         // @ALCHEMY SEPOLIA
-        System.out.println(">>> private Key " + privateKey); // debug
         credentials = Credentials.create(privateKey);
-        System.out.println(">>> credentials address: " + credentials.getAddress()); // debug
 
-        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(4500000000L),BigInteger.valueOf(3000000));
+        staticGasProvider = new StaticGasProvider(BigInteger.valueOf(5500000000L),BigInteger.valueOf(3000000));
 
         // // @GANACHE
         // web3j = Web3j.build(new HttpService("http://localhost:8545"));

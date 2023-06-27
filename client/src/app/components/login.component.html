@@ -1,4 +1,4 @@
-<div>
+<div class="container">
     <mat-card>
         <mat-card-header>
             <mat-card-title>SIGN IN</mat-card-title>
@@ -6,7 +6,7 @@
         <mat-card-content>
 
             <form [formGroup]="form">
-                <mat-form-field>
+                <mat-form-field class="form-width">
                     <mat-label>Sign In As</mat-label>
                     <mat-select formControlName="signInMethod" (ngModelChange)="onChange()">
                         <mat-option value="user">User</mat-option>
@@ -17,64 +17,67 @@
             </form>
 
             <form [formGroup]="userForm" (ngSubmit)="signInAsUser()" *ngIf="showUserForm">
-                <mat-form-field>
+                <mat-form-field class="form-width">
                     <mat-label>Email</mat-label>
                     <input matInput type="email" formControlName="userEmail">
                 </mat-form-field>
                 <br>
-                <mat-form-field>
+                <mat-form-field class="form-width">
                     <mat-label>Password</mat-label>
                     <input matInput type="password" formControlName="userPassword">
                 </mat-form-field>
                 <br>
-                <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid">Sign In</button>
+                <p class="button-position">
+                    <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid">Sign In</button>
+                </p>
             </form>
 
             <form [formGroup]="hospitalForm" (ngSubmit)="signInAsHospital()" *ngIf="showHospitalForm">
-                <mat-form-field>
+                <mat-form-field class="form-width">
                     <mat-label>Ethereum Address</mat-label>
                     <input matInput type="text" formControlName="ethAddress">
                 </mat-form-field>
                 <br>
-                <mat-form-field>
+                <mat-form-field class="form-width">
                     <mat-label>Password</mat-label>
                     <input matInput type="password" formControlName="accountPassword">
                 </mat-form-field>
                 <br>
-                <button mat-raised-button color="primary" type="submit" [disabled]="hospitalForm.invalid">Sign In</button>
+                <p class="button-position">
+                    <button mat-raised-button color="primary" type="submit" [disabled]="hospitalForm.invalid">Sign In</button>
+                </p>
             </form>
             
             <form [formGroup]="mohForm" (ngSubmit)="signInAsMoh()" *ngIf="showMohForm">
-                <mat-form-field>
+                <mat-form-field class="form-width">
                     <mat-label>Country</mat-label>
                     <mat-select formControlName="countryCode">
                         <mat-option *ngFor="let moh of mohList" value="{{moh.countryCode}}">{{moh.countryName}}</mat-option>
                     </mat-select>
-                    <!-- <mat-hint align="end" class="long-hint" >Please make sure you are connected to MetaMask using the correct account before signing in</mat-hint> -->
                 </mat-form-field>
                 <p>
                     <mat-hint>Please make sure you are connected to MetaMask using the correct account before signing in</mat-hint>
                 </p>
                 <br>
-                <mat-form-field>
+                <mat-form-field class="form-width">
                     <mat-label>Password</mat-label>
                     <input matInput type="password" formControlName="accountPassword">
                 </mat-form-field>
                 <br>
-                <button mat-raised-button color="primary" type="submit" [disabled]="mohForm.invalid">Sign In</button>
+                <p class="button-position">
+                    <button mat-raised-button color="primary" type="submit" [disabled]="mohForm.invalid">Sign In</button>
+                </p>
 
             </form>
-
         </mat-card-content>
 
     </mat-card>
 
     <br>
-    &nbsp;&nbsp;
-    <a mat-flat-button color="accent" [routerLink]="['/signup']">Sign Up As User</a>
-    &nbsp;&nbsp;
-    <a mat-flat-button color="accent" [routerLink]="['/signupHospital']">Sign Up As Healthcare Provider</a>
-    &nbsp;&nbsp;
-    <a mat-flat-button color="accent" [routerLink]="['/signupMoh']">Sign Up As MOH</a>
-
+    <div class="button-container">
+        <p><a class="button-size" mat-flat-button color="accent" [routerLink]="['/signup']">Sign Up As User</a></p>
+        <p><a class="button-size" mat-flat-button color="accent" [routerLink]="['/signupHospital']">Sign Up As Healthcare Provider</a></p>
+        <p><a class="button-size" mat-flat-button color="accent" [routerLink]="['/signupMoh']">Sign Up As MOH</a></p>
+    </div>
+    
 </div>

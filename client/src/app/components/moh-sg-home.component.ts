@@ -70,7 +70,7 @@ export class MohSgHomeComponent implements OnInit{
           console.error(err)
         },
         complete:() => {
-          console.log('completed search Sg Hospital') // debug
+          console.log('completed search Sg Hospital')
         }
       });
   }

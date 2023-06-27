@@ -1,12 +1,137 @@
-<div>
+<div class="container">
+    <p *ngIf="waiting">
+        <span>
+            Registration in progress. This may take some time due to busy Ethereum network traffic.
+            <br>
+            Please try again another time if registration failed after waiting for 10 minutes.
+        </span>
+        <mat-progress-bar mode="indeterminate" *ngIf="waiting"></mat-progress-bar>
+    </p>
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>SIGN UP AS HEALTH SERVICE PROVIDER</mat-card-title>
+            <mat-card-subtitle>
+                Please connect to metamask with the account to be registered
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+
+            <form [formGroup]="form" (ngSubmit)="register()">
+                <mat-form-field class="form-width">
+                    <mat-label>Ethereum Account Private Key</mat-label>
+                    <input matInput [type]="hide ? 'password' : 'text'" formControlName="privateKey">
+                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                      </button>
+                    <mat-error *ngIf="form.get('privateKey')?.invalid && form.get('privateKey')?.dirty && !waiting">
+                        Please enter a valid private key associated with the connected account
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Set a Password</mat-label>
+                    <input matInput [type]="hidepassword ? 'password' : 'text'" formControlName="accountPassword">
+                    <button mat-icon-button matSuffix (click)="hidepassword = !hidepassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidepassword">
+                        <mat-icon>{{hidepassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                      </button>
+                    <mat-error *ngIf="form.get('accountPassword')?.invalid">
+                        Password must be at least 8 characters, contains at least 1 digit, 1 uppercase letter and 1 lowercase letter
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Facility Name</mat-label>
+                    <input matInput type="text" formControlName="facilityName">
+                    <mat-error *ngIf="form.get('facilityName')?.invalid">
+                        Facility name is mandatory
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>License</mat-label>
+                    <input matInput type="text" formControlName="license">
+                    <mat-error *ngIf="form.get('license')?.invalid">
+                        License number is mandatory
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Address</mat-label>
+                    <input matInput type="text" formControlName="address">
+                    <mat-error *ngIf="form.get('address')?.invalid">
+                        Address is mandatory
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Street</mat-label>
+                    <input matInput type="text" formControlName="streetName">
+                    <mat-error *ngIf="form.get('streetName')?.invalid">
+                        Street name is mandatory
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Postal Code</mat-label>
+                    <input matInput type="text" formControlName="zipCode">
+                    <mat-error *ngIf="form.get('zipCode')?.invalid">
+                        Postal code is mandatory
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Country</mat-label>
+                    <mat-select formControlName="countryCode">
+                        <mat-option value="sg">Singapore</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Contact Number</mat-label>
+                    <input matInput type="text" formControlName="phoneNumber">
+                    <mat-error *ngIf="form.get('phoneNumber')?.invalid">
+                        Contact number is mandatory
+                    </mat-error>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Hospital Ownership</mat-label>
+                    <mat-select formControlName="hospitalOwnership">
+                        <mat-option value="public">Public</mat-option>
+                        <mat-option value="private">Private</mat-option>
+                        <mat-option value="not-for-profit">Not-for-profit</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="form-width">
+                    <mat-label>Emergency Services Available</mat-label>
+                    <mat-select formControlName="emergencyServices">
+                        <mat-option value="yes">Yes</mat-option>
+                        <mat-option value="no">No</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <br>
+                <p class="button-position">
+                    <button mat-raised-button color="accent" type="submit" [disabled]="form.invalid">Register</button>
+                </p>
+            </form>
+
+            <a [routerLink]="['/']">Back to Sign-In Page</a>
+        </mat-card-content>
+    </mat-card>
+</div>
+
+<!-- ====================================== -->
+<!-- <div>
     <h2>SIGN UP AS HEALTH SERVICE PROVIDER</h2>
     <h3>Please connect to metamask with the account to be registered</h3>
     <form [formGroup]="form" (ngSubmit)="register()">
-        <!-- <button type="submit">Submit</button> -->
+
         <table>
             <tr>
                 Ethereum Account Private Key: <input type="password" formControlName="privateKey">
-                <span *ngIf="form.get('privateKey')?.invalid && form.get('privateKey')?.dirty">Please enter a valid private key associated with the connected account</span>
+                <span *ngIf="form.get('privateKey')?.invalid && form.get('privateKey')?.dirty && !waiting">Please enter a valid private key associated with the connected account</span>
             </tr>
             <tr>
                 Set Password: <input type="password" formControlName="accountPassword">
@@ -66,4 +191,4 @@
         <a [routerLink]="['/']">Back to Sign-In Page</a>
     </form>
 </div>
-
+ -->

@@ -13,6 +13,9 @@ export class SignUpMohComponent {
   form!: FormGroup;
   result$: any;
 
+  hide=true;
+  hidepassword=true;
+
   constructor(private fb:FormBuilder, private hospSvc:HospitalService, private web3Svc:Web3Service, private router:Router){}
 
   ngOnInit(): void {
@@ -71,14 +74,15 @@ export class SignUpMohComponent {
     this.form.patchValue({privateKey:null}) // remove privateKey before sending to server
 
     this.form.addControl('encryptedKeyStore', this.fb.control(encryptedKeyStore))
-    console.log('form: ', this.form)
     this.hospSvc.registerMoh(this.form.value).subscribe({
       next:()=>{},
       error:(err)=>{
         console.error(err)
+        alert(err.error.error)
       },
       complete:()=>{
         console.log('registered success')
+        alert('Registration Successful')
         this.router.navigate(['/'])
       }
     });

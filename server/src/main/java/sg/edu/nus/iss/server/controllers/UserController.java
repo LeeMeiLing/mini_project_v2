@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import sg.edu.nus.iss.server.exceptions.RegisterHospitalFailedException;
 import sg.edu.nus.iss.server.models.User;
 import sg.edu.nus.iss.server.services.UserService;
 
@@ -28,9 +29,8 @@ public class UserController {
     private String keyStorePassword;
     
     @PostMapping(path = "/register/public", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> saveUser(@RequestBody User user){
+    public ResponseEntity<String> saveUser(@RequestBody User user) throws RegisterHospitalFailedException{
 
-        System.out.println(">>> in controller, registerNewUser: " + user);// debug
         if(userSvc.saveUser(user)){
             JsonObject payload = Json.createObjectBuilder().add("email", user.getUserEmail()).build();
             return ResponseEntity.status(HttpStatus.CREATED).body(payload.toString());

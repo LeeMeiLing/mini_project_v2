@@ -38,7 +38,6 @@ export class SearchHospitalComponent implements OnInit{
     this.hospitalSvc.getMohList().subscribe({
       next: (r:any)=>{
         this.mohList = r as Moh[];
-        console.log('mohList ', this.mohList)
       },
       error: (err)=>{
         console.error(err)
@@ -74,23 +73,22 @@ export class SearchHospitalComponent implements OnInit{
         tap(r => this.states = r as string[])
       ).subscribe({
         next: ()=> {
-          console.log(this.states)
         },
         error: err=>{
           console.error(err)
         },
         complete:() => {
-          console.log('completed get states') // debug
+          console.log('completed get states') 
         }
       });
     }
   }
 
   onStateChange(){
-    console.log("onChange()")
-    console.log('state', this.form.value['state']);
-    console.log('city', this.form.value['city']);
-    console.log('name', this.form.value['hospitalName']);
+    // console.log("onChange()")
+    // console.log('state', this.form.value['state']);
+    // console.log('city', this.form.value['city']);
+    // console.log('name', this.form.value['hospitalName']);
 
     this.form.patchValue({city:''}); // reset city to ''
 
@@ -104,13 +102,12 @@ export class SearchHospitalComponent implements OnInit{
         tap(r => this.cities = r as string[])
       ).subscribe({
         next: ()=> {
-          console.log(this.cities)
         },
         error: err=>{
           console.error(err)
         },
         complete:() => {
-          console.log('completed get cities') // debug
+          console.log('completed get cities') 
         }
       });
 
@@ -149,10 +146,6 @@ export class SearchHospitalComponent implements OnInit{
         }),
       ).subscribe({
         next: ()=> {
-          console.log(this.seeResponse);
-          console.log(this.hospitals);
-          console.log(this.count);
-          console.log('count/20 ', this.count/20)
           this.totalPage = Math.ceil(this.count/20);
         },
         error: err=>{
@@ -161,7 +154,7 @@ export class SearchHospitalComponent implements OnInit{
           console.error(err)
         },
         complete:() => {
-          console.log('completed search Sg Hospital') // debug
+          console.log('completed search Sg Hospital') 
         }
       });
   }
@@ -178,19 +171,12 @@ export class SearchHospitalComponent implements OnInit{
 
     this.form.valueChanges.subscribe(
       (value) => { 
-        console.log('Form value changed:', value);
         this.offset = 0;
         this.hospitals = null;
         this.hospitalSgList = null;
 
       }
     );
-
-    console.log('in searchUsHospital()');
-
-    console.log('state', this.form.value['state']);
-    console.log('city', this.form.value['city']);
-    console.log('name', this.form.value['hospitalName']);
 
     this.hospitalSvc.getHospitals( this.form.value['state'], this.form.value['city'], 
       this.form.value['hospitalName'], this.offset, this.sortByRating, this.descending )?.pipe(
@@ -201,10 +187,6 @@ export class SearchHospitalComponent implements OnInit{
         }),
       ).subscribe({
         next: ()=> {
-          console.log(this.seeResponse);
-          console.log(this.hospitals);
-          console.log(this.count);
-          console.log('count/20 ', this.count/20)
           this.totalPage = Math.ceil(this.count/20);
 
         },
@@ -214,7 +196,7 @@ export class SearchHospitalComponent implements OnInit{
           console.error(err);
         },
         complete:() => {
-          console.log('completed search Hospital') // debug
+          console.log('completed search Hospital') 
         }
       });
   
@@ -245,7 +227,6 @@ export class SearchHospitalComponent implements OnInit{
       this.descending = false;;
     }
     
-    console.log('disableSort: ', this.disableSort ,'sortByRating: ',this.sortByRating,'descending: ', this.descending);
 
     if(this.countryCodeForm.value['countryCode']!.toLowerCase() == 'sg'.toLowerCase()){
       this.searchSgHospitals();

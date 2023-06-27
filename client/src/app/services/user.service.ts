@@ -27,7 +27,7 @@ export class UserService {
     const headers = new HttpHeaders().set('Content-Type','application/json')
                                      .set('Accept','application/json');
     
-    return lastValueFrom(this.http.post(this.USER_URL + '/register/public', form, { headers }));                           
+    return this.http.post(this.USER_URL + '/register/public', form, { headers });                           
 
   }
 

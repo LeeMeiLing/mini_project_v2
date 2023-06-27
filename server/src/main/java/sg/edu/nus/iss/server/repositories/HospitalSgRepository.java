@@ -102,6 +102,8 @@ public class HospitalSgRepository {
         
     }
 
+
+
     public boolean updateContractAddress(String facilityId, String contractAddress){
 
          try{
@@ -115,6 +117,62 @@ public class HospitalSgRepository {
         }
     }
 
+    public Integer checkHospEthAddressExist(String ethAddress){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+        @Override
+        public void setValues(PreparedStatement ps) throws SQLException {
+            ps.setString(1, ethAddress);
+        }
+        
+       };
+
+        return jdbcTemplate.query(SqlQueryConstant.CHECK_HOSP_ETH_ADD_EXIST, ps, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+                Integer count = -1;
+
+                while(rs.next()){
+                    count = rs.getInt(1); // if facilityId not found, will return 0
+                }
+
+                return count;
+            }
+            
+        });
+    }
+
+     public Integer checkMohEthAddressExist(String ethAddress){
+
+        PreparedStatementSetter ps = new PreparedStatementSetter() {
+
+        @Override
+        public void setValues(PreparedStatement ps) throws SQLException {
+            ps.setString(1, ethAddress);
+        }
+        
+       };
+
+        return jdbcTemplate.query(SqlQueryConstant.CHECK_MOH_ETH_ADD_EXIST, ps, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+                Integer count = -1;
+
+                while(rs.next()){
+                    count = rs.getInt(1); // if facilityId not found, will return 0
+                }
+
+                return count;
+            }
+            
+        });
+    }
+
     public Optional<HospitalSg> findHospitalSgByEthAddress(String ethAddress){
 
          try{
@@ -124,6 +182,7 @@ public class HospitalSgRepository {
 
         // catch exception if ethAddress not found or more than one entry found for the same eth Address
         }catch(Exception ex){
+
             ex.printStackTrace();        
             return Optional.empty();
         }

@@ -41,12 +41,10 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
         this.statIndex = params['statIndex'];
         this.facilityId = params['facilityId'];
         this.userRole = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()).userRole;
-          console.log('>> userRole: ', this.userRole)
           if(this.userRole == 'moh'){
             const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as MohDecodedToken;
             this.countryCode =decodedToken.countryCode.toLowerCase();
           }
-          //  if hospital can access hospital component !
           if(this.userRole == 'hospital'){
             const decodedToken = this.jwtCookieSvc.decodeToken(this.jwtCookieSvc.getJwt()) as HospitalDecodedToken;
             this.userFacilityId = decodedToken.facilityId;
@@ -83,17 +81,13 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
 
   verifyStatistic(statIndex: number) {
 
-    console.log('Use wanna verify stat index: ', statIndex);
-  
     const dialogRef = this.dialog.open(PasswordComponent, {
       width: '250px',
       data: { accountPassword: this.accountPassword }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
       this.accountPassword = result;
-      console.log("account password ", this.accountPassword);
       this.waiting=true;
       this.hospSvc.verifyStatistic(this.facilityId, statIndex, this.accountPassword).subscribe({
         next: () => {
