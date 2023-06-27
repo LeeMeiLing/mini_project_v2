@@ -47,6 +47,7 @@ export class ReviewListComponent implements OnInit{
         this.reviews = r['reviews'];
         this.totalReview = r['totalReview'];
         this.reviewSummary = r['reviewSummary'];
+        console.log(this.reviewSummary);
       },
       error: err => console.error(err),
       complete: () => console.log('completed getHospitalReview()')

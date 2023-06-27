@@ -4,6 +4,13 @@
     padding: 10px;
     margin-top: 1%;
   }
+
+  .stat-list:hover{
+      background-color: lightgray;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   }
+   
+  
   
   .child {
     flex: 1 1 auto;

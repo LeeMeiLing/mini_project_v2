@@ -1,8 +1,78 @@
-<h2>Ministry of Health Singapore</h2>
+<mat-card-header>
+    <mat-card-title>Ministry of Health Singapore</mat-card-title>
+</mat-card-header>
+
+<!-- 1111111111111111 -->
+<div *ngIf="hospitalsPendingVerify">
+    <mat-card-header>
+        <mat-card-subtitle>
+            <span *ngIf="hospitalsPendingVerify.length > 0">New registered hospitals pending verification ({{hospitalsPendingVerify.length}})</span>
+            <span *ngIf="hospitalsPendingVerify.length == 0">No new registered hospital pending verification</span>    
+        </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div *ngFor="let h of hospitalsPendingVerify">                                                               
+            <mat-card class="parent hosp-list" [routerLink]="['/hospital/sg',h.facilityId]"><span>{{h.facilityName}}</span></mat-card>
+        </div>    
+    </mat-card-content>
+
+</div>
+
+<!-- 2222222222222222 -->
+<div *ngIf="!hospitalsPendingStatVerify">
+    <p *ngIf="loadingHospitalsPendingStatVerify">
+        <span class="parent">Loading Hospital with Statistic Pending Verification</span>
+        <mat-progress-bar mode="query" *ngIf="loadingHospitalsPendingStatVerify"></mat-progress-bar>
+    </p>
+</div>
+<div *ngIf="hospitalsPendingStatVerify">
+    <mat-card-header>
+        <mat-card-subtitle>
+            <span *ngIf="hospitalsPendingStatVerify.length > 0">Hospitals with statistic pending verification ({{hospitalsPendingStatVerify.length}})</span>
+            <span *ngIf="hospitalsPendingStatVerify.length == 0">No hospital with statistic pending verification</span>
+            </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div *ngFor="let h of hospitalsPendingStatVerify">                                                               
+            <mat-card class="parent hosp-list" [routerLink]="['/hospital/sg',h.facilityId]"><span>{{h.facilityName}}</span></mat-card>
+        </div>    
+    </mat-card-content>
+
+</div>
+
+<!-- 3333333333333333 -->
+<div *ngIf="allHospitalSg">
+    <mat-card-header>
+        <mat-card-subtitle>
+            <span *ngIf="allHospitalSg.length > 0">Total hospital registered ({{count}})</span>
+            <span *ngIf="allHospitalSg.length == 0">No Hospital Registered</span>
+            </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div *ngIf="allHospitalSg.length > 0">
+            <mat-card-subtitle>
+                <p>page {{offset + 1}} 
+                    <span *ngIf="offset>0"><button type="button" (click)="loadPreviousPage()">previous page</button></span>
+                    <span *ngIf="(offset + 1) < (count/20)"><button type="button" (click)="loadNextPage()">next page</button></span>
+                </p>    
+            </mat-card-subtitle>
+            <div *ngFor="let h of allHospitalSg">                                                               
+                <mat-card class="parent hosp-list" [routerLink]="['/hospital/sg',h.facilityId]"><span>{{h.facilityName}}</span></mat-card>
+            </div>   
+        </div>
+    </mat-card-content>
+
+</div>
+
+
 
 <!-- Hospitals registered, pending verification & set update freq, penalty -->
 <!-- select * from sg_hospitals where verified = false; -->
-<div>
+<!-- 11111111111111111 -->
+<!-- <div>
     <h3 *ngIf="hospitalsPendingVerify">
         <span *ngIf="hospitalsPendingVerify.length > 0">New registered hospitals pending verification ({{hospitalsPendingVerify.length}})</span>
         <span *ngIf="hospitalsPendingVerify.length == 0">No new registered hospitals pending verification</span>
@@ -12,10 +82,11 @@
             <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
         </tr>
     </table>
-</div>
+</div> -->
 
 <!-- Hospitals submitted updated statistic, pending verification -->
-<div>
+<!-- 22222222222222222222 -->
+<!-- <div>
     <h3 *ngIf="hospitalsPendingStatVerify">
         <span *ngIf="hospitalsPendingStatVerify.length > 0">Hospitals with statistic pending verification ({{hospitalsPendingStatVerify.length}})</span>
         <span *ngIf="hospitalsPendingStatVerify.length == 0">No hospitals with pending statistic verification</span>
@@ -25,11 +96,12 @@
             <a [routerLink]="['/hospital/sg',h.facilityId]">{{h.facilityName}}</a>
         </tr>
     </table>
-</div>
+</div> -->
 
 <!-- List of All Hospital Registered in Singapore -->
 <!-- select * from sg_hospitals; -->
-<div *ngIf="allHospitalSg">
+<!-- 333333333333333333333 -->
+<!-- <div *ngIf="allHospitalSg">
     <h3 >
         <span *ngIf="allHospitalSg.length > 0">Total Hospital in Singapore: {{count}}</span>
         <span *ngIf="allHospitalSg.length == 0">No Hospital</span>
@@ -46,4 +118,4 @@
         </table>
     </div>
     
-</div>
+</div> -->

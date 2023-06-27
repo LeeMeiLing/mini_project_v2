@@ -1,4 +1,8 @@
 <div *ngIf="hospital; else showHospitalSg">
+    <p *ngIf="loadingHospital">
+        <span>Loading data</span>
+        <mat-progress-bar mode="query" *ngIf="loadingHospital"></mat-progress-bar>
+    </p>
     <div class="parent">
         <div class="child left">
             <span class="title">{{hospital.facilityName}}</span>
@@ -105,6 +109,14 @@
 <router-outlet></router-outlet>
 
 <ng-template #showHospitalSg>
+    <p *ngIf="loadingHospital">
+        <span>Loading data</span>
+        <mat-progress-bar mode="query" *ngIf="loadingHospital"></mat-progress-bar>
+    </p>
+    <p *ngIf="waiting">
+        <span>This may take some time due to busy Ethereum network traffic.</span>
+        <mat-progress-bar mode="indeterminate" *ngIf="waiting"></mat-progress-bar>
+    </p>
     <div class="parent" *ngIf="hospitalSg">
         <div class="child left">
             <span class="title">{{hospitalSg.facilityName}}</span>

@@ -5,6 +5,12 @@
 
 <div class="parent" *ngIf="statistic">
     <p class="title">Statistic</p>
+    <br>
+    <p *ngIf="waiting">
+        <span>Verification in progress. This may take some time due to busy Ethereum network traffic.</span>
+        <mat-progress-bar mode="indeterminate" *ngIf="waiting"></mat-progress-bar>
+    </p>
+    <br>
     <table class="table stat-table subtitle-two">
         <tr>
             <th class="subtitle">Quality Measures</th>

@@ -19,6 +19,7 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
   statistic!:Statistic;
   dateUpdated!:Date;
   facilityId!:string;
+  waiting=false;
 
   userRole!:string;
   countryCode!:string;
@@ -92,12 +93,14 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       this.accountPassword = result;
-      console.log("account password ", this.accountPassword)
+      console.log("account password ", this.accountPassword);
+      this.waiting=true;
       this.hospSvc.verifyStatistic(this.facilityId, statIndex, this.accountPassword).subscribe({
         next: () => {
           alert('Verification successful');
         },
         error: (err) => {
+          this.waiting=false;
           console.error(err);
           if (err.status == 401) {
             alert(err.error.error);
@@ -105,6 +108,7 @@ export class ShowStatisticComponent implements OnInit, OnDestroy{
           this.accountPassword = '';
         },
         complete: () => {
+          this.waiting=false;
           this.accountPassword = '';
           this.router.navigate(['/hospital/sg', this.facilityId])
         }

@@ -87,7 +87,7 @@ public class SqlQueryConstant {
         from sg_hospital_reviews where facility_id = ?
     """;
 
-    public static final String QUERY_REVIEW_SG_HOSPITAL_BY_HOSPITAL = "select * from sg_hospital_reviews where facility_id = ?";
+    public static final String QUERY_REVIEW_SG_HOSPITAL_BY_HOSPITAL = "select * from sg_hospital_reviews where facility_id = ? order by review_date desc";
 
     // =========================================================
 
@@ -125,7 +125,7 @@ public class SqlQueryConstant {
         from us_hospital_reviews where facility_id = ?
     """;
 
-    public static final String QUERY_REVIEW_US_HOSPITAL_BY_HOSPITAL = "select * from us_hospital_reviews where facility_id = ?";
+    public static final String QUERY_REVIEW_US_HOSPITAL_BY_HOSPITAL = "select * from us_hospital_reviews where facility_id = ? order by review_date desc";
 
     // =========================================================
 

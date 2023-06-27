@@ -1,0 +1,12 @@
+.parent {
+    display: flex;
+    /* background-color: lightgray; */
+    padding: 3px;
+    margin-top: 1%;
+  }
+
+.hosp-list:hover{
+    background-color: lightgray;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+   

@@ -69,9 +69,10 @@ export class StatisticComponent implements OnInit{
       this.waiting = true;
       this.hospSvc.updateStatistic(this.form.value, this.accountPassword).subscribe({
         next: (r:any) => {
-          this.statIndex = r['statIndex']; // TODO: loading message while waiting
+          this.statIndex = r['statIndex']; 
         },
         error:(err)=> {
+          this.waiting=false;
           console.error('Failed to update statistic: ', err)
           if(err.status == 401){
             alert(err.error.error)

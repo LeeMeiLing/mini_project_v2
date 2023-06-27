@@ -9,7 +9,7 @@
     <div *ngIf="statistics.length > 0; else noStatistic">
         <div *ngFor="let s of statistics.reverse(); let i = index">
 
-            <mat-card class="parent" [routerLink]="['/statistic',facilityId,statistics.length-i-1]">
+            <mat-card class="parent stat-list" [routerLink]="['/statistic',facilityId,statistics.length-i-1]">
                 <span class="content">
                     Statistic ({{statistics.length-i}})
                     &nbsp;&nbsp;

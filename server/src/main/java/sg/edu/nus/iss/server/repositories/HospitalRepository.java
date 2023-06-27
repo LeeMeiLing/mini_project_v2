@@ -598,12 +598,14 @@ public class HospitalRepository {
         while(rs.next()){
 
             Integer rating = rs.getInt("overall_rating");
+
             switch(rating){
-                case 1: reviewSummary.setCountOfRatingOne( rs.getInt("count"));
-                case 2: reviewSummary.setCountOfRatingTwo( rs.getInt("count"));
-                case 3: reviewSummary.setCountOfRatingThree( rs.getInt("count"));
-                case 4: reviewSummary.setCountOfRatingFour( rs.getInt("count"));
-                case 5: reviewSummary.setCountOfRatingFive( rs.getInt("count"));
+                case 1: reviewSummary.setCountOfRatingOne( rs.getInt("count"));break;
+                case 2: reviewSummary.setCountOfRatingTwo( rs.getInt("count"));break;
+                case 3: reviewSummary.setCountOfRatingThree( rs.getInt("count"));break;
+                case 4: reviewSummary.setCountOfRatingFour( rs.getInt("count"));break;
+                case 5: reviewSummary.setCountOfRatingFive( rs.getInt("count"));break;
+                default: break;
             }
            
         }

@@ -17,6 +17,7 @@ export class MohSgHomeComponent implements OnInit{
   seeResponse!:any;
   count: any;
 
+  loadingHospitalsPendingStatVerify=true;
 
   constructor(private hospSvc:HospitalService){}
 
@@ -38,9 +39,11 @@ export class MohSgHomeComponent implements OnInit{
         this.hospitalsPendingStatVerify = r as HospitalSg[];
       },
       error: (err)=>{
+        this.loadingHospitalsPendingStatVerify=false;
         console.error(err)
       },
       complete:()=>{
+        this.loadingHospitalsPendingStatVerify=false;
         console.log('completed getHospitalSgByStatPendingVerify')
       }
     });

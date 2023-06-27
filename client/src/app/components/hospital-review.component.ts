@@ -15,6 +15,7 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
   facilityId!:string;
   hospitalCountry!:string;
   form!:FormGroup
+  waiting=false;
 
   constructor(private fb:FormBuilder, private actiavtedRoute:ActivatedRoute, private hospitalSvc:HospitalService, private router:Router){}
  
@@ -54,10 +55,15 @@ export class HospitalReviewComponent implements OnInit, OnDestroy{
 
   postReview(){
     console.log(this.form.value)
+    this.waiting=true;
     this.hospitalSvc.postHospitalReview(this.hospitalCountry, this.facilityId, this.form.value)?.subscribe({
       next:() => {},
-      error: (err) => console.error(err),
+      error: (err) => {
+        console.error(err)
+        this.waiting=false;
+      },
       complete:()=>{
+        this.waiting=false;
         alert('You have posted a review');
         this.router.navigate(['/hospital',this.hospitalCountry,this.facilityId]);
       }

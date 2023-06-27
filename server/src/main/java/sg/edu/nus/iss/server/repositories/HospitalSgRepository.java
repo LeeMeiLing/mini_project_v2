@@ -470,24 +470,31 @@ public class HospitalSgRepository {
         while(rs.next()){
 
             Integer rating = rs.getInt("overall_rating");
+
             switch(rating){
-                case 1: reviewSummary.setCountOfRatingOne( rs.getInt("count"));
-                case 2: reviewSummary.setCountOfRatingTwo( rs.getInt("count"));
-                case 3: reviewSummary.setCountOfRatingThree( rs.getInt("count"));
-                case 4: reviewSummary.setCountOfRatingFour( rs.getInt("count"));
-                case 5: reviewSummary.setCountOfRatingFive( rs.getInt("count"));
+                case 1: reviewSummary.setCountOfRatingOne( rs.getInt("count"));break;
+                case 2: reviewSummary.setCountOfRatingTwo( rs.getInt("count"));break;
+                case 3: reviewSummary.setCountOfRatingThree( rs.getInt("count"));break;
+                case 4: reviewSummary.setCountOfRatingFour( rs.getInt("count"));break;
+                case 5: reviewSummary.setCountOfRatingFive( rs.getInt("count"));break;
+                default: ;break;
             }
            
         }
-    
+   
         return reviewSummary;
     }
 
 
     public boolean updateHospitalSgOverallRating(Float newAvgRating, String facilityId) {
 
+        String newAvgRatingString = String.valueOf(newAvgRating);
+        if(newAvgRatingString.length()>5){
+            newAvgRatingString = newAvgRatingString.substring(0, 5);
+        }
+
         try{
-            jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_RATING, String.valueOf(newAvgRating).substring(0, 5), facilityId);
+            jdbcTemplate.update(SqlQueryConstant.UPDATE_SG_HOSPITAL_RATING, newAvgRatingString, facilityId);
             return true;
     
         }catch(Exception ex){
